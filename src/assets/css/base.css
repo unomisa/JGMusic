@@ -1,0 +1,16 @@
+:root {
+  --width-main: 1200px;
+  --color-main: #d83993;
+  --color-gray: #808080;
+  --color-light-gray: #D3D3D3;
+
+  --font-size-medium: 18px;
+  --font-size-small: 13px;
+
+  --play-bar-height: 80px;
+}
+
+.tooltip {
+  border: 1px solid #d83993 !important;
+  color: #d83993;
+}
