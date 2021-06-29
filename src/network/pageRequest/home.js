@@ -32,6 +32,29 @@ export class RecommendSong {
     this.name = info.name
     this.picUrl = info.picUrl
     this.artists = info.song.artists
-    this.alias = info.song.alias
+    this.alias = this.alias(info.song.alias)
+    this.duration = this.durationStr(info.song.duration)
+    this.currentBroadcast = false
+    this.album = info.song.album
+  }
+
+  alias (item) {
+    const aliasName = []
+    item.forEach(item => {
+      aliasName.push(item)
+    })
+    return aliasName.join(' / ')
+  }
+
+  durationStr (duration) {
+    const multiple = duration / (60 * 1000)
+    let minute
+    if (parseInt(multiple) < 10) {
+      minute = '0' + parseInt(multiple).toString()
+    } else {
+      minute = parseInt(multiple).toString()
+    }
+    const second = ((multiple.toFixed(2) - minute) * 0.6).toFixed(2).split('.')[1]
+    return minute + ':' + second
   }
 }

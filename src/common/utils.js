@@ -71,3 +71,29 @@ export function formatDate (date, fmt) {
 export function isFloat (number) {
   return ~~number !== number
 }
+
+/**
+ * * js 动画函数
+ * @timing 时间函数
+ * @draw 绘制函数
+ * @duration 动画时间
+ */
+export function animate ({ timing, draw, duration }) {
+  const start = performance.now()
+
+  requestAnimationFrame(function animate (time) {
+    // timeFraction 从 0 增加到 1
+    // * 用当前时间减去开始时间除以总时间，得到当前进程百分比数
+    let timeFraction = (time - start) / duration
+    if (timeFraction > 1) timeFraction = 1 // 超出动画时间归1以正常结束
+
+    // 计算当前动画状态
+    const progress = timing(timeFraction)
+
+    draw(progress) // 每次都会绘制
+
+    if (timeFraction < 1) { // 如果动画时间未到达，继续绘制
+      requestAnimationFrame(animate)
+    }
+  })
+}

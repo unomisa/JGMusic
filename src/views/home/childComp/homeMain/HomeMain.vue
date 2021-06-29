@@ -3,6 +3,7 @@
     <home-banner :banners="banners" />
 
     <home-recommend-songs :recommendSongs="recommendSongs" />
+    <!-- <home-recommend-songs class="recommend-songs" /> -->
   </el-main>
 </template>
 
@@ -28,7 +29,7 @@ export default {
       this.banners = res.banners
     })
 
-    getRecommendSongs(15).then(res => {
+    getRecommendSongs(9).then(res => {
       res.result.forEach(song => {
         this.recommendSongs.push(new RecommendSong(song))
       })

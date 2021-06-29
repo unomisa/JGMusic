@@ -1,16 +1,9 @@
 <template>
-  <el-carousel :interval="4000"
-               type="card"
-               height="300px"
-               trigger="click"
-               @change="change"
-               ref="carousel">
-    <el-carousel-item style="width: 60%"
-                      v-for="(item) in banners"
-                      :key="item.imageUrl"
-                      ref="carouselItem">
-      <el-image :src="item.imageUrl"
-                style="width:100%;height:100%"
+  <el-carousel :interval="4000" type="card" height="300px" trigger="click"
+               @change="change" ref="carousel">
+    <el-carousel-item style="width: 60%;" v-for="(item) in banners"
+                      :key="item.imageUrl" ref="carouselItem">
+      <el-image :src="item.imageUrl" style="width:100%;height:100%; "
                 fit="contain" />
 
     </el-carousel-item>
@@ -30,11 +23,13 @@ export default {
   },
   data () {
     return {
-      carouselItemWidth: 0.6 // 上面设置的百分比
+      carouselItemWidth: 0.6, // 上面设置的百分比,
+      currentIndex: 0
     }
   },
   methods: {
     change (currentIndex) {
+      this.currentIndex = currentIndex
       const carouselItems = this.$refs.carouselItem
 
       // 为除了当前carouselItem重置位置
@@ -43,13 +38,13 @@ export default {
           setTimeout(() => {
             const number = carouselItems[i].$el.style.transform.match(/-?\d+/)[0] - 60
             carouselItems[i].$el.style.transform = `translateX(${number}px) scale(0.83)`
-          }, 0)
+          })
         }
       }
       // 为当前carouselItem重置位置
       setTimeout(() => {
         carouselItems[currentIndex].$el.style.transform = `translateX(${this.currentTranslateX}px) scale(1)`
-      }, 0)
+      })
     }
   },
   computed: {
@@ -73,13 +68,15 @@ export default {
         }
       })
     }
+  },
+  activated () {
+    this.$refs.carouselItem !== undefined && this.change(this.currentIndex)
   }
-
 }
 </script>
 
 <style lang="less" scoped>
 .el-carousel {
-  margin: 20px 0 60px 0;
+  margin: 20px 0 20px 0;
 }
 </style>

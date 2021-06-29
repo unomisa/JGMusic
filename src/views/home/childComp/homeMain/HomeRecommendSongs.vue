@@ -1,28 +1,41 @@
 <template>
-  <div class="recommend-songs">
-    <div class="song" v-for="item of recommendSongs" :key="item.id">
+  <div>
+    <div>
+      <el-button type="text" class="title" size="medium">
+        新曲放送
+        <i class="el-icon-arrow-right"></i>
+      </el-button>
+    </div>
+    <div class=" recommend-songs">
+      <div class="song" v-for="item of recommendSongs" :key="item.id">
+        <div class="pic" @click="playMusic(item)">
+          <el-image :src="imgUrl(item.picUrl)" fit="fit"
+                    @load="picLoad(item)" />
 
-      <div class="pic" @click="playMusic(item)">
-        <el-image :src="item.picUrl" fit="fit" @load="picLoad(item)" />
+          <el-image class="disc"
+                    src="https://static1-music.taihe.com/client/img/f412d65.png"
+                    fit="fill" v-show="item.picLoad" />
+        </div>
 
-        <el-image class="disc"
-                  src="https://static1-music.taihe.com/client/img/f412d65.png"
-                  fit="fill" v-show="item.picLoad" />
-      </div>
-
-      <div class="song-info">
-        <div class="song-name">{{item.name}} <span style="color: #909389"
-                v-if="alias(item).length>0">(
-            {{alias(item)}} )</span></div>
-        <div class="song-artist">{{artistsName(item)}}</div>
+        <div class="song-info">
+          <div class="song-name">{{item.name}} <span style="color: #909389"
+                  v-if="item.alias.length>0">(
+              {{item.alias}} )</span></div>
+          <div class="song-artist">
+            <span v-for="(artist,index) of item.artists" :key="artist.id">
+              {{artist.name}}
+              <span v-if="index!==item.artists.length-1">/</span>
+            </span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
+
 </template>
 
 <script>
-import { mapMutations } from 'vuex'
-import { getSongUrl } from 'network/common'
+import { mapMutations, mapGetters } from 'vuex'
 
 export default {
   props: {
@@ -33,53 +46,54 @@ export default {
       }
     }
   },
+  data () {
+    return {
+      imgSize: '?param=120y120'
+    }
+  },
   computed: {
-    artistsName () {
-      return function (item) {
-        const artistName = []
-        item.artists.forEach(artist => {
-          artistName.push(artist.name)
-        })
-        return artistName.join(' / ')
-      }
-    },
-    alias () {
-      return function (item) {
-        const aliasName = []
-        item.alias.forEach(item => {
-          aliasName.push(item)
-        })
-        return aliasName.join(' / ')
+    ...mapGetters([
+      'currentPlayMusic'
+    ]),
+
+    imgUrl () {
+      return function (url) {
+        return url + this.imgSize
       }
     }
+
   },
   methods: {
     ...mapMutations([
-      'switchMusic'
+      'switchMusic',
+      'addToPlayList',
+      'setCurrentBroadcast',
+      'setListCurrentIndex'
     ]),
 
     picLoad (item) {
       item.picLoad = true
     },
 
-    playMusic (item) {
-      getSongUrl(item.id).then(res => {
-        const music = {
-          id: item.id,
-          title: item.name,
-          alias: this.alias(item),
-          artist: this.artistsName(item),
-          pic: item.picUrl,
-          src: res.data[0].url
-        }
-        this.switchMusic(music)
-      })
+    // 添加播放的音乐
+    playMusic (newPlay) {
+      if (newPlay === this.currentPlayMusic) return
+      if (this.$music !== undefined) {
+        this.$music.pause()
+      }
+      this.setListCurrentIndex(0)
+      this.addToPlayList({ songs: this.recommendSongs, first: newPlay })
     }
   }
 }
 </script>
 
 <style lang="less" scoped>
+.title {
+  font-size: var(--font-size-title);
+  margin-bottom: var(--font-size-title);
+}
+
 .recommend-songs {
   display: flex;
   flex-wrap: wrap;

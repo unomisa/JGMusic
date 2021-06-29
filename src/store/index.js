@@ -8,8 +8,10 @@ import getters from './getters'
 Vue.use(Vuex)
 
 const state = {
-  playMusic: {},
-  musicList: []
+  playList: [],
+  isLoadingMusic: true,
+  isPaused: true,
+  listCurrentIndex: 0
 }
 
 export default new Vuex.Store({

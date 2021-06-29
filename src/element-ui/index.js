@@ -18,7 +18,9 @@ import {
   Col,
   Divider,
   Card,
-  Tooltip
+  Tooltip,
+  Progress,
+  Slider
 } from 'element-ui'
 
 const elementCom = [
@@ -39,7 +41,9 @@ const elementCom = [
   Col,
   Divider,
   Card,
-  Tooltip
+  Tooltip,
+  Progress,
+  Slider
 ]
 
 elementCom.forEach(component => {

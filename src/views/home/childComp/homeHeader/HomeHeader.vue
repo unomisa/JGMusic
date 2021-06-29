@@ -1,7 +1,6 @@
 <template>
-  <el-header height="80px">
-    <el-row type="flex"
-            align="middle">
+  <el-header>
+    <el-row type="flex" align="middle">
       <el-col :span="4">
         <div class="logo">
           <el-image :src="require('assets/img/common/cloudmusic.svg')" />
@@ -9,12 +8,9 @@
         </div>
       </el-col>
 
-      <el-col :span="8"
-              :offset="1">
-        <el-menu style="border:none;"
-                 :default-active="activeIndex"
-                 mode="horizontal"
-                 active-text-color="#d83993"
+      <el-col :span="8" :offset="1">
+        <el-menu style="border:none;" :default-active="activeIndex"
+                 mode="horizontal" active-text-color="#d83993"
                  @select="handleSelect">
           <el-menu-item index="1">首页</el-menu-item>
           <el-menu-item index="2">排行</el-menu-item>
@@ -24,20 +20,16 @@
         </el-menu>
       </el-col>
 
-      <el-col :span="6"
-              :offset="1">
+      <el-col :span="6" :offset="1">
         <div class="flex-center">
-          <el-input placeholder="请输入歌名、歌词、歌手或专辑"
-                    prefix-icon="el-icon-search"
+          <el-input placeholder="请输入歌名、歌词、歌手或专辑" prefix-icon="el-icon-search"
                     v-model="searchText">
           </el-input>
         </div>
       </el-col>
 
-      <el-col :span="2"
-              :offset="2">
-        <el-button style="float:right"
-                   plain>登录 / 注册</el-button>
+      <el-col :span="2" :offset="2">
+        <el-button style="float:right" plain>登录 / 注册</el-button>
       </el-col>
 
     </el-row>
@@ -63,11 +55,16 @@ export default {
 
 <style lang="less" scoped>
 .el-header {
-  position: relative;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
   z-index: 9;
+  height: var(--nav-bar-height) !important;
   width: 100%;
   padding: 0 calc((100% - 1200px) / 2);
   box-shadow: 0 2px 10px 0 rgba(52, 52, 52, 10%);
+  background-color: #fff;
 }
 
 .el-row {
