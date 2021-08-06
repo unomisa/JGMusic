@@ -14,6 +14,12 @@ export default {
     state.playList.unshift(payload.first)
   },
 
+  addMusic (state, music) {
+    const index = state.listCurrentIndex
+    state.playList.splice(index + 1, 0, music) // 在当前位置之后插入歌曲
+    this.commit('setListCurrentIndex', index + 1) // 设置插入歌曲的位置
+  },
+
   setCurrentBroadcast (state, music) {
     music.currentBroadcast = !music.currentBroadcast
   },

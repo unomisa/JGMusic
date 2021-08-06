@@ -10,8 +10,8 @@
 <script>
 import HomeBanner from './HomeBanner.vue'
 
-import { getBanner, getRecommendSongs, RecommendSong, test } from 'network/pageRequest/home'
-import HomeRecommendSongs from './HomeRecommendSongs.vue'
+import { getBanner, getNewSongs, NewSong } from 'network/pageRequest/home'
+import HomeRecommendSongs from './HomeNewSongs.vue'
 
 export default {
   components: {
@@ -29,9 +29,9 @@ export default {
       this.banners = res.banners
     })
 
-    getRecommendSongs(9).then(res => {
+    getNewSongs(9).then(res => {
       res.result.forEach(song => {
-        this.recommendSongs.push(new RecommendSong(song))
+        this.recommendSongs.push(new NewSong(song))
       })
       console.log(res.result)
     })

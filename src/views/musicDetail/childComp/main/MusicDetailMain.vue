@@ -1,117 +1,128 @@
 <template>
   <el-main class="main">
-    <div class="title">
-      <div class="title-name">{{currentPlayMusic.name}}</div>
-      <div class="title-alias">{{currentPlayMusic.alias}}</div>
-      <div class="title-artists">
-        <span v-for="(artist,index) of currentPlayMusic.artists"
-              :key="artist.id">
-          {{artist.name}}
-          <span v-if="index!==currentPlayMusic.artists.length-1">/</span>
-        </span>
-        <span>
-          ─ {{currentPlayMusic.album.name}}
-        </span>
-      </div>
-    </div>
+    <music-detail-title class="title" v-show="isExistCurrentPlayMusic" />
+
     <div class="content">
-      <div class="left"></div>
-      <div class="center">
-        <lyric-roll :lyric="lrc" :tlyric="tlyric" />
+      <div class="left">
+        <music-detail-pic />
       </div>
-      <div class="right"></div>
+
+      <div class="center">
+        <div class="blur-top"></div>
+        <lyric-roll :lyric="lrc" :tlyric="tlyric" ref="lyric"
+                    v-if="lrc.length>0" />
+        <div class="blur-bottom"></div>
+      </div>
+
+      <div class="right">
+        <music-detail-simi :simiSongs="simiSongs" :simiList="simiList" />
+      </div>
     </div>
+
   </el-main>
 </template>
 
 <script>
-import LyricRoll from 'components/common/LyricRoll.vue'
+import LyricRoll from 'components/content/lyricRoll/LyricRoll.vue'
+import MusicDetailTitle from './MusicDetailTitle.vue'
+import MusicDetailSimi from './MusicDetailSimi.vue'
+import MusicDetailPic from './MusicDetailPic.vue'
 
 import { mapGetters } from 'vuex'
-import { getLyric } from 'network/pageRequest/musicdetail'
 
 export default {
   components: {
-    LyricRoll
+    LyricRoll,
+    MusicDetailTitle,
+    MusicDetailSimi,
+    MusicDetailPic
   },
-  data () {
-    return {
-      lrc: '',
-      tlyric: ''
+  props: {
+    lrc: {
+      type: String,
+      default: ''
+    },
+    tlyric: {
+      type: String,
+      default: ''
+    },
+    simiSongs: {
+      type: Array,
+      default () {
+        return []
+      }
+    },
+    simiList: {
+      type: Array,
+      default () {
+        return []
+      }
     }
   },
   computed: {
     ...mapGetters([
-      'currentPlayMusic',
-      'isExistCurrentPlayMusic'
+      'isExistCurrentPlayMusic',
+      'currentPlayMusic'
     ])
-  },
-  methods: {
-    getLyric () {
-      const musicId = this.currentPlayMusic.id
-      getLyric(musicId)
-        .then(res => {
-          this.lrc = res.lrc.lyric
-          this.tlyric = res.tlyric.lyric
-          console.log(res)
-        })
-    }
-  },
-  created () {
-    if (this.isExistCurrentPlayMusic) {
-      this.getLyric()
-    } else {
-      this.$router.replace('/home')
-    }
-  },
-  watch: {
-    currentPlayMusic () {
-      this.getLyric()
-    }
   }
 }
 </script>
 
 <style lang="less" scoped>
 .main {
+  width: 1200px;
   height: 530px;
+  margin: 0 auto;
   overflow: hidden;
 }
 
 .title {
-  height: 20%;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-evenly;
-  margin-bottom: 3rem;
-
-  &-name {
-    color: #333333;
-    font-size: var(--font-size-title);
-  }
-
-  &-alias {
-    color: var(--color-gray);
-  }
-
-  &-artists {
-    color: var(--color-gray);
-  }
+  height: 25%;
 }
 
 .content {
-  height: 80%;
+  height: 75%;
   display: flex;
 }
 
 .left {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex: 1;
+  overflow: hidden;
 }
+
+.blur {
+  content: "";
+  position: absolute;
+  left: -10px;
+  z-index: 1;
+  height: 24px;
+  width: 105%;
+  background-color: white;
+  filter: blur(5px);
+
+  &-top {
+    &:extend(.blur);
+    transform: translateY(-10px);
+    top: 0;
+  }
+
+  &-bottom {
+    &:extend(.blur);
+    transform: translateY(10px);
+    bottom: 0;
+  }
+}
+
 .center {
+  position: relative;
   flex: 1;
+  overflow: hidden;
 }
 .right {
   flex: 1;
+  overflow: hidden;
 }
 </style>

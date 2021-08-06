@@ -87,6 +87,15 @@ export default {
   color: white;
 }
 
+.omit {
+  display: -webkit-box; /** 对象作为伸缩盒子模型显示 **/
+  word-break: break-all;
+  text-overflow: ellipsis;
+  -webkit-box-orient: vertical; /** 设置或检索伸缩盒对象的子元素的排列方式 **/
+  -webkit-line-clamp: 1; /** 显示的行数 **/
+  overflow: hidden;
+}
+
 .song {
   &-pic {
     height: 100%;
@@ -103,17 +112,13 @@ export default {
   }
 
   &-artist {
+    &:extend(.omit);
     font-size: var(--font-size-small);
     color: var(--color-gray);
   }
 
   &-title {
-    display: -webkit-box; /** 对象作为伸缩盒子模型显示 **/
-    word-break: break-all;
-    text-overflow: ellipsis;
-    -webkit-box-orient: vertical; /** 设置或检索伸缩盒对象的子元素的排列方式 **/
-    -webkit-line-clamp: 1; /** 显示的行数 **/
-    overflow: hidden;
+    &:extend(.omit);
   }
 
   &-alias {

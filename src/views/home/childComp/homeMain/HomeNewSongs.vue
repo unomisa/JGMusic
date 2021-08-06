@@ -65,9 +65,7 @@ export default {
   },
   methods: {
     ...mapMutations([
-      'switchMusic',
       'addToPlayList',
-      'setCurrentBroadcast',
       'setListCurrentIndex'
     ]),
 

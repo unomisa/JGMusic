@@ -8,7 +8,7 @@
       <play-bar-right />
     </el-row>
     <audio :src="currentPlayMusic.src" @canplay="canplay" @play="play"
-           @pause="pause" ref="music" />
+           @pause="pause" @ended="ended" ref="music" />
   </div>
 </template>
 
@@ -30,27 +30,27 @@ export default {
   computed: {
     ...mapState([
       'isLoadingMusic',
-      'isPaused'
+      'isPaused',
+      'listCurrentIndex'
     ]),
 
     ...mapGetters([
-      'currentPlayMusic'
-    ]),
-    isExistCurrentPlayMusic () {
-      return Object.keys(this.currentPlayMusic).length > 0
-    }
+      'currentPlayMusic',
+      'isExistCurrentPlayMusic'
+    ])
   },
   methods: {
     ...mapMutations([
       'setMusicSrc',
       'setCurrentBroadcast',
       'setIsLoadingMusic',
-      'setIsPaused'
+      'setIsPaused',
+      'setListCurrentIndex'
     ]),
 
     // * audio 事件
     canplay () {
-      this.setIsLoadingMusic(false)
+      this.setIsLoadingMusic(false) // 可以播放之后设置加载完成
       this.setIsPaused(false)
       this.$music.play()
     },
@@ -61,16 +61,23 @@ export default {
 
     pause () {
       this.setIsPaused(true)
+    },
+
+    // 播放完毕触发
+    ended () {
+      this.setListCurrentIndex(this.listCurrentIndex + 1)
     }
   },
   watch: {
     currentPlayMusic (newPlay, oldPlay) {
-      this.setCurrentBroadcast(newPlay)
-      oldPlay !== undefined && (this.setCurrentBroadcast(oldPlay))
-      this.setIsLoadingMusic(true)
-      getSongUrl(newPlay.id).then(res => {
-        this.setMusicSrc(res.data[0].url)
-      })
+      if (newPlay.id !== oldPlay.id) {
+        this.setCurrentBroadcast(newPlay)
+        oldPlay !== undefined && (this.setCurrentBroadcast(oldPlay))
+        this.setIsLoadingMusic(true) // 换歌之后设置它正在加载
+        getSongUrl(newPlay.id).then(res => {
+          this.setMusicSrc(res.data[0].url)
+        })
+      }
     },
 
     isExistCurrentPlayMusic () {

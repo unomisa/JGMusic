@@ -44,8 +44,10 @@ export default {
     control () {
       if (this.$music.paused !== true) {
         this.$music.pause()
+        this.$bus.$emit('clickPause', true)
       } else {
         this.$music.play()
+        this.$bus.$emit('clickPause', false)
       }
     },
 
@@ -68,6 +70,12 @@ export default {
   }
 }
 </script>
+<style lang="less">
+.control-box .el-button:focus {
+  color: initial !important;
+  background-color: initial !important;
+}
+</style>
 
 <style lang="less" scoped>
 .flex-center {

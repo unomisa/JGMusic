@@ -97,3 +97,42 @@ export function animate ({ timing, draw, duration }) {
     }
   })
 }
+
+// 使节点滚动至固定位置（流畅动画）
+export function ElScrool (el, scrollTop, time = 300) {
+  const currentTop = el.scrollTop
+  const scrollHeight = scrollTop - currentTop
+  animate({
+    duration: time,
+    timing: function (timeFraction) {
+      return timeFraction
+    },
+    draw: function (progress) {
+      el.scrollTop = currentTop + (progress * scrollHeight)
+    }
+  })
+}
+
+// * 项目特有工具函数
+
+// 别名格式化
+export function alias (item) {
+  const aliasName = []
+  item.forEach(item => {
+    aliasName.push(item)
+  })
+  return aliasName.join(' / ')
+}
+
+// 歌曲时长处理
+export function durationStr (duration) {
+  const multiple = duration / (60 * 1000)
+  let minute
+  if (parseInt(multiple) < 10) {
+    minute = '0' + parseInt(multiple).toString()
+  } else {
+    minute = parseInt(multiple).toString()
+  }
+  const second = ((multiple.toFixed(2) - minute) * 0.6).toFixed(2).split('.')[1]
+  return minute + ':' + second
+}

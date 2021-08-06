@@ -1,6 +1,7 @@
 <template>
-  <div v-bar class="scroll" ref="scroll">
-    <div class="container" ref="container" @mousewheel="mousewheel">
+  <div v-bar class="scroll-lyric" ref="scroll" :style="scrollStyle">
+    <div class="lyric-container" :style="containerStyle" ref="container"
+         @mousewheel="mousewheel">
       <div class="lyric-box" v-for="(lyric,index) of lyricArr" :key="index"
            ref="lyric">
         <div :class="{currentLyric:isCurrentLyric(index)}" class="lyric">
@@ -22,26 +23,39 @@
 <script>
 import { mapState } from 'vuex'
 import { animate, debounce } from 'common/utils'
+import { ElScrool } from '../../../common/utils'
 
 export default {
   props: {
+    // 歌词
     lyric: {
       type: String,
       default: ''
     },
+    // 翻译
     tlyric: {
       type: String,
       default: ''
+    },
+    // 高度
+    height: {
+      type: String,
+      default: '100%'
+    },
+    // 宽度
+    width: {
+      type: String,
+      default: '100%'
     }
   },
   data () {
     return {
-      currentTime: 0,
-      timers: [],
-      currentLyricIndex: 0,
-      translator: '',
-      canScroll: true,
-      debounceSetCanScroll: null
+      currentTime: 0, // 当前播放时间
+      currentLyricIndex: 0, // 当前歌词索引位置
+      translator: '', // 翻译者
+      canScroll: true, // 是否可以滚动
+      debounceSetCanScroll: null, // 存储防抖后的函数
+      isShowLyric: true
     }
   },
   computed: {
@@ -92,6 +106,19 @@ export default {
           return false
         }
       }
+    },
+
+    scrollStyle () {
+      return {
+        height: this.height,
+        width: this.width
+      }
+    },
+
+    containerStyle () {
+      return {
+        padding: `calc(${this.height} * 0.3) 17px calc(${this.height} * 0.3) 9px`
+      }
     }
   },
   methods: {
@@ -106,7 +133,7 @@ export default {
     },
 
     repetition () {
-      if (this.$route.path.includes('/musicDetail')) {
+      if (this.isShowLyric) {
         // 重复判断滚动条是否拖动,若拖动则使3s后才恢复歌词滚动
         if (this.$vuebar.getState(this.$refs.scroll).barDragging) {
           this.canScroll = false
@@ -122,6 +149,7 @@ export default {
       }
     },
 
+    // 将歌词截取出来
     splitLyricStr (lyric) {
       let lyricArr = lyric.split('\n')
       lyricArr = lyricArr
@@ -171,30 +199,42 @@ export default {
           }
         })
       }
+    },
+
+    // 歌词回滚至顶部
+    lyricBackTop () {
+      ElScrool(this.$refs.container, 0, 0)
     }
   },
   watch: {
     // 当当前歌词索引发生变化时，滚动歌词
     currentLyricIndex (index) {
       this.scrollLyric(index)
+    },
+
+    isPaused () {
+      this.scrollLyric(this.currentLyricIndex)
     }
   },
   mounted () {
+    this.$bus.$on('sliderChange', () => { this.canScroll = true })
     this.debounceSetCanScroll = debounce(this.setCanScroll, 3000) // 函数防抖
     this.repetition()
+  },
+  destroyed () {
+    this.isShowLyric = false // 销毁时使不再重复执行repetition()
   }
 }
 </script>
 
 <style lang="less" scoped>
-@scrollHeight: 100%;
-@scrollWidth: 400px;
-
-.scroll {
+.scroll-lyric {
   margin: 0 auto;
-  height: @scrollHeight;
-  width: @scrollWidth;
   text-align: center;
+}
+
+.lyric-container {
+  box-sizing: border-box;
 }
 
 .currentLyric {
@@ -205,18 +245,10 @@ export default {
 .lyric-box {
   line-height: 2;
   margin: 1.5rem 0;
-
-  &:first-child {
-    margin-top: @scrollHeight / 2;
-  }
-
-  &:last-child {
-    margin-bottom: @scrollHeight / 2;
-  }
 }
 
 .tlyric {
-  font-size: var(--font-size-small);
+  font-size: 13px;
 }
 
 .currentTlyric {
@@ -225,6 +257,23 @@ export default {
 
 .translator {
   margin-top: 3rem;
-  margin-bottom: @scrollHeight / 2;
+}
+</style>
+
+<style lang="less">
+.scroll-lyric {
+  & > .vb-dragger {
+    display: none;
+  }
+
+  &:hover > .vb-dragger {
+    display: block;
+  }
+}
+
+.vb-dragger {
+  &:active {
+    display: block;
+  }
 }
 </style>

@@ -20,7 +20,15 @@ import {
   Card,
   Tooltip,
   Progress,
-  Slider
+  Slider,
+  Avatar,
+  Link,
+  Pagination,
+  Backtop,
+  Icon,
+  Dialog,
+  Tabs,
+  TabPane
 } from 'element-ui'
 
 const elementCom = [
@@ -43,7 +51,15 @@ const elementCom = [
   Card,
   Tooltip,
   Progress,
-  Slider
+  Slider,
+  Avatar,
+  Link,
+  Pagination,
+  Backtop,
+  Icon,
+  Dialog,
+  Tabs,
+  TabPane
 ]
 
 elementCom.forEach(component => {

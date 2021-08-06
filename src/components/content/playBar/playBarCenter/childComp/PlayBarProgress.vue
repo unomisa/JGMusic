@@ -66,6 +66,7 @@ export default {
     },
 
     sliderChange (sliderValue) {
+      this.$bus.$emit('sliderChange') // 滚动改变
       this.$music.currentTime = (sliderValue * this.$music.duration) / 100
       // console.log('sliderValue：', sliderValue)
       // console.log('过去了:', this.$music.currentTime)

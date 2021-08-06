@@ -17,6 +17,7 @@
 
 body {
   overflow: hidden;
+  color: #333333;
 }
 
 .el-slider__button {
@@ -25,11 +26,14 @@ body {
 }
 
 
-.el-button:focus {
-  color: initial !important;
-  background-color: initial !important;
+
+.el-divider--horizontal {
+  /* 重置height为1的分割线，它会造成高度显示不当 */
+  height: 0.5px !important;
 }
 
+
+/* 外部图标js使用的通用样式 */
 .icon {
   width: 1em;
   height: 1em;
@@ -60,7 +64,7 @@ body {
     background-color 100ms ease-out,
     margin 100ms ease-out,
     height 100ms ease-out;
-  background-color: rgba(190, 118, 159, 0.1);
+  background-color: rgba(190, 118, 159, 0.3);
   margin: 5px 5px 5px 0;
   border-radius: 20px;
   height: calc(100% - 10px);
@@ -69,7 +73,7 @@ body {
 
 .vb.vb-scrolling-phantom>.vb-dragger>.vb-dragger-styler {
   /* 滚动时样式 */
-  background-color: rgba(190, 118, 159, .1);
+  background-color: rgba(190, 118, 159, .3);
 }
 
 .vb>.vb-dragger:hover>.vb-dragger-styler {

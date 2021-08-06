@@ -23,8 +23,10 @@ export default {
   },
   data () {
     return {
-      carouselItemWidth: 0.6, // 上面设置的百分比,
-      currentIndex: 0
+      carouselItemWidth: 0.6, // 上面设置的宽度百分比,
+      currentIndex: 0,
+      transitionNone: false,
+      styleEl: null
     }
   },
   methods: {
@@ -38,13 +40,14 @@ export default {
           setTimeout(() => {
             const number = carouselItems[i].$el.style.transform.match(/-?\d+/)[0] - 60
             carouselItems[i].$el.style.transform = `translateX(${number}px) scale(0.83)`
-          })
+          }, 30)
+        } else {
+          // 为当前carouselItem重置位置
+          setTimeout(() => {
+            carouselItems[currentIndex].$el.style.transform = `translateX(${this.currentTranslateX}px) scale(1)`
+          }, 30)
         }
       }
-      // 为当前carouselItem重置位置
-      setTimeout(() => {
-        carouselItems[currentIndex].$el.style.transform = `translateX(${this.currentTranslateX}px) scale(1)`
-      })
     }
   },
   computed: {
@@ -79,4 +82,4 @@ export default {
 .el-carousel {
   margin: 20px 0 20px 0;
 }
-</style>
+</styl>

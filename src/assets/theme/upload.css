@@ -416,9 +416,9 @@
     padding-right: 0;
     margin-right: 0; }
   .el-progress.is-success .el-progress-bar__inner {
-    background-color: #67C23A; }
+    background-color: #00ead3; }
   .el-progress.is-success .el-progress__text {
-    color: #67C23A; }
+    color: #00ead3; }
   .el-progress.is-warning .el-progress-bar__inner {
     background-color: #E6A23C; }
   .el-progress.is-warning .el-progress__text {
@@ -707,7 +707,7 @@
     .el-upload-list__item:first-child {
       margin-top: 10px; }
     .el-upload-list__item .el-icon-upload-success {
-      color: #67C23A; }
+      color: #00ead3; }
     .el-upload-list__item .el-icon-close {
       display: none;
       position: absolute;
