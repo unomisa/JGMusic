@@ -28,8 +28,16 @@ import {
   Icon,
   Dialog,
   Tabs,
-  TabPane
+  TabPane,
+  Notification,
+  Dropdown,
+  DropdownMenu,
+  DropdownItem,
+  Popover,
+  Skeleton,
+  SkeletonItem
 } from 'element-ui'
+Vue.prototype.$notify = Notification // 这种方法才能正确注册
 
 const elementCom = [
   Button,
@@ -59,7 +67,13 @@ const elementCom = [
   Icon,
   Dialog,
   Tabs,
-  TabPane
+  TabPane,
+  Dropdown,
+  DropdownMenu,
+  DropdownItem,
+  Popover,
+  Skeleton,
+  SkeletonItem
 ]
 
 elementCom.forEach(component => {

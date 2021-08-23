@@ -3,15 +3,15 @@
     <home-banner :banners="banners" />
 
     <home-recommend-songs :recommendSongs="recommendSongs" />
-    <!-- <home-recommend-songs class="recommend-songs" /> -->
   </el-main>
 </template>
 
 <script>
 import HomeBanner from './HomeBanner.vue'
 
-import { getBanner, getNewSongs, NewSong } from 'network/pageRequest/home'
+import { getBanner, getNewSongs } from 'network/pageRequest/home'
 import HomeRecommendSongs from './HomeNewSongs.vue'
+import { Music } from 'network/common'
 
 export default {
   components: {
@@ -24,16 +24,30 @@ export default {
       recommendSongs: []
     }
   },
+  methods: {
+    musicBean (music) {
+      return {
+        id: music.id,
+        name: music.name,
+        picUrl: music.picUrl,
+        alias: music.song.alias,
+        artists: music.song.artists,
+        album: music.song.album,
+        duration: music.song.duration
+      }
+    }
+  },
   created () {
     getBanner().then(res => {
       this.banners = res.banners
     })
 
     getNewSongs(9).then(res => {
-      res.result.forEach(song => {
-        this.recommendSongs.push(new NewSong(song))
-      })
-      console.log(res.result)
+      if (res.code === 200) {
+        res.result.forEach(song => {
+          this.recommendSongs.push(new Music(this.musicBean(song)))
+        })
+      }
     })
   }
 

@@ -1,6 +1,6 @@
 <template>
   <div class="login">
-    <el-button style="float:right" plain @click="dialogVisible = true">
+    <el-button plain @click="dialogVisible = true">
       登录 / 注册</el-button>
     <el-dialog class="login-dialog" title="提示" :visible.sync="dialogVisible"
                width="25%" :modal="false" :append-to-body="true"
@@ -33,8 +33,10 @@ import LoginCaptcha from './loginMethod/LoginCaptcha.vue'
 import LoginQRCode from './loginMethod/LoginQRCode.vue'
 
 import { getQRKey, captchaVerify, getLoginStatus, getQRCodeStatus, logOut, refreshStatus } from 'network/common/login'
+import { updateLoginStatus } from 'common/mixin'
 
 export default {
+  mixins: [updateLoginStatus],
   components: { LoginCaptcha, LoginQRCode },
   data () {
     return {
@@ -49,7 +51,6 @@ export default {
     // dialog 关闭前的回调
     handleClose () {
       this.dialogVisible = false
-      console.log('关闭遮罩')
     },
     handleClick (tab, event) {
       if (this.activeName === 'QRcode') {
@@ -66,9 +67,17 @@ export default {
     pollingQRStatus () {
       this.timer = setInterval(() => {
         getQRCodeStatus(this.qrkey, Date.now()).then(res => {
-          console.log('状态为:', res)
+          // console.log('状态为:', res)
           if (res.code === 803) {
             this.handleClose()
+            // > mixin中setLoginStatus的方法
+            this.getLoginStatus()
+            this.$notify({
+              position: 'top-left',
+              title: '登录成功',
+              offset: 90,
+              type: 'success'
+            })
           }
           this.statusCode = res.code
         })
@@ -101,19 +110,6 @@ export default {
         this.getQRKey()
       }
     }
-  },
-  mounted () {
-    // setInterval(() => {
-    //   getLoginStatus().then(res => {
-    //     console.log('登录状态为：', res)
-    //   })
-
-    //   refreshStatus().then(res => {
-    //     console.log('刷新登录状态', res)
-    //   })
-    // }, 2000)
-
-    // logOut()
   }
 }
 </script>

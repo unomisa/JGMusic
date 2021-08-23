@@ -30,26 +30,23 @@
         <div v-bar class="scroll-area">
           <div>
             <div class="song" v-for="(song,index) of playList" :key="song.id"
-                 @dblclick="selectMusic(index)">
+                 @dblclick="selectMusic(index)"
+                 :class="{'song-play': song.state.currentBroadcast}">
               <div class="song-title-box">
-                <span class="song-title"
-                      :class="{'song-play': song.currentBroadcast}">{{song.name}}</span>
-                <span class="song-alias" v-if="song.alias.length>0"
-                      :class="{'song-play': song.currentBroadcast}">(
+                <span class="song-title">{{song.name}}</span>
+                <span class="song-alias" v-if="song.alias.length>0">(
                   {{song.alias}}
                   )</span>
               </div>
 
-              <div class="song-artist"
-                   :class="{'song-play': song.currentBroadcast}">
+              <div class="song-artist">
                 <span v-for="(artist,index) of song.artists" :key="artist.id">
                   {{artist.name}}
                   <span v-if="index!==song.artists.length-1">/</span>
                 </span>
               </div>
 
-              <div class="song-duration"
-                   :class="{'song-play': song.currentBroadcast}">
+              <div class="song-duration">
                 {{song.duration}}
               </div>
             </div>
@@ -171,8 +168,6 @@ export default {
     &-box {
       &:extend(.ellipsis);
       width: 150px;
-
-      margin-right: 1rem;
     }
   }
 
@@ -187,8 +182,10 @@ export default {
   }
 
   &-play {
-    color: var(--color-main);
-    font-size: 14px !important;
+    & * {
+      color: var(--color-main);
+      font-size: 14px !important;
+    }
   }
 
   &-duration {

@@ -20,17 +20,35 @@ body {
   color: #333333;
 }
 
+/* * 取消number类型时右侧的箭头 */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+/* * element ui 样式覆盖 */
+
 .el-slider__button {
   height: 8px !important;
   width: 8px !important;
 }
 
 
-
 .el-divider--horizontal {
   /* 重置height为1的分割线，它会造成高度显示不当 */
   height: 0.5px !important;
 }
+
+.el-notification__group {
+  /* 消息框内容对齐 */
+  padding-top: 2px;
+}
+
 
 
 /* 外部图标js使用的通用样式 */
@@ -91,4 +109,26 @@ body {
 
 .vb.vb-dragging-phantom>.vb-dragger>.vb-dragger-styler {
   background-color: rgba(216, 57, 147, .5);
+}
+
+/* * 通用样式区 */
+.image-err {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  background-color: #f5f7fa;
+  color: #909399;
+}
+
+.before-fill {
+  position: relative;
+}
+
+.infuse-image {
+  position: absolute !important;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
 }

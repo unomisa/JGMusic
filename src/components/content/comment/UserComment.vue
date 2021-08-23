@@ -1,16 +1,16 @@
 <template>
   <div class="user-comment">
     <el-avatar shape="circle" :src="comment.avatarUrl + '?param=50y50'"
-               fit="fill" />
+               fit="fill" @click.native="goUserDetail" />
     <div class="comment">
       <div class="content">
-        <el-link :underline="false" href="">
+        <el-link :underline="false" @click="goUserDetail">
           {{comment.nickname}}</el-link>
         ：{{comment.content}}
       </div>
 
       <div class="reply" v-if="Object.keys(comment.replied).length>0">
-        <el-link :underline="false" href="">
+        <el-link :underline="false" @click="goUserDetail">
           @{{comment.replied.nickname}}</el-link>
         ：{{comment.replied.content}}
       </div>
@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import { formatDate } from '../../../common/utils'
+import { formatDate } from 'common/utils'
 
 export default {
   props: {
@@ -55,6 +55,11 @@ export default {
         fmtDate = (createdDate.getMonth() + 1) + '月' + createdDate.getDate() + '日' + ' ' + fmtDate
       }
       return fmtDate
+    }
+  },
+  methods: {
+    goUserDetail () {
+      this.$router.push('/userDetail/' + this.comment.userId)
     }
   }
 }

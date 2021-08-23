@@ -1,5 +1,5 @@
 <template>
-  <div class="title">
+  <div class="title" v-if="isExistCurrentPlayMusic">
     <div class="title-name">{{currentPlayMusic.name}}</div>
     <div class="title-alias">{{currentPlayMusic.alias}}</div>
     <div class="title-artists">

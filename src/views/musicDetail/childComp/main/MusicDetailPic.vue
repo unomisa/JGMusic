@@ -80,7 +80,9 @@ export default {
   transform: translate(-50%, -50%);
   height: 300px;
   width: 300px;
+  border: 10px solid rgba(201, 200, 200, 0.8);
   border-radius: 100%;
+  background-color: rgba(201, 200, 200, 0.8);
 }
 
 .cover {

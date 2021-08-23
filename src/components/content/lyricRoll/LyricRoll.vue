@@ -22,8 +22,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import { animate, debounce } from 'common/utils'
-import { ElScrool } from '../../../common/utils'
+import { animate, debounce, ElScrool } from 'common/utils'
 
 export default {
   props: {

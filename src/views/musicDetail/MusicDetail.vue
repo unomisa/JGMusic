@@ -1,7 +1,6 @@
 <template>
   <transition name="el-zoom-in-bottom">
     <div class="detail">
-      <music-detail-header />
       <div v-bar class="scroll">
         <div class="container" ref="container">
           <el-container>
@@ -23,18 +22,17 @@
 
 <script>
 
-import MusicDetailHeader from 'views/musicDetail/childComp/header/MusicDetailHeader'
 import MusicDetailMain from 'views/musicDetail/childComp/main/MusicDetailMain.vue'
 import MusicDetailComment from './childComp/comment/MusicDetailComment.vue'
 
 import { mapGetters } from 'vuex'
-import { getSimiMusic, getLyric, SimiSongs, getSimiList } from 'network/pageRequest/musicdetail'
+import { getSimiMusic, getLyric, getSimiList } from 'network/pageRequest/musicdetail'
 import { ElScrool } from 'common/utils'
+import { Music } from 'network/common'
 
 export default {
   name: 'musicDetail',
   components: {
-    MusicDetailHeader,
     MusicDetailMain,
     MusicDetailComment
   },
@@ -53,6 +51,17 @@ export default {
     ])
   },
   methods: {
+    musicBean (music) {
+      return {
+        id: music.id,
+        name: music.name,
+        picUrl: music.album.picUrl,
+        alias: music.alias,
+        artists: music.artists,
+        album: music.album,
+        duration: music.duration
+      }
+    },
     // 请求歌词
     getLyric () {
       const musicId = this.currentPlayMusic.id
@@ -67,11 +76,11 @@ export default {
     getSimiMusic () {
       getSimiMusic(this.currentPlayMusic.id)
         .then(res => {
-          console.log('推荐歌曲为：', res)
+          console.log('推荐歌曲为', JSON.parse(JSON.stringify(res)))
           res.songs.forEach(info => {
-            this.simiSongs.push(new SimiSongs(info))
+            this.simiSongs.push(new Music(this.musicBean(info)))
           })
-          console.log('歌曲信息格式化之后:', this.simiSongs)
+          console.log('歌曲信息格式化之后:', JSON.parse(JSON.stringify(this.simiSongs)))
         })
     },
 
@@ -80,7 +89,7 @@ export default {
       getSimiList(this.currentPlayMusic.id)
         .then(res => {
           this.simiList = res.playlists
-          console.log('推荐歌单为:', this.simiList)
+          // console.log('推荐歌单为:', this.simiList)
         })
     },
 
@@ -123,9 +132,7 @@ export default {
 
 <style lang="less" scoped>
 .scroll {
-  height: calc(100vh - var(--play-bar-height) - var(--nav-bar-height));
-  position: absolute;
-  top: 80px;
+  height: inherit;
 }
 
 .detail {

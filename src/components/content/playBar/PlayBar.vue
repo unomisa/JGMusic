@@ -7,7 +7,7 @@
 
       <play-bar-right />
     </el-row>
-    <audio :src="currentPlayMusic.src" @canplay="canplay" @play="play"
+    <audio :src="currentPlayMusicUrl" @canplay="canplay" @play="play"
            @pause="pause" @ended="ended" ref="music" />
   </div>
 </template>
@@ -22,6 +22,11 @@ import { mapMutations, mapGetters, mapState } from 'vuex'
 import { getSongUrl } from 'network/common'
 
 export default {
+  data () {
+    return {
+      currentPlayMusicUrl: ''
+    }
+  },
   components: {
     PlayBarLeft,
     PlayBarCenter,
@@ -41,8 +46,6 @@ export default {
   },
   methods: {
     ...mapMutations([
-      'setMusicSrc',
-      'setCurrentBroadcast',
       'setIsLoadingMusic',
       'setIsPaused',
       'setListCurrentIndex'
@@ -71,11 +74,15 @@ export default {
   watch: {
     currentPlayMusic (newPlay, oldPlay) {
       if (newPlay.id !== oldPlay.id) {
-        this.setCurrentBroadcast(newPlay)
-        oldPlay !== undefined && (this.setCurrentBroadcast(oldPlay))
+        // * 状态设置
+        this.currentPlayMusicUrl = '' // 设置歌曲url为空，等待加载
         this.setIsLoadingMusic(true) // 换歌之后设置它正在加载
+        newPlay.state.currentBroadcast = true
+        'state' in oldPlay && (oldPlay.state.currentBroadcast = false)
+
+        // 请求歌曲url
         getSongUrl(newPlay.id).then(res => {
-          this.setMusicSrc(res.data[0].url)
+          this.currentPlayMusicUrl = res.data[0].url
         })
       }
     },
@@ -103,5 +110,6 @@ export default {
   padding: 0.7rem 1rem;
   background-color: white;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12), 0 0 6px rgba(0, 0, 0, 0.04);
+  user-select: none;
 }
 </style>

@@ -1,13 +1,9 @@
 import Vue from 'vue'
 
 export default {
-
-  setMusicSrc (state, src) {
-    Vue.set(state.playList[state.listCurrentIndex], 'src', src)
-  },
-
+  // 添加至歌单
   addToPlayList (state, payload) {
-    state.playList = []
+    state.playList = [] // 歌单清空
     payload.songs.forEach(song => {
       payload.first !== song && state.playList.push(song)
     })
@@ -15,13 +11,14 @@ export default {
   },
 
   addMusic (state, music) {
-    const index = state.listCurrentIndex
-    state.playList.splice(index + 1, 0, music) // 在当前位置之后插入歌曲
-    this.commit('setListCurrentIndex', index + 1) // 设置插入歌曲的位置
-  },
-
-  setCurrentBroadcast (state, music) {
-    music.currentBroadcast = !music.currentBroadcast
+    const findIndex = state.playList.findIndex(item => item.id === music.id)
+    if (findIndex === -1) {
+      const index = state.listCurrentIndex
+      state.playList.splice(index + 1, 0, music) // 在当前位置之后插入歌曲
+      this.commit('setListCurrentIndex', index + 1) // 设置插入歌曲的位置
+    } else {
+      this.commit('setListCurrentIndex', findIndex)
+    }
   },
 
   setListCurrentIndex (state, currentIndex) {
@@ -40,6 +37,15 @@ export default {
 
   setIsPaused (state, currentState) {
     state.isPaused = currentState
-  }
+  },
 
+  // 设置登录状态
+  setIsLogin (state, isLogin) {
+    state.isLogin = isLogin
+  },
+
+  // 设置当前登录用户信息
+  setLoginUser (state, loginUser) {
+    state.loginUser = loginUser
+  }
 }

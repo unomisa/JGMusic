@@ -1,3 +1,4 @@
+import { Artist } from 'network/common'
 /**
  * * 存放公共工具函数
  */
@@ -122,6 +123,15 @@ export function alias (item) {
     aliasName.push(item)
   })
   return aliasName.join(' / ')
+}
+
+// 作者信息格式化
+export function formatArtists (artists) {
+  const newArtists = []
+  artists.forEach((artist) => {
+    newArtists.push(new Artist(artist))
+  })
+  return newArtists
 }
 
 // 歌曲时长处理

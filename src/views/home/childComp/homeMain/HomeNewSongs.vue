@@ -14,7 +14,7 @@
 
           <el-image class="disc"
                     src="https://static1-music.taihe.com/client/img/f412d65.png"
-                    fit="fill" v-show="item.picLoad" />
+                    fit="fill" v-show="item.state.picLoad" />
         </div>
 
         <div class="song-info">
@@ -70,7 +70,7 @@ export default {
     ]),
 
     picLoad (item) {
-      item.picLoad = true
+      item.state.picLoad = true
     },
 
     // 添加播放的音乐

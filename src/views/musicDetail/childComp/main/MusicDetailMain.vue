@@ -9,8 +9,7 @@
 
       <div class="center">
         <div class="blur-top"></div>
-        <lyric-roll :lyric="lrc" :tlyric="tlyric" ref="lyric"
-                    v-if="lrc.length>0" />
+        <lyric-roll :lyric="lrc" :tlyric="tlyric" ref="lyric" />
         <div class="blur-bottom"></div>
       </div>
 
@@ -70,6 +69,7 @@ export default {
 
 <style lang="less" scoped>
 .main {
+  position: relative;
   width: 1200px;
   height: 530px;
   margin: 0 auto;

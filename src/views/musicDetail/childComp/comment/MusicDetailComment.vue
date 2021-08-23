@@ -33,14 +33,14 @@ export default {
       getHotComment({ id: this.currentPlayMusic.id, limit: 10, offset: 0 })
         .then(res => {
           if (res.code === 200) {
-            console.log('最热门评论为:', res)
+            // console.log('最热门评论为:', res)
             const comments = res.hotComments
             this.hotComments = []
             comments.forEach(component => {
               this.hotComments.push(new UserCommentInfo(component))
             })
-            console.log('评论数据为:', comments)
-            console.log('包装好的评论热门数据为：', this.hotComments)
+            // console.log('评论数据为:', comments)
+            // console.log('包装好的评论热门数据为：', this.hotComments)
           }
         })
     },
@@ -56,8 +56,8 @@ export default {
             comments.forEach(component => {
               this.newComments.push(new UserCommentInfo(component))
             })
-            console.log('最新评论数据为:', comments)
-            console.log('包装好的最新评论数据为：', this.newComments)
+            // console.log('最新评论数据为:', comments)
+            // console.log('包装好的最新评论数据为：', this.newComments)
           }
         })
     },
