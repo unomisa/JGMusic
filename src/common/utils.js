@@ -117,9 +117,10 @@ export function ElScrool (el, scrollTop, time = 300) {
 // * 项目特有工具函数
 
 // 别名格式化
-export function alias (item) {
+export function alias (alias) {
+  if (alias === undefined) return
   const aliasName = []
-  item.forEach(item => {
+  alias.forEach(item => {
     aliasName.push(item)
   })
   return aliasName.join(' / ')
@@ -145,4 +146,12 @@ export function durationStr (duration) {
   }
   const second = ((multiple.toFixed(2) - minute) * 0.6).toFixed(2).split('.')[1]
   return minute + ':' + second
+}
+
+// 播放次数格式化
+export function formatPlayCount (playCount, threshold = 100000) {
+  if (playCount >= threshold) {
+    return parseInt(playCount / 10000) + '万'
+  }
+  return playCount
 }

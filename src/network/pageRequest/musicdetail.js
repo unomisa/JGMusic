@@ -1,5 +1,4 @@
 import { request } from 'network/request'
-import { alias, durationStr } from 'common/utils'
 
 // * 获取歌词
 export function getLyric (id) {
@@ -81,20 +80,4 @@ export function getCommentOld (id, limit, offset, before) {
       before
     }
   })
-}
-
-// * 整合歌曲信息
-export class SimiSongs {
-  constructor (info) {
-    this.picLoad = false
-    this.id = info.id
-    this.mvid = info.mvid
-    this.name = info.name
-    this.picUrl = info.album.picUrl
-    this.artists = info.album.artists
-    this.alias = alias(info.alias)
-    this.duration = durationStr(info.duration)
-    this.currentBroadcast = false
-    this.album = info.album
-  }
 }

@@ -121,14 +121,16 @@ export default {
 .shade {
   content: "";
   position: absolute;
+  z-index: 1;
   top: 0;
   left: 0;
   right: 0;
-  box-shadow: 0px 0px 40px 5px rgb(0 0 0);
+  box-shadow: 0px 10px 30px 2px rgb(0 0 0);
 }
 
 .play-count {
   position: absolute;
+  z-index: 2;
   top: 5px;
   right: 8px;
   font-size: 14px;

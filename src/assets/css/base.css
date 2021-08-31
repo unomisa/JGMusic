@@ -2,7 +2,7 @@
   --width-main: 1200px;
   --color-main: #d83993;
   --color-gray: #808080;
-  --color-light-gray: #C0C0C0;
+  --color-light-gray: #a0a0a0;
 
   --font-size-title: 28px;
   --font-size-large: 20px;
@@ -18,6 +18,11 @@
 body {
   overflow: hidden;
   color: #333333;
+}
+
+pre {
+  white-space: pre-wrap;
+  line-height: 2;
 }
 
 /* * 取消number类型时右侧的箭头 */
@@ -49,7 +54,14 @@ input[type=number] {
   padding-top: 2px;
 }
 
+.el-link {
+  color: #527fb0 !important;
+  vertical-align: initial;
+}
 
+.el-link:hover {
+  color: #7c83fd !important;
+}
 
 /* 外部图标js使用的通用样式 */
 .icon {
@@ -60,6 +72,15 @@ input[type=number] {
   overflow: hidden;
 }
 
+/* 详情页的上方背景 */
+.backdrop {
+  position: absolute;
+  z-index: -1;
+  content: "";
+  width: 100%;
+  height: 300px;
+}
+
 
 
 /* 页面侧边滚栏 */
@@ -67,6 +88,7 @@ input[type=number] {
   z-index: 5;
   width: 12px;
   right: 0;
+  min-height: 10px;
 }
 
 .vb>.vb-dragger>.vb-dragger-styler {
@@ -109,6 +131,11 @@ input[type=number] {
 
 .vb.vb-dragging-phantom>.vb-dragger>.vb-dragger-styler {
   background-color: rgba(216, 57, 147, .5);
+}
+
+.vb-content {
+  /*  可以使滚动更流畅 */
+  backface-visibility: hidden;
 }
 
 /* * 通用样式区 */

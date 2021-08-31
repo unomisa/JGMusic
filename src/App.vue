@@ -2,7 +2,7 @@
   <div id="app" ref="app">
     <nav-bar />
 
-    <keep-alive exclude="UserDetail">
+    <keep-alive exclude="UserDetail" max="5">
       <router-view class="view" :style="scrollStyle" :key="$route.fullPath" />
     </keep-alive>
 

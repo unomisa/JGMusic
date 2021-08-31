@@ -4,11 +4,15 @@
     <div class="title-alias">{{currentPlayMusic.alias}}</div>
     <div class="title-artists">
       <span v-for="(artist,index) of currentPlayMusic.artists" :key="artist.id">
-        {{artist.name}}
-        <span v-if="index!==currentPlayMusic.artists.length-1">/</span>
+        <span class="artist"
+              @click="artistDetail(artist)">{{artist.name}}</span>
+        <span class="separator"
+              v-if="index!==currentPlayMusic.artists.length-1">/</span>
       </span>
       <span>
-        ─ {{currentPlayMusic.album.name}}
+        ─
+        <span class="album"
+              @click="albumDetail">{{currentPlayMusic.album.name}}</span>
       </span>
     </div>
   </div>
@@ -23,6 +27,15 @@ export default {
       'currentPlayMusic',
       'isExistCurrentPlayMusic'
     ])
+  },
+  methods: {
+    artistDetail (artist) {
+      this.$router.push('/artist/' + artist.id)
+    },
+
+    albumDetail () {
+      this.$router.push('/album/' + this.currentPlayMusic.album.id)
+    }
   }
 }
 </script>
@@ -47,6 +60,19 @@ export default {
 
   &-artists {
     color: var(--color-gray);
+  }
+}
+
+.separator {
+  padding: 0 5px;
+}
+
+.artist,
+.album {
+  cursor: pointer;
+
+  &:hover {
+    color: black;
   }
 }
 </style>

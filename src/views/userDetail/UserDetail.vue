@@ -31,8 +31,8 @@ export default {
   methods: {
     getUserPlaylist () {
       const userId = parseInt(this.$route.params.userId)
-      getUserPlaylist(userId, this.limit, this.offset).then(res => {
-        console.log('歌单信息为：', JSON.parse(JSON.stringify(res)))
+      getUserPlaylist(userId, this.limit, this.offset, Date.now()).then(res => {
+        // console.log('歌单信息为：', JSON.parse(JSON.stringify(res)))
         if (res.code === 200) {
           res.playlist.forEach((songList) => {
             if (songList.userId === userId) {
@@ -51,8 +51,6 @@ export default {
   },
   created () {
     const userId = parseInt(this.$route.params.userId)
-    console.log('重新创建')
-
     getUserDetail(userId).then(res => {
       if (res.code === 200) {
         this.profile = new Profile(res)
@@ -80,7 +78,7 @@ export default {
   width: 100%;
   height: 230px;
   background-image: linear-gradient(to top, #dfe9f3 0%, white 100%);
-  border: 1px solid transparent;
+  // border: 1px solid transparent;
 }
 </style>
 

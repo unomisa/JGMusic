@@ -96,14 +96,6 @@ export default {
   cursor: pointer;
 }
 
-.el-link {
-  color: #527fb0;
-  vertical-align: initial;
-  &:hover {
-    color: #7c83fd;
-  }
-}
-
 .reply {
   padding: 5px 8px;
   margin-top: 10px;

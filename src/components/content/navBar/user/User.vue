@@ -115,6 +115,11 @@ export default {
 .follows {
   width: 0;
   flex: 1;
+  color: var(--color-gray);
+
+  &:hover {
+    color: black;
+  }
 
   &-number {
     margin-bottom: 5px;
@@ -123,9 +128,6 @@ export default {
   }
 
   &-text {
-    &:hover {
-      color: black;
-    }
   }
 }
 </style>

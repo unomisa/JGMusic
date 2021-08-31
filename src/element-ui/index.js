@@ -35,7 +35,9 @@ import {
   DropdownItem,
   Popover,
   Skeleton,
-  SkeletonItem
+  SkeletonItem,
+  Tag,
+  InfiniteScroll
 } from 'element-ui'
 Vue.prototype.$notify = Notification // 这种方法才能正确注册
 
@@ -73,7 +75,9 @@ const elementCom = [
   DropdownItem,
   Popover,
   Skeleton,
-  SkeletonItem
+  SkeletonItem,
+  Tag,
+  InfiniteScroll
 ]
 
 elementCom.forEach(component => {

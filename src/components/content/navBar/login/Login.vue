@@ -69,9 +69,8 @@ export default {
         getQRCodeStatus(this.qrkey, Date.now()).then(res => {
           // console.log('状态为:', res)
           if (res.code === 803) {
-            this.handleClose()
-            // > mixin中setLoginStatus的方法
-            this.getLoginStatus()
+            this.handleClose() // 关闭登录窗口
+            this.getLoginStatus() // > mixin中setLoginStatus的方法
             this.$notify({
               position: 'top-left',
               title: '登录成功',

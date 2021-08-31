@@ -3,14 +3,15 @@
     <el-tooltip popper-class="tooltip" effect="light" content="播放列表"
                 placement="top-end" :visible-arrow="false"
                 :disabled="isShowList">
-      <svg class="icon list" aria-hidden="true" @click="openList">
+      <svg class="icon list" aria-hidden="true" @click="openList"
+           ref="listIcon">
         <use xlink:href="#icon-yinleliebiao-"></use>
       </svg>
     </el-tooltip>
 
     <transition name="el-zoom-in-top">
       <el-card class="box-card" v-show="isShowList"
-               body-style="padding-right:0;">
+               body-style="padding-right:0;" ref="card">
         <div class="title">
           <el-row type="flex" align="middle">
             <el-col :span="9" :offset="0">
@@ -40,14 +41,21 @@
               </div>
 
               <div class="song-artist">
-                <span v-for="(artist,index) of song.artists" :key="artist.id">
-                  {{artist.name}}
-                  <span v-if="index!==song.artists.length-1">/</span>
+                <span v-for="(artist,index) of song.artists" :key="index">
+                  <span class="artist"
+                        @click="artistDetail(artist)">{{artist.name}}</span>
+                  <span v-if="index!==song.artists.length-1"> / </span>
                 </span>
               </div>
 
               <div class="song-duration">
                 {{song.duration}}
+              </div>
+
+              <div class="palying" v-if="song.state.currentBroadcast">
+                <svg class="icon" aria-hidden="true">
+                  <use xlink:href="#icon-shengyin"></use>
+                </svg>
               </div>
             </div>
           </div>
@@ -61,7 +69,7 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from 'vuex'
+import { mapState, mapMutations, mapGetters } from 'vuex'
 
 export default {
   components: {
@@ -76,6 +84,11 @@ export default {
       'playMusic',
       'playList'
     ]),
+
+    ...mapGetters([
+      'currentPlayMusic'
+    ]),
+
     playListLength () {
       return this.playList.length
     }
@@ -90,6 +103,29 @@ export default {
     },
     selectMusic (index) {
       this.setListCurrentIndex(index)
+    },
+
+    artistDetail (artist) {
+      this.$router.push('/artist/' + artist.id)
+    }
+  },
+  watch: {
+    isShowList (newBool) {
+      // 使点击任意地方关闭列表
+      if (newBool) {
+        document.body.onclick = (event) => {
+          const target = event.target
+          const listIcon = this.$refs.listIcon
+          const card = this.$refs.card.$el
+
+          if (this.isShowList && !listIcon.contains(target) && !card.contains(target)) {
+            console.log('关闭列表')
+            this.isShowList = false
+          }
+        }
+      } else {
+        document.body.onclick = ''
+      }
     }
   }
 }
@@ -104,6 +140,7 @@ export default {
   height: 30px;
   width: 30px;
   cursor: pointer;
+  outline: none;
 }
 
 .title {
@@ -147,12 +184,14 @@ export default {
 }
 
 .song {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
   font-size: var(--font-size-small);
   line-height: 3;
   padding-right: 20px;
+  padding-left: 20px;
   user-select: none;
 
   &:nth-child(2n) {
@@ -191,6 +230,19 @@ export default {
   &-duration {
     font-size: 12px;
     letter-spacing: 2px;
+  }
+}
+
+.palying {
+  position: absolute;
+  left: 0px;
+}
+
+.artist {
+  cursor: pointer;
+
+  &:hover {
+    color: black;
   }
 }
 </style>

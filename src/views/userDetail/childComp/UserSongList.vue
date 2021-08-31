@@ -58,7 +58,6 @@ export default {
 }
 
 .song-list {
-  height: 250px;
   width: 0;
   flex: 20% 0;
   margin-bottom: 2rem;

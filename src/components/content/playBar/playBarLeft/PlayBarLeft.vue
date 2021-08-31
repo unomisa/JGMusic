@@ -16,12 +16,14 @@
       <div class="song-title">{{currentPlayMusic.name}} <span class="song-alias"
               v-if="currentPlayMusic.alias.length>0">(
           {{currentPlayMusic.alias}}
-          )</span> </div>
+          )</span>
+      </div>
       <div class="song-artist">
         <span v-for="(artist,index) of currentPlayMusic.artists"
               :key="artist.id">
-          {{artist.name}}
-          <span v-if="index!==currentPlayMusic.artists.length-1">/</span>
+          <span class="artist"
+                @click="artistDetail(artist)">{{artist.name}}</span>
+          <span v-if="index!==currentPlayMusic.artists.length-1"> / </span>
         </span>
       </div>
     </div>
@@ -49,6 +51,10 @@ export default {
       } else {
         this.$router.push('/musicDetail')
       }
+    },
+
+    artistDetail (artist) {
+      this.$router.push('/artist/' + artist.id)
     }
   }
 }
@@ -123,6 +129,14 @@ export default {
 
   &-alias {
     color: var(--color-gray);
+  }
+}
+
+.artist {
+  cursor: pointer;
+
+  &:hover {
+    color: black;
   }
 }
 </style>

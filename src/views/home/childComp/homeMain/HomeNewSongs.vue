@@ -7,8 +7,8 @@
       </el-button>
     </div>
     <div class=" recommend-songs">
-      <div class="song" v-for="item of recommendSongs" :key="item.id">
-        <div class="pic" @click="playMusic(item)">
+      <div class="song" v-for="(item,index) of recommendSongs" :key="item.id">
+        <div class="pic" @click="playMusic(item,index)">
           <el-image :src="imgUrl(item.picUrl)" fit="fit"
                     @load="picLoad(item)" />
 
@@ -74,13 +74,12 @@ export default {
     },
 
     // 添加播放的音乐
-    playMusic (newPlay) {
+    playMusic (newPlay, index) {
       if (newPlay === this.currentPlayMusic) return
-      if (this.$music !== undefined) {
-        this.$music.pause()
-      }
-      this.setListCurrentIndex(0)
-      this.addToPlayList({ songs: this.recommendSongs, first: newPlay })
+      this.addToPlayList({
+        playList: this.recommendSongs,
+        index: index
+      })
     }
   }
 }

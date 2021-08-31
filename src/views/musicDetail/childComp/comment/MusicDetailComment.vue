@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <comment class="comment" :hotComments="hotComments"
-             :newComments="newComments" :totalCount="totalCount"
+             :newComments="newComments" :total="totalCount"
              @pageChange="pageChange"
              v-if="hotComments.length>0||newComments.length>0" />
   </div>
@@ -12,7 +12,7 @@ import Comment from 'components/content/comment/Comment.vue'
 
 import { mapGetters } from 'vuex'
 import { getCommentOld, getHotComment } from 'network/pageRequest/musicdetail'
-import { UserCommentInfo } from 'network/common'
+import { UserComment } from 'network/common'
 
 export default {
   components: { Comment },
@@ -37,7 +37,7 @@ export default {
             const comments = res.hotComments
             this.hotComments = []
             comments.forEach(component => {
-              this.hotComments.push(new UserCommentInfo(component))
+              this.hotComments.push(new UserComment(component))
             })
             // console.log('评论数据为:', comments)
             // console.log('包装好的评论热门数据为：', this.hotComments)
@@ -54,7 +54,7 @@ export default {
             this.totalCount = res.total
             this.newComments = []
             comments.forEach(component => {
-              this.newComments.push(new UserCommentInfo(component))
+              this.newComments.push(new UserComment(component))
             })
             // console.log('最新评论数据为:', comments)
             // console.log('包装好的最新评论数据为：', this.newComments)

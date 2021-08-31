@@ -1,31 +1,37 @@
 <template>
   <div class="container" ref="container">
-    <div v-show="hotComments.length>0 && isShowHot">
-      <div class="title">云村评论({{totalCount}})</div>
-      <div class="comments">
-        <div class="comment" v-for="comment in hotComments"
-             :key="comment.commentId">
-          <user-comment :comment="comment" />
-          <el-divider />
+    <div v-if="total!==0">
+      <div v-show="hotComments.length>0 && isShowHot">
+        <div class="title">云村评论({{total}})</div>
+        <div class="comments">
+          <div class="comment" v-for="comment in hotComments"
+               :key="comment.commentId">
+            <user-comment :comment="comment" />
+            <el-divider />
+          </div>
         </div>
       </div>
-    </div>
 
-    <div v-if="newComments.length>0">
-      <div class="title">最新评论({{totalCount}})</div>
-      <div class="comments">
-        <div class="comment" v-for="comment in newComments"
-             :key="comment.commentId">
-          <user-comment :comment="comment" />
-          <el-divider />
+      <div v-if="newComments.length>0">
+        <div class="title">最新评论({{total}})</div>
+        <div class="comments">
+          <div class="comment" v-for="comment in newComments"
+               :key="comment.commentId">
+            <user-comment :comment="comment" />
+            <el-divider />
+          </div>
         </div>
       </div>
+
+      <el-pagination background layout="prev, pager, next" :total="total"
+                     :page-size="20" :pager-count="9"
+                     @current-change="pageChange" />
+      <br>
     </div>
 
-    <el-pagination background layout="prev, pager, next" :total="totalCount"
-                   :page-size="20" :pager-count="9"
-                   @current-change="pageChange" />
-    <br>
+    <div v-if="total===0">
+      <h3 class="tips">还没有评论，快来抢沙发~</h3>
+    </div>
   </div>
 </template>
 
@@ -47,7 +53,7 @@ export default {
         return []
       }
     },
-    totalCount: {
+    total: {
       type: Number,
       default: 0
     }
@@ -66,7 +72,7 @@ export default {
       } else {
         this.isShowHot = true
       }
-      this.$emit('pageChange', page)
+      this.$emit('pageChange', page) // > 注意页码改变会发出事件
       this.$refs.container.scrollIntoView(true)
     }
   }
@@ -74,6 +80,10 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.container {
+  // margin-top: 24px;
+}
+
 .title {
   margin-bottom: 24px;
   font-weight: bold;
@@ -97,5 +107,9 @@ export default {
   text-align: center;
   margin-bottom: 30px;
   margin-top: -50px;
+}
+
+.tips {
+  text-align: center;
 }
 </style>

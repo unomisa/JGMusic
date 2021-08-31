@@ -28,7 +28,7 @@ import MusicDetailComment from './childComp/comment/MusicDetailComment.vue'
 import { mapGetters } from 'vuex'
 import { getSimiMusic, getLyric, getSimiList } from 'network/pageRequest/musicdetail'
 import { ElScrool } from 'common/utils'
-import { Music } from 'network/common'
+import { Music, SimiList } from 'network/common'
 
 export default {
   name: 'musicDetail',
@@ -88,8 +88,10 @@ export default {
     getSimiList () {
       getSimiList(this.currentPlayMusic.id)
         .then(res => {
-          this.simiList = res.playlists
-          // console.log('推荐歌单为:', this.simiList)
+          if (res.code === 200) {
+            console.log('推荐歌单为:', res)
+            this.simiList = res.playlists.map(list => new SimiList(list))
+          }
         })
     },
 

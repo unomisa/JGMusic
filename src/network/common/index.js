@@ -11,6 +11,41 @@ export function getSongUrl (id) {
   })
 }
 
+// 喜欢音乐
+export function likeSong (id, like) {
+  return request({
+    url: '/like',
+    params: {
+      id,
+      like
+    }
+  })
+}
+
+// 收藏歌手
+export function subArtist (id, t, timestamp) {
+  return request({
+    url: '/artist/sub',
+    params: {
+      id,
+      t,
+      timestamp
+    }
+  })
+}
+
+// 关注用户
+export function followUser (id, t, timestamp) {
+  return request({
+    url: '/follow',
+    params: {
+      id,
+      t,
+      timestamp
+    }
+  })
+}
+
 // 歌曲信息
 export class Music {
   constructor (music) {
@@ -29,6 +64,7 @@ export class Music {
   }
 }
 
+// 专辑信息
 export class Album {
   constructor (album) {
     this.id = album.id
@@ -36,15 +72,26 @@ export class Album {
   }
 }
 
+// 歌手信息
 export class Artist {
   constructor (artist) {
     this.id = artist.id
     this.name = artist.name
+    this.picUrl = artist.picUrl
+  }
+}
+
+// 推荐歌单信息
+export class SimiList {
+  constructor (list) {
+    this.id = list.id
+    this.name = list.name
+    this.picUrl = list.coverImgUrl
   }
 }
 
 // 用户评论信息整合
-export class UserCommentInfo {
+export class UserComment {
   constructor (info) {
     this.avatarUrl = info.user.avatarUrl
     this.nickname = info.user.nickname
@@ -54,6 +101,7 @@ export class UserCommentInfo {
     this.likedCount = info.likedCount
     this.commentId = info.commentId
     this.replied = {}
+
     if ('beReplied' in info && info.beReplied !== null && info.beReplied.length > 0) {
       this.replied.nickname = info.beReplied[0].user.nickname
       this.replied.userId = info.beReplied[0].user.userId

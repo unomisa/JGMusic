@@ -9,9 +9,10 @@
           包含这首歌的歌单
         </div>
         <div class="list-content">
-          <div class="item" v-for="(item) in simiList" :key="item.id">
+          <div class="item" v-for="(item) in simiList" :key="item.id"
+               @click="listDetail(item)">
             <div class="img-box">
-              <el-image class="img" :src="item.coverImgUrl+'?param=50y50'"
+              <el-image class="img" :src="item.picUrl+'?param=50y50'"
                         fit="fill" />
             </div>
             <div class="list-name">{{item.name}}</div>
@@ -76,6 +77,10 @@ export default {
 
     addSong (song) {
       this.addMusic(song)
+    },
+
+    listDetail (list) {
+      this.$router.push('/songList/' + list.id)
     }
   }
 }

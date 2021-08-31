@@ -3,11 +3,12 @@ import { request } from 'network/request'
 // * 用户信息相关
 
 // 获取用户详情
-export function getUserDetail (uid) {
+export function getUserDetail (uid, timestamp) {
   return request({
     url: '/user/detail',
     params: {
-      uid
+      uid,
+      timestamp
     }
   })
 }
@@ -26,14 +27,51 @@ export function getUserSubcount () {
   })
 }
 
+// 获取用户喜欢的音乐的列表
+export function getLikeList (id, timestamp) {
+  return request({
+    url: '/likelist',
+    params: {
+      id,
+      timestamp
+    }
+  })
+}
+
+// 获取用户收藏歌手
+export function getArtistSubList (limit, offset, timestamp) {
+  return request({
+    url: '/artist/sublist',
+    params: {
+      limit,
+      offset,
+      timestamp
+    }
+  })
+}
+
+// 获取用户关注用户
+export function getUserFollows (uid, limit, offset, timestamp) {
+  return request({
+    url: '/user/follows',
+    params: {
+      uid,
+      limit,
+      offset,
+      timestamp
+    }
+  })
+}
+
 // 查看用户歌单
-export function getUserPlaylist (uid, limit, offset) {
+export function getUserPlaylist (uid, limit, offset, timestamp) {
   return request({
     url: '/user/playlist',
     params: {
       uid,
       limit,
-      offset
+      offset,
+      timestamp
     }
   })
 }
@@ -50,6 +88,20 @@ export class Profile {
     this.follows = info.follows
     this.signature = info.signature
     this.gender = info.gender
+
+    this.likeListSet = new Set([])
+    this.artistSub = new Map([])
+    this.followList = new Map([])
+  }
+}
+
+export class Follow {
+  constructor (follow) {
+    this.userId = follow.userId
+    this.name = follow.nickname
+    this.avatarUrl = follow.avatarUrl
+    this.signature = follow.signature
+    this.followeds = follow.followeds
   }
 }
 
