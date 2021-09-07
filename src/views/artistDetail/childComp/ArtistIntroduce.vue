@@ -100,13 +100,7 @@ export default {
           if (res.code === 200) {
             // console.log('取消收藏：', res)
             this.artistUnfollow(id)
-            this.$notify({
-              position: 'top-left',
-              title: '已取消收藏歌手',
-              offset: 90,
-              type: 'success',
-              duration: 2000
-            })
+            this.$notify.topleft('取消收藏歌手成功')
           }
         })
       } else {
@@ -118,13 +112,7 @@ export default {
               name: this.artist.name,
               picUrl: this.artist.cover
             }))
-            this.$notify({
-              position: 'top-left',
-              title: '收藏歌手成功',
-              offset: 90,
-              type: 'success',
-              duration: 2000
-            })
+            this.$notify.topleft('收藏歌手成功')
           }
         })
       }
@@ -138,7 +126,8 @@ export default {
 
 <style lang="less" scoped>
 .cover {
-  height: 100%;
+  height: 190px;
+  width: 190px;
   border-radius: 5px;
 }
 

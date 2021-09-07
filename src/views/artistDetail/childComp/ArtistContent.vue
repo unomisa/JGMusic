@@ -28,23 +28,15 @@ import ArtistHot from './ArtistHot.vue'
 import ArtistDesc from './ArtistDesc.vue'
 import ArtistSimi from './ArtistSimi.vue'
 
+import { mapMutations } from 'vuex'
 import { getAlbum } from 'network/pageRequest/albumdetail'
 import { Music, Artist } from 'network/common'
 
 export default {
   components: { ArtistAlbums, ArtistHot, ArtistDesc, ArtistSimi },
-  props: {
-    scrollDisabled: {
-      type: Boolean,
-      default: true
-    },
-    activeIndex: {
-      type: String,
-      default: '1'
-    }
-  },
   data () {
     return {
+      activeIndex: '1',
       albums: [],
       albumLimit: 3,
       albumPage: 1,
@@ -59,6 +51,10 @@ export default {
     }
   },
   methods: {
+    ...mapMutations([
+      'setInfiniteScrollDisabled'
+    ]),
+
     musicBean (music) {
       return {
         id: music.id,
@@ -73,9 +69,10 @@ export default {
 
     select (index) {
       const id = this.$route.params.id
-      this.$emit('update:activeIndex', index)
-
-      if (index === '2' && Object.keys(this.artistDesc).length === 0) {
+      this.activeIndex = index
+      if (index === '1') {
+        this.setInfiniteScrollDisabled(false) // 只在专辑选项时才加载
+      } else if (index === '2' && Object.keys(this.artistDesc).length === 0) {
         this.getArtistDesc(id)
       } else if (index === '3' && this.simiArtists.length === 0) {
         this.getSimiArtist(id)
@@ -118,6 +115,7 @@ export default {
     },
 
     getAlbums () {
+      if (this.activeIndex !== '1') return // 非专辑选项不请求
       const promiseArr = []
       const start = this.albumLimit * (this.albumPage - 1)
       let end = this.albumLimit * this.albumPage
@@ -129,7 +127,7 @@ export default {
         }
 
         Promise.all(promiseArr).then(() => {
-          this.$emit('update:scrollDisabled', false) // 恢复下拉加载
+          this.setInfiniteScrollDisabled(false) // 恢复下拉加载
           this.albumPage++ // 增加
         })
       }
@@ -163,7 +161,10 @@ export default {
     this.getArtistHotSongs(id)
   },
   mounted () {
-    this.$bus.$on('artistAlbumMore', this.getAlbums) // 接收下拉刷新事件
+    this.$bus.$on('infiniteScroll', this.getAlbums) // 接收下拉刷新事件
+  },
+  destroyed () {
+    this.$bus.$off('infiniteScroll')
   }
 }
 </script>
