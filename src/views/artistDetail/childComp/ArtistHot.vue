@@ -7,7 +7,8 @@
     <div class="hot-right">
       <div class="title">{{hot.title}}</div>
       <song v-for="(song,index) in songsPart" :key="song.id" :track="song"
-            :index="index+1" :showDetail="false" @click.native="play(index)" />
+            :index="index+1" :areas="areas" :indexWidth="30" :gutter="20"
+            @click.native="play(index)" />
 
       <song class="more" @click.native="more" v-if="hot.songs.length>10">
         {{bottomText}}
@@ -38,6 +39,16 @@ export default {
     }
   },
   computed: {
+    areas () {
+      return {
+        others: 3,
+        name: 18,
+        artists: 0,
+        album: 0,
+        duration: 3
+      }
+    },
+
     songsPart () {
       if (this.hot.songs.length < 10 || this.showAll) {
         return this.hot.songs

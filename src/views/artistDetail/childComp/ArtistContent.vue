@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import { getArtistAlbum, getArtistHotSongs, ArtistAlbum, getArtistDesc, getSimiArtist } from 'network/pageRequest/artist'
+import { getArtistAlbum, getArtistHotSongs, ArtistAlbum, getArtistDesc, getSimiArtist } from 'network/pageRequest/artistDetail'
 import ArtistAlbums from './ArtistAlbums.vue'
 import ArtistHot from './ArtistHot.vue'
 import ArtistDesc from './ArtistDesc.vue'

@@ -29,7 +29,7 @@
         <div class="artists">
           <span>歌手：</span>
           <el-link :underline="false" v-for="(artist,index) in album.artists"
-                   :key="artist.id">
+                   :key="artist.id" @click="artistDetail(artist)">
             {{artist.name}}
             <span v-if="index!==album.artists.length-1">&nbsp;/&nbsp;</span>
           </el-link>
@@ -60,6 +60,11 @@ export default {
     loading: {
       type: Boolean,
       default: true
+    }
+  },
+  methods: {
+    artistDetail (artist) {
+      this.$router.push('/artistDetail/' + artist.id)
     }
   }
 }

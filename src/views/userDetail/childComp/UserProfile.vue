@@ -1,98 +1,108 @@
 <template>
-  <div class="container">
-    <el-card class="userDetail-card">
-      <user-profile-skeleton style="width:100%">
-        <div class="card-body">
-          <div class="card-left">
-            <el-image v-if="Object.keys(profile).length>0" class="avatar"
-                      :src="profile.avatarUrl + '?param=300y300'" fit="contain"
-                      :lazy="true">
-              <div slot="error" class="avatar-error">
-                <i class="el-icon-user user-icon"></i>
-              </div>
-            </el-image>
-          </div>
-          <div class="card-right">
-            <div class="nickname">{{profile.nickname}}</div>
+  <detail-card :loading="profileLoading">
+    <template v-slot:left>
+      <el-image v-if="Object.keys(profile).length>0" class="avatar"
+                :src="profile.avatarUrl + '?param=200y200'" fit="fill">
+        <div slot="error" class="avatar-error">
+          <i class="el-icon-user user-icon"></i>
+        </div>
+      </el-image>
+    </template>
+    <template v-slot:right>
+      <div class="right">
+        <div class="nickname">{{profile.nickname}}</div>
 
-            <div class="other">
-              <span class="level">Lv{{profile.level}}</span>
-              <span class="gender">
-                <svg class="icon" aria-hidden="true" v-if="profile.gender===1">
-                  <use xlink:href="#icon-nan"></use>
-                </svg>
+        <div class="other">
+          <span class="level">Lv{{profile.level}}</span>
 
-                <svg class="icon" aria-hidden="true" v-if="profile.gender!==1">
-                  <use xlink:href="#icon-nv"></use>
-                </svg>
-              </span>
-              <div class="edit" v-if="isLoginUser">
-                <el-button type="primary" icon="el-icon-edit" @click="editInfo">
-                  编辑个人信息
-                </el-button>
-              </div>
-            </div>
+          <span class="gender">
+            <svg class="icon" aria-hidden="true" v-if="profile.gender===1">
+              <use xlink:href="#icon-nan"></use>
+            </svg>
 
-            <el-divider class="divider" v-if="isLoginUser">
-              <i style="font-size:1.5rem" class="el-icon-folder"></i>
-            </el-divider>
+            <svg class="icon" aria-hidden="true" v-if="profile.gender!==1">
+              <use xlink:href="#icon-nv"></use>
+            </svg>
+          </span>
 
-            <el-divider content-position="right" v-if="!isLoginUser">
-              <div class="btn">
-                <el-button plain round @click="followUser">
-                  <i class="el-icon-plus" v-show="!isFollow"></i>
-                  <i class="el-icon-check" v-show="isFollow"></i>
-                  {{followText}}
-                </el-button>
+          <span class="identify" v-if="profile.identify">
+            <el-image class="identify-icon"
+                      :src="profile.identify.imageUrl + '?param=20y20'"
+                      fit="fill" />
+            <span class="identify-desc">{{profile.identify.imageDesc}}</span>
+          </span>
 
-                <el-button plain round @click="sendMessage">
-                  <i class="el-icon-message"></i>
-                  发送私信
-                </el-button>
-              </div>
-            </el-divider>
-
-            <div class="relationship">
-              <div class="relationship-text">
-                <div class="relationship-number">{{profile.follows}}</div>
-                <div>关注</div>
-              </div>
-              <el-divider class="divider-vertical" direction="vertical">
-              </el-divider>
-              <div class="relationship-text">
-                <div class="relationship-number">{{profile.followeds}}</div>
-                <div>粉丝</div>
-              </div>
-            </div>
-
-            <div>
-              个人介绍：
-              <span class="signature-content"
-                    v-if="profile.signature!==''">{{profile.signature}}</span>
-              <span v-if=" profile.signature===''">暂无介绍</span>
-            </div>
+          <div class="edit" v-if="isLoginUser">
+            <el-button type="primary" icon="el-icon-edit" @click="editInfo">
+              编辑个人信息
+            </el-button>
           </div>
         </div>
-      </user-profile-skeleton>
-    </el-card>
-  </div>
+
+        <el-divider class="divider" v-if="isLoginUser">
+          <i style="font-size:1.5rem" class="el-icon-folder"></i>
+        </el-divider>
+
+        <el-divider content-position="right" v-if="!isLoginUser">
+          <div class="btn">
+            <el-button plain round @click="followUser">
+              <i class="el-icon-plus" v-show="!isFollow"></i>
+              <i class="el-icon-check" v-show="isFollow"></i>
+              {{followText}}
+            </el-button>
+
+            <el-button plain round @click="sendMessage">
+              <i class="el-icon-message"></i>
+              发送私信
+            </el-button>
+          </div>
+        </el-divider>
+
+        <div class="relationship">
+          <div class="relationship-text">
+            <div class="relationship-number">{{profile.follows}}</div>
+            <div>关注</div>
+          </div>
+          <el-divider class="divider-vertical" direction="vertical">
+          </el-divider>
+          <div class="relationship-text">
+            <div class="relationship-number">{{profile.followeds}}</div>
+            <div>粉丝</div>
+          </div>
+        </div>
+
+        <collapsible-text>
+          个人介绍：
+          <span class="signature-content"
+                v-if="profile.signature">{{profile.signature}}</span>
+          <span v-if=" !profile.signature">暂无介绍</span>
+        </collapsible-text>
+
+      </div>
+    </template>
+  </detail-card>
 </template>
 
 <script>
-import UserProfileSkeleton from '../skeleton/UserProfileSkeleton.vue'
 
 import { mapState, mapMutations } from 'vuex'
 import { followUser } from 'network/common'
 import { Follow } from 'network/pageRequest/user'
+import DetailCard from '../../../components/content/detailCard/DetailCard.vue'
+import CollapsibleText from '../../../components/common/collapsibleText/collapsibleText.vue'
 
 export default {
-  components: { UserProfileSkeleton },
+  components: { DetailCard, CollapsibleText },
   props: {
     profile: {
       type: Object,
       default () {
         return {}
       }
+    },
+    profileLoading: {
+      type: Boolean,
+      default: true
     }
   },
   computed: {
@@ -147,13 +157,7 @@ export default {
           if (res.code === 200) {
             console.log('取消关注：', res)
             this.userUnfollow(uid)
-            this.$notify({
-              position: 'top-left',
-              title: '已关注',
-              offset: 90,
-              type: 'success',
-              duration: 2000
-            })
+            this.$notify.topleft('已取消关注')
           }
         })
       } else {
@@ -164,60 +168,21 @@ export default {
               key: uid,
               value: new Follow(this.profile)
             })
-            this.$notify({
-              position: 'top-left',
-              title: '已取消关注',
-              offset: 90,
-              type: 'success',
-              duration: 2000
-            })
+            this.$notify.topleft('已关注')
           }
         })
       }
     },
-
     sendMessage () {
-      this.$notify.info({
-        position: 'top-left',
-        title: '等待开发',
-        message: '这是一个等待开发的组件',
-        offset: 90
-      })
+      this.$notify.wait()
     }
   }
 }
 </script>
 
 <style lang="less" scoped>
-.container {
-  width: var(--width-main);
-  margin: 0 auto;
-}
-
-.userDetail-card {
-  margin-top: 50px;
-  height: 230px;
-}
-
-.card {
-  &-body {
-    display: flex;
-  }
-
-  &-left {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 0;
-    flex: 1;
-  }
-
-  &-right {
-    width: 0;
-    flex: 4;
-    line-height: 1.5;
-  }
+.right {
+  line-height: 1.5;
 }
 
 .avatar {
@@ -233,6 +198,10 @@ export default {
 
 .other {
   position: relative;
+
+  & > * {
+    margin-right: 10px;
+  }
 }
 
 .edit {
@@ -248,8 +217,26 @@ export default {
 }
 
 .gender {
-  margin-left: 10px;
   font-size: 20px;
+}
+
+.identify {
+  height: 20px;
+  color: #f0483b;
+  background-color: #fde4e2;
+  padding-right: 8px;
+  border-radius: 20px;
+
+  &-icon {
+    margin-right: 5px;
+    vertical-align: text-top;
+    height: inherit;
+  }
+
+  &-desc {
+    display: inline-block;
+    transform: translateY(-2px);
+  }
 }
 
 .divider {
@@ -284,18 +271,13 @@ export default {
 
 .signature {
   &-content {
-    color: #676767;
+    color: var(--color-gray);
+    line-height: 2;
   }
 }
 </style>
 
 <style lang="less">
-.userDetail-card .el-card__body {
-  box-sizing: border-box;
-  height: inherit;
-  display: flex;
-}
-
 .avatar-error {
   display: flex;
   align-items: center;

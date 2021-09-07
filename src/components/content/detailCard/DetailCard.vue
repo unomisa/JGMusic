@@ -38,7 +38,7 @@ export default {
 .card {
   margin-top: 50px;
   margin-bottom: 2rem;
-  height: 230px;
+  // height: 230px;
 }
 
 .content {

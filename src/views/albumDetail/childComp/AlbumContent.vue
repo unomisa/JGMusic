@@ -2,14 +2,16 @@
   <div class="content">
     <el-menu :default-active="activeIndex" mode="horizontal" @select="select">
       <el-menu-item index="1">歌曲列表</el-menu-item>
-      <el-menu-item index="2">评论({{total}})</el-menu-item>
-      <el-menu-item index="3" v-if="desc.length>0">专辑详情</el-menu-item>
+      <el-menu-item index="2">评论({{commentTotal}})</el-menu-item>
+      <el-menu-item index="3" v-if="desc">专辑详情</el-menu-item>
     </el-menu>
 
     <song-group :tracks="tracks" v-show="activeIndex==='1'" />
+
     <comment :newComments="newComments" :hotComments="hotComments"
-             :total="total" @pageChange="pageChange"
-             v-show="activeIndex==='2'" />
+             :total="commentTotal" :loading="commentLoading"
+             @pageChange="pageChange" v-show="activeIndex==='2'" />
+
     <pre v-show="activeIndex==='3'">{{desc}}</pre>
   </div>
 </template>
@@ -30,6 +32,10 @@ export default {
         return []
       }
     },
+    commentTotal: {
+      type: Number,
+      default: 0
+    },
     desc: {
       type: String,
       default: ''
@@ -39,8 +45,8 @@ export default {
     return {
       newComments: [],
       hotComments: [],
-      total: 0,
-      activeIndex: '1'
+      activeIndex: '1',
+      commentLoading: true
     }
   },
   methods: {
@@ -51,18 +57,19 @@ export default {
           console.log('专辑评论为：', res)
           this.newComments = []
           this.hotComments = []
-          this.total = res.total
 
           res.comments.forEach(comment => {
-            this.newComments.push(new UserComment(comment))
+            this.newComments.push(new UserComment(comment, id, 3))
           })
 
           if ('hotComments' in res) {
             res.hotComments.forEach(comment => {
-              this.hotComments.push(new UserComment(comment))
+              this.hotComments.push(new UserComment(comment, id, 3))
             })
+            this.hotComments.length > 10 && (this.hotComments.length = 10)
           }
-          this.hotComments.length > 10 && (this.hotComments.length = 10)
+
+          this.commentLoading = false
         }
       })
     },
@@ -70,16 +77,17 @@ export default {
     // * 事件处理
     select (index) {
       this.activeIndex = index
+
+      const id = this.$route.params.id
+      if (index === '2' && this.newComments.length === 0) {
+        this.getAlbumComment(id)
+      }
     },
 
     pageChange (page) {
       const id = this.$route.params.id
       this.getAlbumComment(id, (page - 1) * 20)
     }
-  },
-  created () {
-    const id = this.$route.params.id
-    this.getAlbumComment(id)
   }
 }
 </script>

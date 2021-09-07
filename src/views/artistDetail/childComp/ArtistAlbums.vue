@@ -16,8 +16,8 @@
       <div class="album-right">
         <div class="name">{{album.name}}</div>
         <song v-for="(song,index) in songsPart(album.songs)" :key="song.id"
-              :track="song" :index="index+1" :showDetail="false"
-              @click.native="play(album.songs,index)" />
+              :track="song" :index="index+1" :areas='areas' :indexWidth="30"
+              :gutter="20" @click.native="play(album.songs,index)" />
 
         <song class="more" @click.native="albumDetail(album)"
               v-if="album.songs.length>10">
@@ -53,6 +53,15 @@ export default {
         } else {
           return songs
         }
+      }
+    },
+    areas () {
+      return {
+        others: 3,
+        name: 18,
+        artists: 0,
+        album: 0,
+        duration: 3
       }
     }
   },

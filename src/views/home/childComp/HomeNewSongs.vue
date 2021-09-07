@@ -2,8 +2,10 @@
   <div>
     <div>
       <el-button type="text" class="title" size="medium">
-        新曲放送
-        <i class="el-icon-arrow-right"></i>
+        最新音乐
+        <svg class="icon" aria-hidden="true">
+          <use xlink:href="#icon-icon-"></use>
+        </svg>
       </el-button>
     </div>
     <div class=" recommend-songs">
@@ -88,7 +90,12 @@ export default {
 <style lang="less" scoped>
 .title {
   font-size: var(--font-size-title);
-  margin-bottom: var(--font-size-title);
+  margin: 2rem 0;
+  color: #333333;
+
+  &:hover {
+    color: var(--color-main);
+  }
 }
 
 .recommend-songs {
@@ -103,6 +110,8 @@ export default {
   display: flex;
   font-size: var(--font-size-small);
   margin-bottom: 1rem;
+  background-color: #f7f8f9;
+  border-radius: 3px;
 
   &-info {
     flex: 1;

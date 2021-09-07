@@ -9,7 +9,9 @@
 
       <div class="center">
         <div class="blur-top"></div>
-        <lyric-roll :lyric="lrc" :tlyric="tlyric" ref="lyric" />
+        <lyric-roll :lyric="lyric.lrc" :tlyric="lyric.tlyric"
+                    :nolyric="lyric.nolyric" :nowNolyric="lyric.nowNolyric"
+                    ref="lyric" />
         <div class="blur-bottom"></div>
       </div>
 
@@ -37,13 +39,16 @@ export default {
     MusicDetailPic
   },
   props: {
-    lrc: {
-      type: String,
-      default: ''
-    },
-    tlyric: {
-      type: String,
-      default: ''
+    lyric: {
+      type: Object,
+      default () {
+        return {
+          lrc: '',
+          tlyric: '',
+          nolyric: false,
+          nowNolyric: false
+        }
+      }
     },
     simiSongs: {
       type: Array,

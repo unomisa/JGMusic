@@ -25,7 +25,7 @@ export default {
   },
   methods: {
     artistDetail () {
-      this.$router.push('/artist/' + this.singer.id)
+      this.$router.push('/artistDetail/' + this.singer.id)
     },
 
     imgLoad () {

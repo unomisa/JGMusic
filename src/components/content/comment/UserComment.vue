@@ -1,7 +1,16 @@
 <template>
   <div class="user-comment">
-    <el-avatar shape="circle" :src="comment.avatarUrl + '?param=50y50'"
-               fit="fill" @click.native="goUserDetail" />
+    <div class="left">
+      <el-avatar class="avatar" shape="circle"
+                 :src="comment.avatarUrl + '?param=50y50'" fit="fill"
+                 @click.native="goUserDetail" />
+      <span v-if="comment.authStatus===1">
+        <el-avatar class="author-icon" shape="circle"
+                   src="http://p3.music.126.net/tBTNafgjNnTL1KlZMt7lVA==/18885211718935735.jpg?param=20y20"
+                   fit="fill" />
+      </span>
+    </div>
+
     <div class="comment">
       <div class="content">
         <el-link :underline="false" @click="goUserDetail">
@@ -18,9 +27,19 @@
       <div class="info">
         <span class="date">{{publishedDate}}</span>
         <span class="other">
-          <svg class="icon other-icon" aria-hidden="true">
-            <use xlink:href="#icon-dianzan"></use>
-          </svg>
+
+          <span @click="like">
+            <svg class="icon other-icon" aria-hidden="true"
+                 v-if="!comment.liked">
+              <use xlink:href="#icon-dianzan"></use>
+            </svg>
+
+            <svg class="icon other-icon liked" aria-hidden="true"
+                 v-if="comment.liked">
+              <use xlink:href="#icon-dianzan1"></use>
+            </svg>
+          </span>
+
           {{comment.likedCount}}
           <el-divider direction="vertical"></el-divider>
           <svg class="icon other-icon" aria-hidden="true">
@@ -34,6 +53,7 @@
 
 <script>
 import { formatDate } from 'common/utils'
+import { likeComment } from 'network/common'
 
 export default {
   props: {
@@ -60,6 +80,26 @@ export default {
   methods: {
     goUserDetail () {
       this.$router.push('/userDetail/' + this.comment.userId)
+    },
+
+    like () {
+      const comm = this.comment
+      if (this.comment.liked) {
+        likeComment(comm.rid, comm.commentId, 0, comm.type).then(res => {
+          if (res.code === 200) {
+            this.$emit('unLike')
+            this.$notify.topleft('取消点赞')
+          }
+        })
+      } else {
+        likeComment(comm.rid, comm.commentId, 1, comm.type).then(res => {
+          console.log('点赞后：', res)
+          if (res.code === 200) {
+            this.$emit('like')
+            this.$notify.topleft('点赞成功')
+          }
+        })
+      }
     }
   }
 }
@@ -70,10 +110,24 @@ export default {
   display: flex;
 }
 
+.left {
+  position: relative;
+  margin-right: 1rem;
+}
+
+.author-icon {
+  position: absolute;
+  right: 0;
+  top: 35px;
+  height: 16px;
+  width: 16px;
+}
+
 .comment {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  word-break: break-all;
 }
 
 .comment {
@@ -89,8 +143,7 @@ export default {
   font-size: 12px;
 }
 
-.el-avatar {
-  margin-right: 1rem;
+.avatar {
   height: 50px;
   width: 50px;
   cursor: pointer;
@@ -123,5 +176,9 @@ export default {
     font-size: 18px;
     cursor: pointer;
   }
+}
+
+.liked {
+  color: var(--color-main);
 }
 </style>

@@ -7,7 +7,7 @@
 
     <song-group :tracks="tracks" v-show="activeIndex==='1'" />
     <comment :newComments="newComments" :hotComments="hotComments"
-             :total="total" @pageChange="pageChange"
+             :total="total" :loading="commentLoading" @pageChange="pageChange"
              v-show="activeIndex==='2'" />
 
   </div>
@@ -28,35 +28,41 @@ export default {
       default () {
         return []
       }
+    },
+    total: {
+      type: Number,
+      default: 0
     }
   },
   data () {
     return {
       newComments: [],
       hotComments: [],
-      total: 0,
-      activeIndex: '1'
+      activeIndex: '1',
+      commentLoading: true
     }
   },
   methods: {
     getSongListComment (id, offset) {
       getSongListComment(id, 20, offset).then(res => {
+        console.log('请求结果为：', res)
         if (res.code === 200) {
           this.newComments = []
           this.hotComments = []
-          this.total = res.total
 
           res.comments.forEach(comment => {
-            this.newComments.push(new UserComment(comment))
+            this.newComments.push(new UserComment(comment, id, 2))
           })
 
           if ('hotComments' in res) {
             res.hotComments.forEach(comment => {
-              this.hotComments.push(new UserComment(comment))
+              this.hotComments.push(new UserComment(comment, id, 2))
             })
           }
 
           this.hotComments.length > 10 && (this.hotComments.length = 10)
+
+          this.commentLoading = false
         }
       })
     },
@@ -64,16 +70,17 @@ export default {
     // * 事件处理
     select (index) {
       this.activeIndex = index
+
+      const id = this.$route.params.id
+      if (index === '2' && this.newComments.length === 0) {
+        this.getSongListComment(id)
+      }
     },
 
     pageChange (page) {
       const id = this.$route.params.id
       this.getSongListComment(id, (page - 1) * 20)
     }
-  },
-  created () {
-    const id = this.$route.params.id
-    this.getSongListComment(id)
   }
 }
 </script>

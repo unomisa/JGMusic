@@ -13,7 +13,8 @@ const state = {
   isPaused: true, // 是否暂停
   listCurrentIndex: 0, // 当前列表下标
   isLogin: false, // 是否登录
-  loginUser: {} // 登录用户
+  loginUser: {}, // 登录用户
+  infiniteScrollDisabled: true // 是否开启下拉加载
 }
 
 export default new Vuex.Store({

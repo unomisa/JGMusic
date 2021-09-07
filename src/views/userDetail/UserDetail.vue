@@ -1,13 +1,13 @@
 <template>
-  <div v-bar>
-    <div style="position: relative;">
-      <div class="backdrop"></div>
-      <div class="user-detail">
-        <user-profile :profile="profile" />
-        <user-song-list :created="created" :subscribed="subscribed" />
-      </div>
+  <div class="page">
+    <div class="backdrop"></div>
+    <div class="user-detail">
+      <user-profile :profile="profile" :profileLoading="profileLoading" />
+      <user-song-list :created="created" :subscribed="subscribed"
+                      :loading="userListLoading" />
     </div>
   </div>
+
 </template>
 
 <script>
@@ -15,6 +15,7 @@ import UserProfile from './childComp/UserProfile.vue'
 
 import { getUserDetail, getUserPlaylist, Profile } from 'network/pageRequest/user'
 import UserSongList from './childComp/UserSongList.vue'
+import { SongList } from 'network/common'
 
 export default {
   name: 'UserDetail',
@@ -25,7 +26,9 @@ export default {
       created: [], // 创建的歌单
       subscribed: [], // 收藏的歌单,
       limit: 30, // 歌单每次请求数量
-      offset: 0 // 歌单偏移数量
+      offset: 0, // 歌单偏移数量,
+      profileLoading: true,
+      userListLoading: true
     }
   },
   methods: {
@@ -36,11 +39,12 @@ export default {
         if (res.code === 200) {
           res.playlist.forEach((songList) => {
             if (songList.userId === userId) {
-              this.created.push(songList)
+              this.created.push(new SongList(songList))
             } else {
-              this.subscribed.push(songList)
+              this.subscribed.push(new SongList(songList))
             }
           })
+          this.userListLoading = false
           if (res.more === true) {
             this.offset += this.limit
             this.getUserPlaylist()
@@ -52,11 +56,10 @@ export default {
   created () {
     const userId = parseInt(this.$route.params.userId)
     getUserDetail(userId).then(res => {
+      console.log('歌手信息为：', res)
       if (res.code === 200) {
         this.profile = new Profile(res)
-
-        // profile信息加载完成
-        this.$bus.$emit('userProfileLoading', false)
+        this.profileLoading = false
       }
     })
 
@@ -66,6 +69,11 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.page {
+  position: relative;
+  overflow: hidden;
+}
+
 .user-detail {
   width: var(--width-main);
   margin: 0 auto;
@@ -77,10 +85,7 @@ export default {
   content: "";
   width: 100%;
   height: 230px;
-  background-image: linear-gradient(to top, #dfe9f3 0%, white 100%);
+  background-image: linear-gradient(to top, #ffffff 0%, #dfe9f3 100%);
   // border: 1px solid transparent;
 }
-</style>
-
-<style lang="less">
 </style>

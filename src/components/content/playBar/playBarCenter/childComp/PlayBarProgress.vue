@@ -107,9 +107,11 @@ export default {
       }
     },
 
-    currentPlayMusic () {
-      this.percent = 0
-      this.currentTime = '00:00'
+    currentPlayMusic (newPlay, oldPlay) {
+      if (newPlay.id !== oldPlay.id) {
+        this.percent = 0
+        this.currentTime = '00:00'
+      }
     }
   }
 }

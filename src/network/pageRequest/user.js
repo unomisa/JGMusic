@@ -80,6 +80,8 @@ export class Profile {
   constructor (profile) {
     const info = profile.profile
     this.level = profile.level
+    this.identify = profile.identify
+
     this.userId = info.userId
     this.nickname = info.nickname
     this.avatarUrl = info.avatarUrl
@@ -89,9 +91,10 @@ export class Profile {
     this.signature = info.signature
     this.gender = info.gender
 
-    this.likeListSet = new Set([])
-    this.artistSub = new Map([])
-    this.followList = new Map([])
+    this.likeListSet = new Set([]) // 喜欢列表
+    this.artistSub = new Map([]) // 收藏歌手列表
+    this.followList = new Map([]) // 关注用户
+    this.subList = {} // 收藏歌单
   }
 }
 
@@ -102,16 +105,5 @@ export class Follow {
     this.avatarUrl = follow.avatarUrl
     this.signature = follow.signature
     this.followeds = follow.followeds
-  }
-}
-
-// 歌单展示信息
-export class songList {
-  constructor (songList) {
-    this.id = songList.id
-    this.name = songList.name
-    this.coverImgUrl = songList.coverImgUrl
-    this.playCount = songList.playCount
-    this.trackCount = songList.trackCount
   }
 }

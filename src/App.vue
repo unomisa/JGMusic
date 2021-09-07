@@ -1,10 +1,16 @@
 <template>
-  <div id="app" ref="app">
+  <div id="app" :style="scrollStyle" v-infinite-scroll="load"
+       infinite-scroll-distance="500"
+       :infinite-scroll-disabled="infiniteScrollDisabled"
+       :infinite-scroll-immediate="false" ref="scrollbar">
+
     <nav-bar />
 
     <keep-alive exclude="UserDetail" max="5">
-      <router-view class="view" :style="scrollStyle" :key="$route.fullPath" />
+      <router-view :key="$route.fullPath" />
     </keep-alive>
+
+    <back-top :target="$refs.scrollbar" />
 
     <play-bar />
   </div>
@@ -14,23 +20,52 @@
 import PlayBar from 'components/content/playBar/PlayBar.vue'
 import NavBar from './components/content/navBar/NavBar.vue'
 
-import { mapGetters } from 'vuex'
+import { mapGetters, mapMutations, mapState } from 'vuex'
+import BackTop from './components/common/backTop/BackTop.vue'
 
 export default {
   components: {
     PlayBar,
-    NavBar
+    NavBar,
+    BackTop
   },
   computed: {
+    ...mapState([
+      'infiniteScrollDisabled'
+    ]),
+
     ...mapGetters([
       'isExistCurrentPlayMusic'
     ]),
 
-    // 给一个统一高度
-    scrollStyle () {
+    scrollStyle () { // 给与变化高度
       return {
         height: !this.isExistCurrentPlayMusic ? 'calc(100vh - var(--nav-bar-height))' : 'calc(100vh - var(--nav-bar-height) - var(--play-bar-height))'
       }
+    }
+  },
+  methods: {
+    ...mapMutations([
+      'setInfiniteScrollDisabled'
+    ]),
+
+    load () {
+      // console.log('触发正在加载')
+      this.setInfiniteScrollDisabled(true) // 每次加载使之停止继续加载
+      this.$bus.$emit('infiniteScroll') // 发送加载事件
+    },
+
+    backTop (scrollTop = 0) {
+      this.$refs.scrollbar.scrollTop = scrollTop
+    }
+  },
+  mounted () {
+    this.$bus.$on('scroll', this.backTop)
+  },
+  watch: {
+    $route () {
+      // console.log('路由改变')
+      this.backTop()
     }
   }
 }
@@ -40,6 +75,12 @@ export default {
 @import "assets/css/base.css";
 
 #app {
-  padding-top: var(--nav-bar-height);
+  backface-visibility: hidden;
+  position: absolute;
+  top: calc(var(--nav-bar-height));
+  left: 0;
+  right: 0;
+  overflow-y: scroll;
+  height: 100%;
 }
 </style>

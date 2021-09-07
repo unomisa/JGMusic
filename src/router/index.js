@@ -8,7 +8,8 @@ const MusicDetail = () => import('views/musicDetail/MusicDetail')
 const UserDetail = () => import('views/userDetail/UserDetail')
 const SongListDetail = () => import('views/songListDetail/SongListDetail')
 const AlbumDetail = () => import('views/albumDetail/AlbumDetail')
-const Artist = () => import('views/artist/Artist')
+const Artist = () => import('views/artistDetail/Artist')
+const RankList = () => import('views/rankList/RankList')
 
 const routes = [
   {
@@ -36,10 +37,13 @@ const routes = [
     component: AlbumDetail
   },
   {
-    path: '/artist/:id',
+    path: '/artistDetail/:id',
     component: Artist
+  },
+  {
+    path: '/rankList',
+    component: RankList
   }
-
 ]
 
 const router = new VueRouter({
@@ -53,5 +57,4 @@ const originalPush = VueRouter.prototype.push
 VueRouter.prototype.push = function push (location) {
   return originalPush.call(this, location).catch((err) => err)
 }
-
 export default router

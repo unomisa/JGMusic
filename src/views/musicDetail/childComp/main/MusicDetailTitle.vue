@@ -30,7 +30,7 @@ export default {
   },
   methods: {
     artistDetail (artist) {
-      this.$router.push('/artist/' + artist.id)
+      this.$router.push('/artistDetail/' + artist.id)
     },
 
     albumDetail () {

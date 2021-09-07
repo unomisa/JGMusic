@@ -1,11 +1,10 @@
 <template>
-  <div v-bar>
-    <div class="container">
-      <div class="backdrop"></div>
-      <div class="album">
-        <album-presentation :album='album' :loading="loading" />
-        <album-content :tracks='tracks' :desc="album.description" />
-      </div>
+  <div class="album-detail">
+    <div class="backdrop"></div>
+    <div class="album">
+      <album-presentation :album='album' :loading="loading" />
+      <album-content :tracks='tracks' :desc="album.description"
+                     :commentTotal="commentTotal" />
     </div>
   </div>
 </template>
@@ -18,11 +17,13 @@ import { getAlbum, AlbumBasic, getAlbumDynamic } from 'network/pageRequest/album
 import { Music } from 'network/common'
 
 export default {
+  name: 'albumDetail',
   components: { AlbumPresentation, AlbumContent },
   data () {
     return {
       album: {},
       tracks: [],
+      commentTotal: 0,
       loading: true
     }
   },
@@ -52,6 +53,7 @@ export default {
         })
 
         this.loading = false
+        this.commentTotal = res[1].commentCount
         console.log('专辑为：', res)
       })
     }
@@ -65,8 +67,9 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.container {
+.album-detail {
   position: relative;
+  overflow: hidden;
 }
 
 .album {

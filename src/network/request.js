@@ -18,6 +18,10 @@ export function request (config) {
   // 请求拦截
   instance.interceptors.request.use(
     config => {
+      config.params = {
+        _t: Date.parse(new Date()) / 1000,
+        ...config.params
+      }
       return config
     },
     err => {

@@ -1,7 +1,6 @@
 import { request } from 'network/request'
 import { alias, formatArtists, durationStr } from 'common/utils'
 
-// * 歌曲相关
 export function getSongUrl (id) {
   return request({
     url: '/song/url',
@@ -25,7 +24,7 @@ export function likeSong (id, like) {
 // 收藏歌手
 export function subArtist (id, t, timestamp) {
   return request({
-    url: '/artist/sub',
+    url: '/artistDetail/sub',
     params: {
       id,
       t,
@@ -42,6 +41,31 @@ export function followUser (id, t, timestamp) {
       id,
       t,
       timestamp
+    }
+  })
+}
+
+// 收藏歌单
+export function subPlaylist (id, t, timestamp) {
+  return request({
+    url: '/playlist/subscribe',
+    params: {
+      id,
+      t,
+      timestamp
+    }
+  })
+}
+
+// 点赞评论
+export function likeComment (id, cid, t, type) {
+  return request({
+    url: '/comment/like',
+    params: {
+      id,
+      cid,
+      t,
+      type
     }
   })
 }
@@ -92,13 +116,19 @@ export class SimiList {
 
 // 用户评论信息整合
 export class UserComment {
-  constructor (info) {
+  constructor (info, rid, type) {
+    this.rid = rid
+    this.type = type
+
     this.avatarUrl = info.user.avatarUrl
     this.nickname = info.user.nickname
     this.userId = info.user.userId
+    this.authStatus = info.user.authStatus
+
     this.content = info.content
     this.time = info.time
-    this.likedCount = info.likedCount
+    this.likedCount = info.likedCount // 点赞数
+    this.liked = info.liked // 是否点赞
     this.commentId = info.commentId
     this.replied = {}
 
@@ -107,5 +137,19 @@ export class UserComment {
       this.replied.userId = info.beReplied[0].user.userId
       this.replied.content = info.beReplied[0].content
     }
+  }
+}
+
+// 歌单展示信息
+export class SongList {
+  constructor (songList) {
+    this.id = songList.id
+    this.name = songList.name
+    this.coverImgUrl = songList.coverImgUrl
+    this.playCount = songList.playCount
+    this.trackCount = songList.trackCount
+    this.toplist = 'ToplistType' in songList
+    this.updateTime = songList.updateTime
+    // this.tracks = []
   }
 }

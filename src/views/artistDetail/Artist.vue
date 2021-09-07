@@ -10,7 +10,7 @@
 
 <script>
 import ArtistIntroduce from './childComp/ArtistIntroduce.vue'
-import { getArtistDetail, ArtistBasic } from 'network/pageRequest/artist'
+import { ArtistBasic, getArtistDetail1 } from 'network/pageRequest/artistDetail'
 import ArtistContent from './childComp/ArtistContent.vue'
 
 export default {
@@ -24,7 +24,7 @@ export default {
   },
   methods: {
     getArtistDetail (id) {
-      getArtistDetail(id, Date.now()).then(res => {
+      getArtistDetail1(id, Date.now()).then(res => {
         if (res.code === 200) {
           // console.log('歌手详情为：', res)
           this.artist = new ArtistBasic(res.data)

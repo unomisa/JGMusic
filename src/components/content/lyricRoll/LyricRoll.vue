@@ -1,28 +1,40 @@
 <template>
   <div v-bar class="scroll-lyric" ref="scroll" :style="scrollStyle">
-    <div class="lyric-container" :style="containerStyle" ref="container"
-         @mousewheel="mousewheel">
-      <div class="lyric-box" v-for="(lyric,index) of lyricArr" :key="index"
-           ref="lyric">
-        <div :class="{currentLyric:isCurrentLyric(index)}" class="lyric">
-          {{lyric.lyric}}
+    <div class="lyric-container" ref="container" @mousewheel="mousewheel">
+      <div :style="containerStyle">
+        <div v-if="isActive && !nolyric && !nowNolyric">
+          <div class="lyric-box" v-for="(lyric,index) of lyricArr" :key="index"
+               ref="lyric">
+            <div :class="{currentLyric:isCurrentLyric(index)}" class="lyric">
+              {{lyric.lyric}}
+            </div>
+
+            <div :class="{currentTlyric: isCurrentLyric(index)}" class="tlyric">
+              {{lyric.tlyric}}
+            </div>
+
+            <br v-show="lyric.lyric===''">
+          </div>
+          <div class="translator" v-if="translator.length>0">翻译贡献者:
+            {{translator}}
+          </div>
         </div>
 
-        <div :class="{currentTlyric: isCurrentLyric(index)}" class="tlyric">
-          {{lyric.tlyric}}
+        <div v-show="nolyric">
+          <h3>纯音乐,请欣赏</h3>
         </div>
 
-        <br v-show="lyric.lyric===''">
-      </div>
-      <div class="translator" v-if="translator.length>0">翻译贡献者: {{translator}}
+        <div v-show="nowNolyric">
+          <h3>暂无歌词</h3>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { mapState } from 'vuex'
-import { animate, debounce, ElScrool } from 'common/utils'
+import { mapState, mapGetters } from 'vuex'
+import { animate, debounce } from 'common/utils'
 
 export default {
   props: {
@@ -35,6 +47,14 @@ export default {
     tlyric: {
       type: String,
       default: ''
+    },
+    nolyric: {
+      type: Boolean,
+      default: false
+    },
+    nowNolyric: {
+      type: Boolean,
+      default: false
     },
     // 高度
     height: {
@@ -54,7 +74,8 @@ export default {
       translator: '', // 翻译者
       canScroll: true, // 是否可以滚动
       debounceSetCanScroll: null, // 存储防抖后的函数
-      isShowLyric: true
+      isShowLyric: true,
+      isActive: false
     }
   },
   computed: {
@@ -62,6 +83,11 @@ export default {
       'isPaused'
     ]),
 
+    ...mapGetters([
+      'currentPlayMusic'
+    ]),
+
+    //  将歌词、翻译、事件打包在一起
     lyricArr () {
       if (this.lyric.length > 0) {
         const lyricArr = this.splitLyricStr(this.lyric)
@@ -82,6 +108,7 @@ export default {
           }
           return lyric
         })
+        // console.log('打包好的歌词为：', lyricArr)
         return lyricArr
       } else {
         return []
@@ -96,6 +123,7 @@ export default {
       }
     },
 
+    // 计算当前歌词索引
     isCurrentLyric () {
       return function (index) {
         if (this.lyricArr[index].time < this.currentTime && (index + 1 <= this.lyricArr.length - 1 ? this.lyricArr[index + 1].time > this.currentTime : true)) {
@@ -121,19 +149,29 @@ export default {
     }
   },
   methods: {
+    reset () {
+      this.currentTime = 0
+      this.$refs.container.scrollTop = 0
+      this.translator = ''
+      this.canScroll = true
+      clearTimeout(this.debounceSetCanScroll()) // 清除可能存在的延时滚动
+    },
+
     mousewheel () {
       this.canScroll = false
       this.debounceSetCanScroll()
     },
 
     setCanScroll () {
+      // console.log('重新滚动：', this.currentLyricIndex)
       this.canScroll = true
       this.scrollLyric(this.currentLyricIndex) // 直接滚动至当前歌词位置
     },
 
     repetition () {
-      if (this.isShowLyric) {
+      if (this.isActive) { // 活跃期间重复执行
         // 重复判断滚动条是否拖动,若拖动则使3s后才恢复歌词滚动
+        // console.log('一直执行')
         if (this.$vuebar.getState(this.$refs.scroll).barDragging) {
           this.canScroll = false
           this.debounceSetCanScroll()
@@ -144,7 +182,9 @@ export default {
           this.currentTime = this.$music.currentTime
         }
 
-        requestAnimationFrame(this.repetition)
+        setTimeout(() => {
+          requestAnimationFrame(this.repetition)
+        }, 100)
       }
     },
 
@@ -198,30 +238,36 @@ export default {
           }
         })
       }
-    },
-
-    // 歌词回滚至顶部
-    lyricBackTop () {
-      ElScrool(this.$refs.container, 0, 0)
     }
+
   },
   watch: {
+    currentPlayMusic (newMusic, oldMusic) {
+      if (newMusic.id !== oldMusic.id) {
+        this.reset()
+      }
+    },
     // 当当前歌词索引发生变化时，滚动歌词
     currentLyricIndex (index) {
       this.scrollLyric(index)
-    },
-
-    isPaused () {
-      this.scrollLyric(this.currentLyricIndex)
     }
+
+    // 不知道有什么用
+    // isPaused () {
+    //   this.scrollLyric(this.currentLyricIndex)
+    // }
   },
   mounted () {
-    this.$bus.$on('sliderChange', () => { this.canScroll = true })
+    this.$bus.$on('sliderChange', () => { this.canScroll = true })// 歌曲进度条改变使之可以滚动
     this.debounceSetCanScroll = debounce(this.setCanScroll, 3000) // 函数防抖
+  },
+  activated () {
+    this.isActive = true
     this.repetition()
   },
-  destroyed () {
-    this.isShowLyric = false // 销毁时使不再重复执行repetition()
+  deactivated () {
+    this.isActive = false
+    clearTimeout(this.debounceSetCanScroll()) // 清除可能存在的延时滚动
   }
 }
 </script>
@@ -233,7 +279,8 @@ export default {
 }
 
 .lyric-container {
-  box-sizing: border-box;
+  backface-visibility: hidden;
+  // height: 35% !important; // 这是减去padding的高度,不能动态计算因为会被覆盖
 }
 
 .currentLyric {
@@ -256,23 +303,5 @@ export default {
 
 .translator {
   margin-top: 3rem;
-}
-</style>
-
-<style lang="less">
-.scroll-lyric {
-  & > .vb-dragger {
-    display: none;
-  }
-
-  &:hover > .vb-dragger {
-    display: block;
-  }
-}
-
-.vb-dragger {
-  &:active {
-    display: block;
-  }
 }
 </style>

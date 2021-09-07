@@ -14,16 +14,17 @@
 
         <el-col :span="16" :offset="0">
           <slot name="center">
+
             <transition name="el-fade-in-linear">
               <div v-show="!$route.path.includes('/musicDetail')">
                 <el-row type="flex" align="middle">
                   <el-col :span="12" :offset="1">
                     <el-menu style="border:none;" :default-active="activeIndex"
                              mode="horizontal" text-color="#f0f0f0"
-                             active-text-color="white"
+                             active-text-color="white" :router="true"
                              background-color="#d83993" @select="handleSelect">
-                      <el-menu-item index="1">首页</el-menu-item>
-                      <el-menu-item index="2">排行</el-menu-item>
+                      <el-menu-item index="/home">首页</el-menu-item>
+                      <el-menu-item index="/rankList">排行</el-menu-item>
                       <el-menu-item index="3">歌单</el-menu-item>
                       <el-menu-item index="4">歌手</el-menu-item>
                       <el-menu-item index="5">MV</el-menu-item>
@@ -68,7 +69,7 @@
 import Login from 'components/content/navBar/login/Login.vue'
 import User from './user/User.vue'
 
-import { mapState, mapMutations } from 'vuex'
+import { mapState } from 'vuex'
 import { updateLoginStatus } from 'common/mixin'
 
 export default {
@@ -76,8 +77,7 @@ export default {
   components: { Login, User },
   data () {
     return {
-      activeIndex: '1',
-      currentIndex: '1',
+      activeIndex: '',
       searchText: ''
     }
   },
@@ -87,22 +87,22 @@ export default {
     ])
   },
   methods: {
-    ...mapMutations([
-      'setIsLogin'
-    ]),
-
-    handleSelect (index, keyPath) {
-      this.currentIndex = index
+    handleSelect (index) {
+      this.activeIndex = index
+      console.log('index：', this.activeIndex)
     },
 
     goHome () {
-      if (!this.$route.path.includes('/home')) {
-        this.$router.push('/home')
-      }
+      this.$router.push('/home')
     }
   },
   created () {
     this.getLoginStatus()
+  },
+  watch: {
+    $route (to) {
+      this.activeIndex = to.path // 根据当前路由来判断导航选项
+    }
   }
 }
 </script>

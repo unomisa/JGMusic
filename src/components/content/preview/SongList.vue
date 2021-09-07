@@ -26,7 +26,8 @@
 
     <div :style="textStyle" class="text">
       <div class="name">{{songList.name}}</div>
-      <div class="trackCount">{{songList.trackCount}}首</div>
+      <div class="trackCount" v-if="showTrackCount">{{songList.trackCount}}首
+      </div>
     </div>
   </div>
 </template>
@@ -43,6 +44,14 @@ export default {
     imgHeight: {
       type: Number,
       default: 200
+    },
+    showTrackCount: {
+      type: Boolean,
+      default: true
+    },
+    rank: {
+      type: Boolean,
+      default: false
     }
   },
   computed: {
@@ -74,7 +83,16 @@ export default {
   },
   methods: {
     goSongListDetail () {
-      this.$router.push('/songList/' + this.songList.id)
+      if (this.rank) {
+        this.$router.push({
+          path: '/songList/' + this.songList.id,
+          query: {
+            type: 'rank'
+          }
+        })
+      } else {
+        this.$router.push('/songList/' + this.songList.id)
+      }
     }
   }
 }

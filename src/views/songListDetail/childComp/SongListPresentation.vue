@@ -1,5 +1,5 @@
 <template>
-  <detail-card :loading="loading" :class="detailCardClass">
+  <detail-card :loading="loading">
     <template v-slot:left>
       <el-image class="cover" :src="playList.coverImgUrl + '?param=250y250' "
                 fit="cover" />
@@ -11,9 +11,9 @@
           <span class="category">
             <el-tag effect="dark" size="small">
               <svg class="icon" aria-hidden="true">
-                <use xlink:href="#icon-gedan"></use>
+                <use :xlink:href="iconType"></use>
               </svg>
-              歌单
+              {{type}}
             </el-tag>
           </span>
           <span class="name">
@@ -43,7 +43,8 @@
           </div>
         </div>
 
-        <dynamic :dynamic="playList" />
+        <dynamic :dynamic="playList" :isMyList="isMyList" :isSubList="isSubList"
+                 @sub="subList" />
 
         <div class="tags" v-if="'tags' in playList && playList.tags.length>0">
           标签：
@@ -59,22 +60,11 @@
           <span>播放：{{playList.playCount}}</span>
         </div>
 
-        <div style="position:relative;transform: translateY(-3px);">
-          <div class="desc" :class="descClass" v-if="playList.description"
-               ref="desc">
-            简介：
-            <span class="desc-content">{{playList.description}}</span>
+        <collapsible-text v-if="playList.description">
+          简介：
+          <span class="desc-content">{{playList.description}}</span>
+        </collapsible-text>
 
-            <div class="desc-unfold" @click="unfold" v-show="descOverflow">
-              <i class="desc-icon" :class="descIconClass"></i>
-            </div>
-          </div>
-
-          <div class="desc-copy" v-if="playList.description" ref="descCopy">
-            简介：
-            <span class="desc-content">{{playList.description}}</span>
-          </div>
-        </div>
       </div>
     </template>
   </detail-card>
@@ -84,8 +74,12 @@
 import Dynamic from 'components/content/miniCom/Dynamic.vue'
 import DetailCard from 'components/content/detailCard/DetailCard.vue'
 
+import { mapState, mapMutations } from 'vuex'
+import { subPlaylist } from 'network/common'
+import CollapsibleText from '../../../components/common/collapsibleText/collapsibleText.vue'
+
 export default {
-  components: { Dynamic, DetailCard },
+  components: { Dynamic, DetailCard, CollapsibleText },
   props: {
     playList: {
       type: Object,
@@ -100,46 +94,78 @@ export default {
   },
   data () {
     return {
-      descOverflow: false,
-      descUnfold: false
+      type: '歌单'
     }
   },
   computed: {
-    detailCardClass () {
-      return {
-        'detail-card': this.descUnfold
-      }
-    },
-    descClass () {
-      return {
-        'desc-open': this.descUnfold
+    ...mapState([
+      'loginUser'
+    ]),
+
+    isMyList () {
+      if (this.loginUser.userId === this.playList.creator.userId) {
+        return true
+      } else {
+        return false
       }
     },
 
-    descIconClass () {
-      return {
-        'el-icon-caret-bottom': !this.descUnfold,
-        'el-icon-caret-top': this.descUnfold
+    isSubList () {
+      const id = this.$route.params.id
+      if ('subList' in this.loginUser) {
+        if (id in this.loginUser.subList) {
+          return true
+        } else {
+          return false
+        }
+      } else {
+        return false
       }
+    },
+
+    iconType () {
+      let iconType = ''
+      switch (this.type) {
+        case '排行榜': iconType = '#icon-paixingbang'; break
+        default: iconType = '#icon-gedan'
+      }
+      return iconType
     }
   },
   methods: {
-    unfold () {
-      this.descUnfold = !this.descUnfold
-    },
+    ...mapMutations([
+      'pushSubList',
+      'unSubList'
+    ]),
 
     userDetail () {
       this.$router.push('/userDetail/' + this.playList.creator.userId)
+    },
+
+    subList () {
+      const id = this.$route.params.id
+      if (this.isSubList) {
+        subPlaylist(id, 2, Date.now()).then(() => {
+          this.unSubList(id)
+          this.$notify.topleft('取消歌单收藏')
+        })
+      } else {
+        subPlaylist(id, 1, Date.now()).then(() => {
+          this.pushSubList(id)
+          this.$notify.topleft('收藏歌单成功')
+        })
+      }
+    },
+
+    listType (type) {
+      switch (type) {
+        case 'rank': this.type = '排行榜'
+      }
     }
   },
-  updated () {
-    if (this.$refs.desc !== undefined) {
-      const desc = this.$refs.desc
-      const descCopy = this.$refs.descCopy
-      if (descCopy.clientWidth > desc.clientWidth) {
-        this.descOverflow = true
-        console.log('溢出了')
-      }
+  created () {
+    if ('type' in this.$route.query) {
+      this.listType(this.$route.query.type)
     }
   }
 }
@@ -189,6 +215,7 @@ export default {
 .creator {
   display: flex;
   align-items: center;
+  cursor: pointer;
 }
 
 .avatar {
@@ -214,37 +241,9 @@ export default {
 }
 
 .desc {
-  width: 95%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  line-height: 1.5;
-  text-align: justify;
-
-  &-copy {
-    position: absolute; // 移除文档流
-    visibility: hidden; // 不显示
-  }
-
   &-content {
     color: var(--color-gray);
     line-height: 2;
-  }
-
-  &-unfold {
-    font-size: 20px;
-    position: absolute;
-    right: 20px;
-    top: -5px;
-  }
-
-  &-icon {
-    vertical-align: middle;
-    color: var(--color-gray);
-  }
-
-  &-open {
-    white-space: initial;
   }
 }
 </style>

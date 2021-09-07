@@ -18,7 +18,7 @@
 export default {
   data () {
     return {
-      volume: 50,
+      volume: 30,
       oldVolume: 50,
       isMute: false
     }

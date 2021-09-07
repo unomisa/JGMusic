@@ -41,6 +41,25 @@ import {
 } from 'element-ui'
 Vue.prototype.$notify = Notification // 这种方法才能正确注册
 
+Vue.prototype.$notify.topleft = (title, type = 'success') => {
+  Vue.prototype.$notify({
+    position: 'top-left',
+    title,
+    offset: 90,
+    type,
+    duration: 2000
+  })
+}
+
+Vue.prototype.$notify.wait = () => {
+  Vue.prototype.$notify.info({
+    position: 'top-left',
+    title: '等待开发',
+    message: '这是一个等待开发的组件',
+    offset: 90
+  })
+}
+
 const elementCom = [
   Button,
   Select,

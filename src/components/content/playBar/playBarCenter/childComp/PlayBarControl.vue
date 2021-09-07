@@ -44,7 +44,7 @@ export default {
     control () {
       if (this.$music.paused !== true) {
         this.$music.pause()
-        this.$bus.$emit('clickPause', true)
+        this.$bus.$emit('clickPause', true) // 使唱针放至盘片
       } else {
         this.$music.play()
         this.$bus.$emit('clickPause', false)

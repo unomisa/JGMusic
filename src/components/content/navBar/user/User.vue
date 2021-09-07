@@ -47,12 +47,7 @@ export default {
 
     loginOut () {
       logOut(Date.now())
-      this.$notify({
-        position: 'top-left',
-        title: '退出登录',
-        offset: 90,
-        type: 'success'
-      })
+      this.$notify.topleft('退出登录')
       this.setIsLogin(false)
     },
 

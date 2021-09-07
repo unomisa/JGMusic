@@ -34,8 +34,6 @@ export default {
   },
   computed: {
     ...mapState([
-      'isLoadingMusic',
-      'isPaused',
       'listCurrentIndex'
     ]),
 
@@ -55,11 +53,13 @@ export default {
     canplay () {
       this.setIsLoadingMusic(false) // 可以播放之后设置加载完成
       this.setIsPaused(false)
+      // this.play()
       this.$music.play()
     },
 
     play () {
       this.setIsPaused(false)
+      this.$bus.$emit('clickPause', false)
     },
 
     pause () {
@@ -76,6 +76,7 @@ export default {
       if (newPlay.id !== oldPlay.id) {
         // * 状态设置
         this.currentPlayMusicUrl = '' // 设置歌曲url为空，等待加载
+        // this.pause() // 暂停，这玩意会出bug
         this.setIsLoadingMusic(true) // 换歌之后设置它正在加载
         newPlay.state.currentBroadcast = true
         'state' in oldPlay && (oldPlay.state.currentBroadcast = false)
@@ -90,7 +91,7 @@ export default {
     isExistCurrentPlayMusic () {
       this.$nextTick(() => {
         Vue.prototype.$music = this.$refs.music
-        this.$music.volume = 0.5 // 初始化音量大小
+        this.$music.volume = 0.3 // 初始化音量大小
       })
     }
 

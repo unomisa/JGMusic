@@ -1,11 +1,9 @@
 <template>
-  <div v-bar>
-    <div class="container">
-      <div class="backdrop"></div>
-      <div class="list-detail">
-        <song-list-presentation :playList="playList" :loading="loading" />
-        <song-list-content :tracks="tracks" />
-      </div>
+  <div class="container">
+    <div class="backdrop"></div>
+    <div class="list-detail">
+      <song-list-presentation :playList="playList" :loading="loading" />
+      <song-list-content :tracks="tracks" :total="commentTotal" />
     </div>
   </div>
 </template>
@@ -16,8 +14,12 @@ import SongListPresentation from './childComp/SongListPresentation.vue'
 import { getPlayListDetail, SongListDetail } from 'network/pageRequest/songList'
 import { Music } from 'network/common'
 import SongListContent from './childComp/SongListContent.vue'
+import { getMusicDetail } from 'network/pageRequest/musicdetail'
+import { musicBean } from 'common/mixin'
 
 export default {
+  name: 'songListDetail',
+  mixins: [musicBean],
   components: { SongListPresentation, SongListContent },
   data () {
     return {
@@ -25,32 +27,67 @@ export default {
         creator: {}
       },
       tracks: [],
+      trackIds: [],
+      commentTotal: 0,
       loading: true
     }
   },
   methods: {
-    musicBean (music) {
-      return {
-        id: music.id,
-        name: music.name,
-        picUrl: music.al.picUrl,
-        alias: music.alia,
-        artists: music.ar,
-        album: music.al,
-        duration: music.dt
+    addOther (music, index) {
+      if (this.$route.query.type !== 'rank') return
+      const other = {}
+      if ('ratio' in this.trackIds[index]) {
+        other.ratio = this.trackIds[index].ratio
+      } else if ('lr' in this.trackIds[index]) {
+        other.lr = this.trackIds[index].lr
+      } else {
+        other.new = true
       }
+      this.$set(music, 'rank', other)
     },
 
     getPlayListDetail (id) {
       getPlayListDetail(id, Date.now()).then(res => {
         if (res.code === 200) {
-          // console.log('歌单详情为：', res)
-          this.playList = new SongListDetail(res.playlist)
-          res.playlist.tracks.forEach(track => {
-            this.tracks.push(new Music(this.musicBean(track)))
+          console.log('歌单详情为：', res)
+          this.playList = new SongListDetail(res.playlist) // 歌单描述
+          this.trackIds = res.playlist.trackIds
+          this.commentTotal = res.playlist.commentCount
+
+          if (this.trackIds.length > res.playlist.tracks.length) {
+            this.getMusicDetail(res.playlist.tracks)
+          } else {
+            res.playlist.tracks.forEach((track, index) => {
+              const music = new Music(this.musicBean(track))
+              this.addOther(music, index)
+              this.tracks.push(music)
+            })
+            this.loading = false
+          }
+
+          // console.log('包装后的歌曲信息为：', JSON.parse(JSON.stringify(this.tracks)))
+        }
+      })
+    },
+
+    getMusicDetail (existingTracks) {
+      const startIndex = existingTracks.length
+      const idArr = this.trackIds.filter((track, index) => index >= startIndex).map(track => track.id)
+      getMusicDetail(idArr.join(',')).then(res => {
+        if (res.code === 200) {
+          console.log('歌曲详情为：', res)
+          existingTracks.forEach((track, index) => {
+            const music = new Music(this.musicBean(track))
+            this.addOther(music, index)
+            this.tracks.push(music)
+          })
+
+          res.songs.forEach((track, index) => {
+            const music = new Music(this.musicBean(track))
+            this.addOther(music, startIndex + index)
+            this.tracks.push(music)
           })
           this.loading = false
-          // console.log('包装后的歌曲信息为：', JSON.parse(JSON.stringify(this.tracks)))
         }
       })
     }
@@ -65,6 +102,7 @@ export default {
 <style lang="less" scoped>
 .container {
   position: relative;
+  overflow: hidden;
 }
 
 .list-detail {

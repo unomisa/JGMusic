@@ -56,7 +56,7 @@ export function getComment (id, type, pageNo, pageSize, sortType, cursor) {
 }
 
 // * 旧版获取热门评论
-export function getHotComment ({ id, type = 0, limit, offset, before }) {
+export function getHotComment ({ id, type = 0, limit, offset, before, timestamp = Date.now() }) {
   return request({
     url: '/comment/hot',
     params: {
@@ -64,19 +64,21 @@ export function getHotComment ({ id, type = 0, limit, offset, before }) {
       type,
       limit,
       offset,
+      timestamp,
       before
     }
   })
 }
 
 // * 旧版获取最新评论
-export function getCommentOld (id, limit, offset, before) {
+export function getCommentOld (id, limit, offset, timestamp = Date.now(), before) {
   return request({
     url: '/comment/music',
     params: {
       id,
       limit,
       offset,
+      timestamp,
       before
     }
   })

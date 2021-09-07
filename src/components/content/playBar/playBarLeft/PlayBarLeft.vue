@@ -13,10 +13,15 @@
                 fit="contain" />
     </div>
     <div class="song-info">
-      <div class="song-title">{{currentPlayMusic.name}} <span class="song-alias"
-              v-if="currentPlayMusic.alias.length>0">(
-          {{currentPlayMusic.alias}}
-          )</span>
+      <div class="song-title">
+        <span class="song-text">
+          {{currentPlayMusic.name}}
+          <span class="song-alias" v-if="currentPlayMusic.alias.length>0">(
+            {{currentPlayMusic.alias}}
+            )</span>
+        </span>
+
+        <like-song class="like-song" :id="currentPlayMusic.id" />
       </div>
       <div class="song-artist">
         <span v-for="(artist,index) of currentPlayMusic.artists"
@@ -32,8 +37,10 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import LikeSong from 'components/content/miniCom/LikeSong.vue'
 
 export default {
+  components: { LikeSong },
   computed: {
     ...mapGetters([
       'currentPlayMusic',
@@ -54,7 +61,7 @@ export default {
     },
 
     artistDetail (artist) {
-      this.$router.push('/artist/' + artist.id)
+      this.$router.push('/artistDetail/' + artist.id)
     }
   }
 }
@@ -67,9 +74,10 @@ export default {
 }
 
 .image-box {
+  flex: 65px 0;
   position: relative;
   height: 65px;
-  width: 65px;
+  width: 0;
   margin-right: 1rem;
   cursor: pointer;
 
@@ -111,6 +119,8 @@ export default {
   }
 
   &-info {
+    width: 0;
+    flex: 1;
     display: flex;
     justify-content: center;
     flex-direction: column;
@@ -124,12 +134,27 @@ export default {
   }
 
   &-title {
-    &:extend(.omit);
+    position: relative;
+    padding-right: 24px;
+    // &:extend(.omit);
+  }
+
+  &-text {
+    display: inline-block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   &-alias {
     color: var(--color-gray);
   }
+}
+
+.like-song {
+  position: absolute;
+  margin-left: 5px;
 }
 
 .artist {

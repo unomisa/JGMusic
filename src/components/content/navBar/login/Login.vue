@@ -71,12 +71,7 @@ export default {
           if (res.code === 803) {
             this.handleClose() // 关闭登录窗口
             this.getLoginStatus() // > mixin中setLoginStatus的方法
-            this.$notify({
-              position: 'top-left',
-              title: '登录成功',
-              offset: 90,
-              type: 'success'
-            })
+            this.$notify.topleft('登录成功')
           }
           this.statusCode = res.code
         })

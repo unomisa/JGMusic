@@ -1,7 +1,7 @@
 <template>
   <div class="song-group">
     <div class="explain">
-      <el-row :gutter="50">
+      <el-row :gutter="30">
         <el-col :span="3" class="other">序号</el-col>
         <el-col :span="6">音乐标题</el-col>
         <el-col :span="7">歌手</el-col>
@@ -40,6 +40,15 @@ export default {
         index: index
       })
     }
+  },
+  mounted () {
+    this.$bus.$on('playAll', this.play) // 将当前页面的所有歌曲添加
+  },
+  destroyed () {
+    this.$bus.$off('playAll')
+  },
+  deactivated () {
+    this.$bus.$off('playAll')
   }
 }
 </script>
@@ -54,6 +63,6 @@ export default {
 }
 
 .other {
-  padding-left: 40px !important;
+  padding-left: 23px !important;
 }
 </style>

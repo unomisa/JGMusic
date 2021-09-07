@@ -3,7 +3,7 @@ import { Artist } from 'network/common'
  * * 存放公共工具函数
  */
 
-// 节流函数
+// 节流函数,每隔一段时间，只执行一次函数。
 export function throttle (func, ms) {
   let isThrottled = false
   let savedArgs
@@ -40,6 +40,8 @@ export function debounce (func, delay = 300) {
     timer = setTimeout(() => {
       func.apply(this, arguments)
     }, delay)
+
+    return timer
   }
 }
 

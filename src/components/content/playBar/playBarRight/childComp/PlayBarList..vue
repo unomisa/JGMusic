@@ -106,7 +106,7 @@ export default {
     },
 
     artistDetail (artist) {
-      this.$router.push('/artist/' + artist.id)
+      this.$router.push('/artistDetail/' + artist.id)
     }
   },
   watch: {
