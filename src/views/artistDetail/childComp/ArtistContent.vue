@@ -31,8 +31,10 @@ import ArtistSimi from './ArtistSimi.vue'
 import { mapMutations } from 'vuex'
 import { getAlbum } from 'network/pageRequest/albumdetail'
 import { Music, Artist } from 'network/common'
+import { infiniteScroll } from 'common/mixin'
 
 export default {
+  mixins: [infiniteScroll],
   components: { ArtistAlbums, ArtistHot, ArtistDesc, ArtistSimi },
   data () {
     return {
@@ -74,16 +76,20 @@ export default {
         this.setInfiniteScrollDisabled(false) // 只在专辑选项时才加载
       } else if (index === '2' && Object.keys(this.artistDesc).length === 0) {
         this.getArtistDesc(id)
+        this.setInfiniteScrollDisabled(true)
       } else if (index === '3' && this.simiArtists.length === 0) {
         this.getSimiArtist(id)
+        this.setInfiniteScrollDisabled(true)
       }
     },
 
     getArtistAlbum (id, limit = 50, offset = 0) {
       return getArtistAlbum(id, limit, offset).then(res => {
         if (res.code === 200) {
-          // console.log('歌手专辑信息为：', res)
-          this.albums = res.hotAlbums.map(album => new ArtistAlbum(album))
+          console.log('歌手专辑信息为：', res)
+          res.hotAlbums.forEach(album => {
+            this.albums.push(new ArtistAlbum(album))
+          })
 
           if (res.more === true) {
             this.getArtistAlbum(id, limit, offset + limit)
@@ -98,7 +104,10 @@ export default {
           // console.log('歌手热门歌曲为：', res)
           this.hot = {
             title: '热门50首',
-            songs: res.hotSongs.map(song => new Music(this.musicBean(song)))
+            songs: res.hotSongs.map(song => new Music({
+              ...this.musicBean(song),
+              cp: song.privilege.cp
+            }))
           }
         }
       })
@@ -107,8 +116,12 @@ export default {
     getAlbum (album) {
       return getAlbum(album.id).then(res => {
         if (res.code === 200) {
+          console.log('专辑歌曲为：', res)
           res.songs.forEach(song => {
-            album.songs.push(new Music(this.musicBean(song)))
+            album.songs.push(new Music({
+              ...this.musicBean(song),
+              cp: song.privilege.cp
+            }))
           })
         }
       })
@@ -155,16 +168,14 @@ export default {
   },
   created () {
     const id = this.$route.params.id
-    this.getArtistAlbum(id).then(() => {
-      this.getAlbums()
+    this.getArtistHotSongs(id) // 请求歌手热门歌曲
+    this.getArtistAlbum(id).then(() => { // 先请求歌曲专辑信息
+      this.getAlbums() // 然后请求多个专辑
     })
-    this.getArtistHotSongs(id)
   },
-  mounted () {
+  activated () {
+    this.setInfiniteScrollDisabled(false)
     this.$bus.$on('infiniteScroll', this.getAlbums) // 接收下拉刷新事件
-  },
-  destroyed () {
-    this.$bus.$off('infiniteScroll')
   }
 }
 </script>

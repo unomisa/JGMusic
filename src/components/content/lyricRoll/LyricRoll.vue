@@ -144,7 +144,7 @@ export default {
 
     containerStyle () {
       return {
-        padding: `calc(${this.height} * 0.3) 17px calc(${this.height} * 0.3) 9px`
+        padding: `calc(${this.height} * 0.3) 0 calc(${this.height} * 0.3) 0`
       }
     }
   },
@@ -280,6 +280,7 @@ export default {
 
 .lyric-container {
   backface-visibility: hidden;
+  margin-left: 8px !important;
   // height: 35% !important; // 这是减去padding的高度,不能动态计算因为会被覆盖
 }
 
@@ -303,5 +304,17 @@ export default {
 
 .translator {
   margin-top: 3rem;
+}
+</style>
+
+<style lang="less">
+.scroll-lyric {
+  & > .vb-dragger {
+    display: none;
+  }
+
+  &:hover > .vb-dragger {
+    display: block;
+  }
 }
 </style>

@@ -115,17 +115,11 @@ export default {
 
     // 重置各数据
     resetData () {
-      console.log('重置歌词')
+      // console.log('重置歌词')
       this.lyric.lrc = ''
       this.lyric.tlyric = ''
       this.lyric.nolyric = false
       this.lyric.nowNolyric = false
-      // this.lyric.lrc = {
-      //   lrc: '',
-      //   tlyric: '',
-      //   nolyric: false,
-      //   nowNolyric: false
-      // }
       this.simiSongs = []
       this.simiList = []
     }
@@ -139,7 +133,7 @@ export default {
   activated () {
     this.showMusicDetail = true
     if (this.isExistCurrentPlayMusic) {
-      if (this.lyric.lrc.length === 0) {
+      if (this.lyric.lrc.length === 0 && !this.lyric.nolyric && !this.lyric.nowNolyric) {
         this.getLyric()
       }
       if (this.simiSongs.length === 0 && this.simiList.length === 0) {

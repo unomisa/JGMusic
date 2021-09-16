@@ -16,7 +16,7 @@
 
 
 body {
-  /* overflow: hidden; */
+  overflow: hidden;
   color: #333333;
 }
 
@@ -34,6 +34,15 @@ input[type=number]::-webkit-outer-spin-button {
 
 input[type=number] {
   -moz-appearance: textfield;
+}
+
+li {
+  list-style: none;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
 }
 
 /* * element ui 样式覆盖 */
@@ -107,13 +116,15 @@ input[type=number] {
   background-color: rgba(190, 118, 159, 0.3);
   margin: 5px 5px 5px 0;
   border-radius: 20px;
-  height: calc(100% - 10px);
+  /* height: calc(100% - 10px); */
+  height: 100%;
   display: block;
 }
 
 .vb.vb-scrolling-phantom>.vb-dragger>.vb-dragger-styler {
   /* 滚动时样式 */
   background-color: rgba(190, 118, 159, .3);
+  height: 100%;
 }
 
 .vb>.vb-dragger:hover>.vb-dragger-styler {
@@ -131,6 +142,8 @@ input[type=number] {
 
 .vb.vb-dragging-phantom>.vb-dragger>.vb-dragger-styler {
   background-color: rgba(216, 57, 147, .5);
+  /* height: 100%; */
+  height: calc(100% + 10px);
 }
 
 .vb-content {

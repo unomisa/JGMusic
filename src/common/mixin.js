@@ -1,10 +1,10 @@
 import { getLoginStatus } from 'network/common/login'
-import { mapMutations } from 'vuex'
+import { mapMutations, mapState } from 'vuex'
 import {
   getUserDetail, Profile, getLikeList, getUserFollows,
   Follow, getUserPlaylist, getArtistSubList
 } from 'network/pageRequest/user'
-import { Artist } from 'network/common'
+import { Artist, SongList } from 'network/common'
 
 // 更新登录状态s
 export const updateLoginStatus = {
@@ -67,9 +67,12 @@ export const updateLoginStatus = {
     getUserPlaylist (uid, limit = 50, offset = 0) {
       return getUserPlaylist(uid, limit, offset, Date.now()).then(res => {
         if (res.code === 200) {
-          // console.log('当前用户歌单信息为：', res)
+          console.log('当前用户歌单信息为：', res)
           res.playlist.forEach(list => {
-            this.pushSubList(list.id)
+            this.pushSubList({
+              key: list.id,
+              value: new SongList(list)
+            })
           })
           if (res.more) {
             this.getUserPlaylist(uid, limit, offset + limit)
@@ -101,6 +104,72 @@ export const updateLoginStatus = {
         }
       })
     }
+  }
+}
+
+export const updateUserPlaylist = {
+  computed: {
+    ...mapState([
+      'loginUser'
+    ])
+  },
+  methods: {
+    ...mapMutations([
+      'pushSubList'
+    ]),
+
+    getUserPlaylist (uid, limit = 50, offset = 0) {
+      const LoginUserId = this.loginUser.userId // 获取当前用户id
+      return getUserPlaylist(LoginUserId, limit, offset, Date.now()).then(res => {
+        if (res.code === 200) {
+          // console.log('当前用户歌单信息为：', res)
+          res.playlist.forEach(list => {
+            this.pushSubList({
+              key: list.id,
+              value: new SongList(list)
+            })
+          })
+          if (res.more) {
+            this.getUserPlaylist(LoginUserId, limit, offset + limit)
+          }
+        }
+      })
+    }
+  }
+
+}
+
+export const infiniteScroll = {
+  // 离开页面关闭滚动与滚动监听
+  deactivated () {
+    this.setInfiniteScrollDisabled(true)
+    this.$bus.$off('infiniteScroll')
+  },
+  destroyed () {
+    this.setInfiniteScrollDisabled(true)
+    this.$bus.$off('infiniteScroll')
+  }
+}
+
+export const updateComment = {
+  methods: {
+    // 用于添加评论的数据
+    addComment (add = true) {
+      if (add) {
+        this.total++
+      } else {
+        this.total--
+      }
+    }
+  },
+  created () {
+    this.$bus.$on('addComment', this.addComment)
+  },
+  destroyed () {
+    this.$bus.$off('addComment', this.addComment)
+  },
+  deactivated () {
+    this.$bus.$off('addComment', this.addComment)
   }
 }
 

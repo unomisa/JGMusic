@@ -1,6 +1,6 @@
 import { request } from 'network/request'
 
-// 获取相似歌手
+// 获取排行榜内容
 export function getTopList () {
   return request({
     url: '/toplist'

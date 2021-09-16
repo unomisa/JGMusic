@@ -9,7 +9,7 @@
     <song-group :tracks="tracks" v-show="activeIndex==='1'" />
 
     <comment :newComments="newComments" :hotComments="hotComments"
-             :total="commentTotal" :loading="commentLoading"
+             :total="commentTotal" :loading="commentLoading" :type="3" :rid="id"
              @pageChange="pageChange" v-show="activeIndex==='2'" />
 
     <pre v-show="activeIndex==='3'">{{desc}}</pre>
@@ -47,6 +47,11 @@ export default {
       hotComments: [],
       activeIndex: '1',
       commentLoading: true
+    }
+  },
+  computed: {
+    id () {
+      return parseInt(this.$route.params.id)
     }
   },
   methods: {

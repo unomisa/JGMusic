@@ -31,6 +31,17 @@ export function logOut (timestamp) {
   })
 }
 
+// 手机登录：密码/验证码
+export function phoneLogin (phone, captcha) {
+  return request({
+    url: '/login/cellphone',
+    params: {
+      phone,
+      captcha
+    }
+  })
+}
+
 // 向手机发送验证码
 export function sendCaptcha (phone, ctcode) {
   return request({

@@ -9,11 +9,12 @@
       <div class="right">
         <div class="title">
           <span class="category">
-            <el-tag effect="dark" size="small">
+            <el-tag effect="dark" :class="{'high-quality':playList.highQuality}"
+                    size="small">
               <svg class="icon" aria-hidden="true">
                 <use :xlink:href="iconType"></use>
               </svg>
-              {{type}}
+              {{listType}}
             </el-tag>
           </span>
           <span class="name">
@@ -49,7 +50,8 @@
         <div class="tags" v-if="'tags' in playList && playList.tags.length>0">
           标签：
           <el-link class="tag" :underline="false"
-                   v-for="(tag,index) in playList.tags" :key="index">
+                   v-for="(tag,index) in playList.tags" :key="index"
+                   @click="songListTag(tag)">
             {{tag}}<span
                   v-if="index!==playList.tags.length-1">&ensp;/&ensp;</span>
           </el-link>
@@ -73,10 +75,10 @@
 <script>
 import Dynamic from 'components/content/miniCom/Dynamic.vue'
 import DetailCard from 'components/content/detailCard/DetailCard.vue'
+import CollapsibleText from 'components/common/collapsibleText/collapsibleText.vue'
 
 import { mapState, mapMutations } from 'vuex'
-import { subPlaylist } from 'network/common'
-import CollapsibleText from '../../../components/common/collapsibleText/collapsibleText.vue'
+import { subPlaylist, SongList } from 'network/common'
 
 export default {
   components: { Dynamic, DetailCard, CollapsibleText },
@@ -111,9 +113,9 @@ export default {
     },
 
     isSubList () {
-      const id = this.$route.params.id
+      const id = parseInt(this.$route.params.id)
       if ('subList' in this.loginUser) {
-        if (id in this.loginUser.subList) {
+        if (this.loginUser.subList.has(id)) {
           return true
         } else {
           return false
@@ -125,11 +127,21 @@ export default {
 
     iconType () {
       let iconType = ''
-      switch (this.type) {
+      switch (this.listType) {
         case '排行榜': iconType = '#icon-paixingbang'; break
         default: iconType = '#icon-gedan'
       }
       return iconType
+    },
+
+    listType () {
+      if ('type' in this.$route.query && this.$route.query.type === 'rank') {
+        return '排行榜'
+      } else if (this.playList.highQuality) {
+        return '精品歌单'
+      } else {
+        return '歌单'
+      }
     }
   },
   methods: {
@@ -143,7 +155,7 @@ export default {
     },
 
     subList () {
-      const id = this.$route.params.id
+      const id = parseInt(this.$route.params.id)
       if (this.isSubList) {
         subPlaylist(id, 2, Date.now()).then(() => {
           this.unSubList(id)
@@ -151,22 +163,27 @@ export default {
         })
       } else {
         subPlaylist(id, 1, Date.now()).then(() => {
-          this.pushSubList(id)
+          this.pushSubList({
+            key: this.playList.id,
+            value: {
+              ...new SongList(this.playList),
+              subscribed: true
+            }
+          })
           this.$notify.topleft('收藏歌单成功')
         })
       }
     },
 
-    listType (type) {
-      switch (type) {
-        case 'rank': this.type = '排行榜'
-      }
+    songListTag (tag) {
+      this.$router.push({
+        path: '/songList',
+        query: {
+          tag
+        }
+      })
     }
-  },
-  created () {
-    if ('type' in this.$route.query) {
-      this.listType(this.$route.query.type)
-    }
+
   }
 }
 </script>
@@ -245,5 +262,10 @@ export default {
     color: var(--color-gray);
     line-height: 2;
   }
+}
+
+.high-quality {
+  background-color: #f3b068;
+  border-color: #f3b068;
 }
 </style>

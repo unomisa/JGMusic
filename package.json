@@ -8,14 +8,14 @@
     "preinstall": "npx npm-force-resolutions"
   },
   "dependencies": {
-    "@better-scroll/core": "^2.4.1",
     "axios": "^0.21.1",
     "core-js": "^3.6.5",
     "element-ui": "^2.15.5",
     "normalize.css": "^8.0.1",
+    "v-contextmenu": "^2.9.0",
     "vue": "^2.6.11",
-    "vue-aplayer": "^1.6.1",
     "vue-router": "^3.2.0",
+    "vue-runtime-helpers": "^1.1.2",
     "vuebar": "0.0.20",
     "vuex": "^3.4.0"
   },

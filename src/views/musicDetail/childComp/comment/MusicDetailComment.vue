@@ -1,8 +1,9 @@
 <template>
   <div class="container">
     <comment class="comment" :hotComments="hotComments"
-             :newComments="newComments" :total="totalCount" :loading="loading"
-             @pageChange="pageChange"
+             :newComments="newComments" :total="total" :loading="loading"
+             :singleWC="true" @pageChange="pageChange" :type="0"
+             :rid="currentPlayMusic.id"
              v-if="hotComments.length>0||newComments.length>0" />
   </div>
 </template>
@@ -13,8 +14,10 @@ import Comment from 'components/content/comment/Comment.vue'
 import { mapGetters } from 'vuex'
 import { getCommentOld, getHotComment } from 'network/pageRequest/musicdetail'
 import { UserComment } from 'network/common'
+import { updateComment } from 'common/mixin'
 
 export default {
+  mixins: [updateComment],
   components: { Comment },
   props: {
     showMusicDetail: {
@@ -24,7 +27,7 @@ export default {
   },
   data () {
     return {
-      totalCount: 0,
+      total: 0,
       hotComments: [],
       newComments: [],
       loading: true
@@ -37,7 +40,7 @@ export default {
   },
   methods: {
     getHotComments (page, id) {
-      if (this.hotComments.length !== 0) return
+      if (page !== 1) return
       return getHotComment({ id: id, limit: 10, offset: 0 })
         .then(res => {
           if (res.code === 200) {
@@ -60,7 +63,7 @@ export default {
           // console.log(res)
           if (res.code === 200) {
             const comments = res.comments
-            this.totalCount = res.total
+            this.total = res.total
             this.newComments = []
 
             comments.forEach(component => {
@@ -83,16 +86,13 @@ export default {
 
     reset () {
       this.loading = true
-      this.totalCount = 0
+      this.total = 0
       this.newComments = []
       this.hotComments = []
     }
-
   },
   activated () {
-    if (this.newComments.length === 0) { // 活跃并没有评论时请求
-      this.pageChange(1)
-    }
+    this.pageChange(1) // 每次活跃时刷新评论
   },
   watch: {
     currentPlayMusic (newMusic, oldMusic) {

@@ -58,14 +58,43 @@ export function subPlaylist (id, t, timestamp) {
 }
 
 // 点赞评论
-export function likeComment (id, cid, t, type) {
+export function likeComment (id, cid, t, type, timestamp = Date.now()) {
   return request({
     url: '/comment/like',
     params: {
       id,
       cid,
       t,
-      type
+      type,
+      timestamp
+    }
+  })
+}
+
+// 歌单添加或删除歌曲
+export function playlistManagement (op, pid, tracks, timestamp = Date.now()) {
+  return request({
+    url: '/playlist/tracks',
+    params: {
+      op,
+      pid,
+      tracks,
+      timestamp
+    }
+  })
+}
+
+// 发送或删除评论
+export function commentHandle (t, type, id, content, commentId, timestamp = Date.now()) {
+  return request({
+    url: '/comment',
+    params: {
+      t,
+      type,
+      id,
+      content,
+      commentId,
+      timestamp
     }
   })
 }
@@ -83,7 +112,8 @@ export class Music {
 
     this.state = { // 保留属性：对象状态
       picLoad: false, // 与那个黑胶图片有关,为true时它才出现
-      currentBroadcast: false
+      currentBroadcast: false,
+      cp: 'cp' in music ? music.cp : 1
     }
   }
 }
@@ -102,6 +132,7 @@ export class Artist {
     this.id = artist.id
     this.name = artist.name
     this.picUrl = artist.picUrl
+    this.accountId = 'accountId' in artist ? artist.accountId : null
   }
 }
 
@@ -127,8 +158,8 @@ export class UserComment {
 
     this.content = info.content
     this.time = info.time
-    this.likedCount = info.likedCount // 点赞数
-    this.liked = info.liked // 是否点赞
+    this.likedCount = 'likedCount' in info ? info.likedCount : 0 // 点赞数
+    this.liked = 'liked' in info ? info.liked : false // 是否点赞
     this.commentId = info.commentId
     this.replied = {}
 
@@ -150,6 +181,8 @@ export class SongList {
     this.trackCount = songList.trackCount
     this.toplist = 'ToplistType' in songList
     this.updateTime = songList.updateTime
+    this.highQuality = songList.highQuality
+    this.subscribed = songList.subscribed ? songList.subscribed : false
     // this.tracks = []
   }
 }

@@ -2,7 +2,7 @@ import { request } from 'network/request'
 import { formatArtists, formatPlayCount, formatDate } from 'common/utils'
 
 // 获取专辑内容
-export function getAlbum (id, timestamp) {
+export function getAlbum (id, timestamp = Date.now()) {
   return request({
     url: '/album',
     params: {
@@ -12,19 +12,20 @@ export function getAlbum (id, timestamp) {
   })
 }
 
-export function getAlbumComment (id, limit, offset) {
+export function getAlbumComment (id, limit, offset, timestamp = Date.now()) {
   return request({
     url: '/comment/album',
     params: {
       id,
       limit,
-      offset
+      offset,
+      timestamp
     }
   })
 }
 
 // 专辑动态信息,如是否收藏,收藏数,评论数,分享数
-export function getAlbumDynamic (id, timestamp) {
+export function getAlbumDynamic (id, timestamp = Date.now()) {
   return request({
     url: '/album/detail/dynamic',
     params: {

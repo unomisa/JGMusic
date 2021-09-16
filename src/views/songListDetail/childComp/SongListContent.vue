@@ -6,9 +6,9 @@
     </el-menu>
 
     <song-group :tracks="tracks" v-show="activeIndex==='1'" />
-    <comment :newComments="newComments" :hotComments="hotComments"
-             :total="total" :loading="commentLoading" @pageChange="pageChange"
-             v-show="activeIndex==='2'" />
+    <comment :newComments="newComments" :hotComments="hotComments" :type="2"
+             :rid="id" :total="total" :loading="commentLoading"
+             @pageChange="pageChange" v-show="activeIndex==='2'" />
 
   </div>
 </template>
@@ -42,10 +42,15 @@ export default {
       commentLoading: true
     }
   },
+  computed: {
+    id () {
+      return parseInt(this.$route.params.id)
+    }
+  },
   methods: {
     getSongListComment (id, offset) {
       getSongListComment(id, 20, offset).then(res => {
-        console.log('请求结果为：', res)
+        // console.log('歌单评论请求结果为：', res)
         if (res.code === 200) {
           this.newComments = []
           this.hotComments = []

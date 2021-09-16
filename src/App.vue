@@ -6,10 +6,11 @@
 
     <nav-bar />
 
-    <keep-alive exclude="UserDetail" max="5">
+    <keep-alive exclude="UserDetail,songListDetail" max="5">
       <router-view :key="$route.fullPath" />
     </keep-alive>
 
+    <save-to-playlist />
     <back-top :target="$refs.scrollbar" />
 
     <play-bar />
@@ -19,15 +20,17 @@
 <script>
 import PlayBar from 'components/content/playBar/PlayBar.vue'
 import NavBar from './components/content/navBar/NavBar.vue'
+import BackTop from 'components/common/backTop/BackTop.vue'
+import SaveToPlaylist from 'components/content/savaToPlay/SaveToPlaylist.vue'
 
 import { mapGetters, mapMutations, mapState } from 'vuex'
-import BackTop from './components/common/backTop/BackTop.vue'
 
 export default {
   components: {
     PlayBar,
     NavBar,
-    BackTop
+    BackTop,
+    SaveToPlaylist
   },
   computed: {
     ...mapState([
@@ -50,7 +53,7 @@ export default {
     ]),
 
     load () {
-      // console.log('触发正在加载')
+      console.log('触发正在加载')
       this.setInfiniteScrollDisabled(true) // 每次加载使之停止继续加载
       this.$bus.$emit('infiniteScroll') // 发送加载事件
     },

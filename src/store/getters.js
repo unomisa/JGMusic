@@ -6,6 +6,7 @@ export default {
       return {}
     }
   },
+
   isExistCurrentPlayMusic (state, getters) {
     return Object.keys(getters.currentPlayMusic).length > 0
   }

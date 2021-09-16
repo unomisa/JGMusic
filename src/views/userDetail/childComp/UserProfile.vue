@@ -224,7 +224,7 @@ export default {
   height: 20px;
   color: #f0483b;
   background-color: #fde4e2;
-  padding-right: 8px;
+  padding: 3px 8px 3px 0;
   border-radius: 20px;
 
   &-icon {

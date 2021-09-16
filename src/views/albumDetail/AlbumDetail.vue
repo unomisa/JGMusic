@@ -4,7 +4,7 @@
     <div class="album">
       <album-presentation :album='album' :loading="loading" />
       <album-content :tracks='tracks' :desc="album.description"
-                     :commentTotal="commentTotal" />
+                     :commentTotal="total" />
     </div>
   </div>
 </template>
@@ -15,15 +15,17 @@ import AlbumPresentation from './childComp/AlbumPresentation.vue'
 
 import { getAlbum, AlbumBasic, getAlbumDynamic } from 'network/pageRequest/albumdetail'
 import { Music } from 'network/common'
+import { updateComment } from 'common/mixin'
 
 export default {
   name: 'albumDetail',
+  mixins: [updateComment],
   components: { AlbumPresentation, AlbumContent },
   data () {
     return {
       album: {},
       tracks: [],
-      commentTotal: 0,
+      total: 0,
       loading: true
     }
   },
@@ -49,11 +51,14 @@ export default {
         this.album = new AlbumBasic(res[0].album, res[1])
 
         res[0].songs.forEach(track => {
-          this.tracks.push(new Music(this.musicBean(track)))
+          this.tracks.push(new Music({
+            ...this.musicBean(track),
+            cp: track.privilege.cp
+          }))
         })
 
         this.loading = false
-        this.commentTotal = res[1].commentCount
+        this.total = res[1].commentCount
         console.log('专辑为：', res)
       })
     }

@@ -1,7 +1,8 @@
 <template>
   <div class="container">
     <div class="title">
-      创建的歌单<span class="number">({{created.length}})</span>
+      创建的歌单
+      <span class="number">({{created.length}})</span>
     </div>
 
     <list-skeleton :loading="loading">
@@ -13,7 +14,8 @@
       </div>
     </list-skeleton>
 
-    <div class="title">收藏的歌单
+    <div class="title" v-if="subscribed.length>0">
+      收藏的歌单
       <span class="number">({{subscribed.length}})</span>
     </div>
 

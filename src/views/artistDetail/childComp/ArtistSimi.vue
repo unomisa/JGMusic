@@ -28,8 +28,20 @@ export default {
   flex-wrap: wrap;
 }
 
+@listWidth: 200px;
 .artist {
-  flex: 0 20%;
+  width: @listWidth;
+  margin-right: calc((100% - (@listWidth * 5)) / 4);
   margin-bottom: 2rem;
+
+  &:nth-child(5n) {
+    margin: 0;
+  }
+
+  &s {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+  }
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="title">
+    <div class="title" @click="moreSongList">
       推荐歌单
       <svg class="icon title-icon" aria-hidden="true">
         <use xlink:href="#icon-gedanshouye"></use>
@@ -33,6 +33,11 @@ export default {
     loading: {
       type: Boolean,
       default: true
+    }
+  },
+  methods: {
+    moreSongList () {
+      this.$router.push('/songList')
     }
   }
 }

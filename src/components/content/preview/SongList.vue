@@ -1,11 +1,19 @@
 <template>
-  <div class="song-list">
-    <div class="before-fill" :style="beforeFillStyle" @click="goSongListDetail">
+  <div class="song-list" @click="goSongListDetail">
+    <div class="cover-box" :style="imageStyle">
       <div class="shade"></div>
-      <el-image class="infuse-image "
+      <div v-if="songList.highQuality">
+        <div class="quality"></div>
+        <div class="quality-icon">
+          <svg class="icon" aria-hidden="true">
+            <use xlink:href="#icon-_huangguan"></use>
+          </svg>
+        </div>
+      </div>
+      <el-image class="cover "
                 :src="songList.coverImgUrl + '?param='+imgHeight+'y'+imgHeight"
-                fit="cover">
-        <div slot="error" class="image-err" :style="imageErrorStyle">
+                fit="fill">
+        <div slot="error" class="image-err" :style="imageStyle">
           <i class="el-icon-picture-outline "></i>
         </div>
       </el-image>
@@ -24,7 +32,7 @@
       </div>
     </div>
 
-    <div :style="textStyle" class="text">
+    <div class="text" v-if="showText">
       <div class="name">{{songList.name}}</div>
       <div class="trackCount" v-if="showTrackCount">{{songList.trackCount}}首
       </div>
@@ -49,27 +57,19 @@ export default {
       type: Boolean,
       default: true
     },
+    showText: {
+      type: Boolean,
+      default: true
+    },
     rank: {
       type: Boolean,
       default: false
     }
   },
   computed: {
-    textStyle () {
-      return {
-        width: this.imgHeight + 'px'
-      }
-    },
-
-    imageErrorStyle () {
+    imageStyle () {
       return {
         height: this.imgHeight + 'px',
-        width: this.imgHeight + 'px'
-      }
-    },
-    beforeFillStyle () {
-      return {
-        'padding-top': this.imgHeight + 'px',
         width: this.imgHeight + 'px'
       }
     },
@@ -100,21 +100,29 @@ export default {
 
 <style lang="less" scoped>
 .song-list {
+  position: relative;
   user-select: none;
+  box-sizing: border-box;
+  width: 200px;
+  overflow: hidden;
 }
 
-.before-fill {
-  overflow: hidden;
-  border: 1px solid #f0f2f2;
+.cover {
   border-radius: 5px;
-  cursor: pointer;
+  border: 1px solid #f0f2f2;
 
-  &:hover + .text > .name {
-    color: black;
-  }
+  &-box {
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
 
-  &:hover > .play {
-    opacity: 0.9;
+    &:hover + .text > .name {
+      color: black;
+    }
+
+    &:hover > .play {
+      opacity: 0.9;
+    }
   }
 }
 
@@ -144,6 +152,25 @@ export default {
   left: 0;
   right: 0;
   box-shadow: 0px 10px 30px 2px rgb(0 0 0);
+}
+
+.quality {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  border: 20px solid #f3b068;
+  border-color: #f3b068 transparent transparent #f3b068;
+  border-top-left-radius: 5px;
+
+  &-icon {
+    position: absolute;
+    color: white;
+    top: 4px;
+    left: 4px;
+    z-index: 1;
+    transform: rotate(-46deg);
+  }
 }
 
 .play-count {

@@ -1,55 +1,66 @@
 <template>
-  <comment-skeleton :loading="loading">
-    <div class="container" ref="container">
-      <div v-if="total!==0">
-        <div v-show="hotComments.length>0 && isShowHot">
-          <div class="title">
-            云村评论
-            <span>({{total}})</span>
-          </div>
-          <div class="comments">
-            <div class="comment" v-for="comment in hotComments"
-                 :key="comment.commentId">
-              <user-comment :comment="comment" @like="like(comment)"
-                            @unLike="unLike(comment)" />
-              <el-divider />
+  <div>
+    <write-comment-area :type="type" :rid="rid" v-if="!singleWC" />
+
+    <comment-skeleton :loading="loading">
+      <div class="container" ref="container">
+
+        <div v-if="newComments.length > 0">
+          <div v-show="hotComments.length>0 && isShowHot">
+            <div class="title">
+              云村评论
+              <span>({{total}})</span>
+            </div>
+            <div class="comments">
+              <div class="comment" v-for="comment in hotComments"
+                   :key="comment.commentId">
+                <user-comment :comment="comment" @like="like(comment)"
+                              @unLike="unLike(comment)" />
+                <el-divider />
+              </div>
             </div>
           </div>
-        </div>
 
-        <div v-if=" newComments.length>0">
-          <div class="title">最新评论
-            <span>({{total}})</span>
-          </div>
-          <div class="comments">
-            <div class="comment" v-for="comment in newComments"
-                 :key="comment.commentId">
-              <user-comment :comment="comment" @like="like(comment)"
-                            @unLike="unLike(comment)" />
-              <el-divider />
+          <div v-if=" newComments.length>0">
+            <div class="title">最新评论
+              <span>({{total}})</span>
+            </div>
+            <div class="comments">
+              <div class="comment" v-for="(comment,index) in newComments"
+                   :key="comment.commentId">
+                <user-comment :comment="comment" @like="like(comment)"
+                              :index="index" @unLike="unLike(comment)" />
+                <el-divider />
+              </div>
             </div>
           </div>
+
+          <el-pagination background layout="prev, pager, next" :total="total"
+                         :page-size="20" :pager-count="9"
+                         @current-change="pageChange" />
+          <br>
         </div>
 
-        <el-pagination background layout="prev, pager, next" :total="total"
-                       :page-size="20" :pager-count="9"
-                       @current-change="pageChange" />
-        <br>
-      </div>
+        <div v-if="newComments.length === 0">
+          <h3 class="tips">还没有评论，快来抢沙发~</h3>
+        </div>
 
-      <div v-if="total===0">
-        <h3 class="tips">还没有评论，快来抢沙发~</h3>
+        <write-comment :type="type" :rid="rid" v-if="singleWC" />
+
       </div>
-    </div>
-  </comment-skeleton>
+    </comment-skeleton>
+  </div>
+
 </template>
 
 <script>
 import CommentSkeleton from './skeleton/CommentSkeleton.vue'
 import UserComment from './UserComment.vue'
+import WriteComment from './writeComment.vue'
+import WriteCommentArea from './WriteCommentArea.vue'
 
 export default {
-  components: { UserComment, CommentSkeleton },
+  components: { UserComment, CommentSkeleton, WriteComment, WriteCommentArea },
   props: {
     hotComments: {
       type: Array,
@@ -70,6 +81,18 @@ export default {
     loading: {
       type: Boolean,
       default: true
+    },
+    type: {
+      type: Number,
+      default: 0
+    },
+    rid: {
+      type: Number,
+      default: 0
+    },
+    singleWC: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
@@ -97,7 +120,24 @@ export default {
     like (comment) {
       comment.liked = true
       comment.likedCount++
+    },
+
+    addComment (comment, index) {
+      if (comment) { // 若传递过来的为一个对象，则直接添加至顶
+        this.newComments.unshift(comment)
+      } else { // 否则删除下标位置的评论
+        this.newComments.splice(index, 1)
+      }
     }
+  },
+  created () {
+    this.$bus.$on('addComment', this.addComment)
+  },
+  destroyed () {
+    this.$bus.$off('addComment', this.addComment)
+  },
+  deactivated () {
+    this.$bus.$off('addComment', this.addComment)
   }
 }
 </script>

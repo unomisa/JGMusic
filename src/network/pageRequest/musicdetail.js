@@ -41,7 +41,7 @@ export function getSimiList (id) {
 }
 
 // * 新版获取评论
-export function getComment (id, type, pageNo, pageSize, sortType, cursor) {
+export function getComment (id, type, pageNo, pageSize, sortType, cursor, timestamp = Date.now()) {
   return request({
     url: '/comment/new',
     params: {
@@ -50,7 +50,8 @@ export function getComment (id, type, pageNo, pageSize, sortType, cursor) {
       pageNo,
       pageSize,
       sortType,
-      cursor
+      cursor,
+      timestamp
     }
   })
 }

@@ -3,23 +3,24 @@
     <div class="backdrop"></div>
     <div class="list-detail">
       <song-list-presentation :playList="playList" :loading="loading" />
-      <song-list-content :tracks="tracks" :total="commentTotal" />
+      <song-list-content :tracks="tracks" :total="total" />
     </div>
   </div>
 </template>
 
 <script>
 import SongListPresentation from './childComp/SongListPresentation.vue'
+import SongListContent from './childComp/SongListContent.vue'
 
 import { getPlayListDetail, SongListDetail } from 'network/pageRequest/songList'
 import { Music } from 'network/common'
-import SongListContent from './childComp/SongListContent.vue'
 import { getMusicDetail } from 'network/pageRequest/musicdetail'
-import { musicBean } from 'common/mixin'
+import { musicBean, updateComment } from 'common/mixin'
+import { mapMutations, mapState } from 'vuex'
 
 export default {
   name: 'songListDetail',
-  mixins: [musicBean],
+  mixins: [musicBean, updateComment],
   components: { SongListPresentation, SongListContent },
   data () {
     return {
@@ -28,11 +29,21 @@ export default {
       },
       tracks: [],
       trackIds: [],
-      commentTotal: 0,
-      loading: true
+      total: 0,
+      loading: true,
+      startIndex: 0
     }
   },
+  computed: {
+    ...mapState([
+      'loginUser'
+    ])
+  },
   methods: {
+    ...mapMutations([
+      'updateSubList'
+    ]),
+
     addOther (music, index) {
       if (this.$route.query.type !== 'rank') return
       const other = {}
@@ -52,49 +63,60 @@ export default {
           console.log('歌单详情为：', res)
           this.playList = new SongListDetail(res.playlist) // 歌单描述
           this.trackIds = res.playlist.trackIds
-          this.commentTotal = res.playlist.commentCount
+          this.total = res.playlist.commentCount
 
           if (this.trackIds.length > res.playlist.tracks.length) {
-            this.getMusicDetail(res.playlist.tracks)
+            this.getMusicDetail()
           } else {
             res.playlist.tracks.forEach((track, index) => {
-              const music = new Music(this.musicBean(track))
+              const music = new Music({
+                ...this.musicBean(track),
+                cp: res.privileges[index].cp
+              })
               this.addOther(music, index)
               this.tracks.push(music)
             })
             this.loading = false
           }
-
-          // console.log('包装后的歌曲信息为：', JSON.parse(JSON.stringify(this.tracks)))
         }
       })
     },
 
-    getMusicDetail (existingTracks) {
-      const startIndex = existingTracks.length
-      const idArr = this.trackIds.filter((track, index) => index >= startIndex).map(track => track.id)
-      getMusicDetail(idArr.join(',')).then(res => {
+    getMusicDetail () {
+      const ids = this.trackIds.map(trackId => trackId.id).join(',')
+      getMusicDetail(ids).then(res => {
         if (res.code === 200) {
           console.log('歌曲详情为：', res)
-          existingTracks.forEach((track, index) => {
-            const music = new Music(this.musicBean(track))
-            this.addOther(music, index)
-            this.tracks.push(music)
-          })
 
           res.songs.forEach((track, index) => {
-            const music = new Music(this.musicBean(track))
-            this.addOther(music, startIndex + index)
+            const music = new Music({
+              ...this.musicBean(track),
+              cp: res.privileges[index].cp
+            })
+            this.addOther(music, index)
             this.tracks.push(music)
           })
           this.loading = false
         }
       })
+    },
+
+    // * 事件处理
+    delMusic (lid, index) {
+      this.tracks.splice(index, 1) // 删除歌曲，重绘页面
+      this.playList.trackCount-- // 当前页面歌单总数-1
     }
   },
   created () {
     const id = this.$route.params.id
     this.getPlayListDetail(id)
+    this.$bus.$on('songListDelMusic', this.delMusic) // 歌单删除歌曲
+  },
+  destroyed () {
+    this.$bus.$off('songListDelMusic', this.delMusic)
+  },
+  deactivated () {
+    this.$bus.$off('songListDelMusic', this.delMusic)
   }
 }
 </script>

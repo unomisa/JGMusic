@@ -1,5 +1,5 @@
 <template>
-  <el-skeleton class="skeleton" :loading="loading" :throttle="0" animated>
+  <el-skeleton class="skeleton" :loading="loading" animated>
     <template v-slot:template>
       <div>
         <div class="skeleton-solt">

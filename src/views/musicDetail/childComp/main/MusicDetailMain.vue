@@ -9,9 +9,11 @@
 
       <div class="center">
         <div class="blur-top"></div>
+        <div class="blur-bc-top"></div>
         <lyric-roll :lyric="lyric.lrc" :tlyric="lyric.tlyric"
                     :nolyric="lyric.nolyric" :nowNolyric="lyric.nowNolyric"
                     ref="lyric" />
+        <div class="blur-bc-bottom"></div>
         <div class="blur-bottom"></div>
       </div>
 
@@ -101,22 +103,36 @@ export default {
 .blur {
   content: "";
   position: absolute;
-  left: -10px;
+  left: 0;
+  right: 0;
   z-index: 1;
-  height: 24px;
-  width: 105%;
+  height: 20px;
+  width: 100%;
   background-color: white;
-  filter: blur(5px);
+
+  &-bc {
+    &-top {
+      &:extend(.blur);
+      height: 8px;
+      top: 0;
+    }
+
+    &-bottom {
+      &:extend(.blur);
+      height: 8px;
+      bottom: 0;
+    }
+  }
 
   &-top {
     &:extend(.blur);
-    transform: translateY(-10px);
+    filter: blur(3px);
     top: 0;
   }
 
   &-bottom {
     &:extend(.blur);
-    transform: translateY(10px);
+    filter: blur(3px);
     bottom: 0;
   }
 }

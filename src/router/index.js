@@ -8,8 +8,10 @@ const MusicDetail = () => import('views/musicDetail/MusicDetail')
 const UserDetail = () => import('views/userDetail/UserDetail')
 const SongListDetail = () => import('views/songListDetail/SongListDetail')
 const AlbumDetail = () => import('views/albumDetail/AlbumDetail')
-const Artist = () => import('views/artistDetail/Artist')
+const Artist = () => import('views/artist/Artist')
+const ArtistDetail = () => import('views/artistDetail/Artist')
 const RankList = () => import('views/rankList/RankList')
+const SongList = () => import('views/songList/Songlist')
 
 const routes = [
   {
@@ -33,12 +35,20 @@ const routes = [
     component: SongListDetail
   },
   {
+    path: '/songList',
+    component: SongList
+  },
+  {
     path: '/album/:id',
     component: AlbumDetail
   },
   {
-    path: '/artistDetail/:id',
+    path: '/artist',
     component: Artist
+  },
+  {
+    path: '/artistDetail/:id',
+    component: ArtistDetail
   },
   {
     path: '/rankList',

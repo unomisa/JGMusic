@@ -20,7 +20,7 @@
                   v-for="(track,index) in list.tracks" :key="index"
                   :index="index+1" :areas="songAreas" :gutter="0"
                   :showLike="false" :indexWidth='30'
-                  @click.native="play(track)">
+                  @dblclick.native="play(track)">
             </song>
             <div class="more" @click="rankDetail(list)">查看全部 ></div>
           </div>

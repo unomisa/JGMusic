@@ -25,9 +25,9 @@
                              background-color="#d83993" @select="handleSelect">
                       <el-menu-item index="/home">首页</el-menu-item>
                       <el-menu-item index="/rankList">排行</el-menu-item>
-                      <el-menu-item index="3">歌单</el-menu-item>
-                      <el-menu-item index="4">歌手</el-menu-item>
-                      <el-menu-item index="5">MV</el-menu-item>
+                      <el-menu-item index="/songList">歌单</el-menu-item>
+                      <el-menu-item index="/artist">歌手</el-menu-item>
+                      <!-- <el-menu-item index="5">MV</el-menu-item> -->
                     </el-menu>
                   </el-col>
 
@@ -88,8 +88,8 @@ export default {
   },
   methods: {
     handleSelect (index) {
-      this.activeIndex = index
-      console.log('index：', this.activeIndex)
+      // console.log('index：', this.activeIndex)
+      // this.activeIndex = index
     },
 
     goHome () {
@@ -100,8 +100,8 @@ export default {
     this.getLoginStatus()
   },
   watch: {
-    $route (to) {
-      this.activeIndex = to.path // 根据当前路由来判断导航选项
+    '$route.path' (toPath) {
+      this.activeIndex = toPath // 根据当前路由来判断导航选项
     }
   }
 }
@@ -123,6 +123,7 @@ export default {
   margin: 0 auto;
   height: inherit;
   width: 1200px;
+  transform: translateX(-9px);
 }
 
 .right {

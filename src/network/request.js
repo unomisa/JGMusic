@@ -1,4 +1,5 @@
 import axios from 'axios'
+import Vue from 'vue'
 
 let baseUrl = ''
 
@@ -12,16 +13,21 @@ export function request (config) {
   const instance = axios.create({
     baseURL: baseUrl,
     timeout: 5000,
-    withCredentials: true // 允许跨域
+    withCredentials: true, // 允许跨域
+    retry: 4,
+    retryDelay: 1000
   })
+
+  // 在main.js设置全局的请求次数，请求的间隙
+  // * 自动重新请求功能
 
   // 请求拦截
   instance.interceptors.request.use(
     config => {
-      config.params = {
-        _t: Date.parse(new Date()) / 1000,
-        ...config.params
-      }
+      // config.params = {
+      //   _t: Date.parse(new Date()) / 1000,
+      //   ...config.params
+      // }
       return config
     },
     err => {
@@ -35,7 +41,40 @@ export function request (config) {
       return res.data
     },
     err => {
+      // if (err.message.includes('timeout')) {
+      //   Vue.prototype.$notify.topleft('请求超时，请检查网络', 'error')
+      // }
       console.log(err)
+      const config = err.config
+      // If config does not exist or the retry option is not set, reject
+      if (!config || !config.retry) {
+        console.log('没有设置')
+        return Promise.reject(err)
+      }
+
+      // Set the variable for keeping track of the retry count
+      config.__retryCount = config.__retryCount || 0
+
+      // Check if we've maxed out the total number of retries
+      if (config.__retryCount >= config.retry) {
+      // Reject with the error
+        return Promise.reject(err)
+      }
+
+      // Increase the retry count
+      config.__retryCount += 1
+
+      // Create new promise to handle exponential backoff
+      const backoff = new Promise(function (resolve) {
+        setTimeout(function () {
+          resolve()
+        }, config.retryDelay || 1)
+      })
+
+      // Return the promise in which recalls axios to retry the request
+      return backoff.then(function () {
+        return axios(config)
+      })
     }
   )
 

@@ -3,16 +3,10 @@ import Vue from 'vue'
 export default {
   // 添加至歌单
   addToPlayList (state, payload) {
-    if (payload.playList !== state.playList) { // 播放列表不同才切换
-      const music = Vue.prototype.$music
-      if (music !== undefined) {
-        music.pause() // 暂停当前歌曲播放
-      }
-      state.playList = payload.playList
-    }
-    if (payload.index !== state.listCurrentIndex) { // 播放歌曲下标不同才跳转
-      this.commit('setListCurrentIndex', payload.index) // 播放该下标歌曲
-    }
+    state.playList = Array.from(payload.playList) // 使之不是同一引用
+    // if (payload.index !== state.listCurrentIndex) { // 播放歌曲下标不同才跳转
+    this.commit('setListCurrentIndex', payload.index) // 播放该下标歌曲
+    // }
   },
 
   // 添加新的歌曲，若以存在则跳转
@@ -24,6 +18,24 @@ export default {
       this.commit('setListCurrentIndex', index + 1) // 设置插入歌曲的位置
     } else {
       this.commit('setListCurrentIndex', findIndex)
+    }
+  },
+
+  // 设置或添加歌曲使其在下一首播放
+  addNextMusic (state, music) {
+    const findIndex = state.playList.findIndex(item => item.id === music.id)
+    const index = state.listCurrentIndex
+    if (findIndex === -1) {
+      state.playList.splice(index + 1, 0, music) // 在当前位置之后插入歌曲
+    } else {
+      state.playList.splice(findIndex, 1)
+
+      if (findIndex < index) {
+        this.commit('setListCurrentIndex', index - 1) // 如果该歌曲在同一歌单并且在当前播放索引前，则索引-1以保证当前歌曲不变
+        state.playList.splice(index, 0, music) // 因为索引已经减一，因此可直接设置原位置
+      } else {
+        state.playList.splice(index + 1, 0, music) // 正常设置索引
+      }
     }
   },
 
@@ -112,11 +124,16 @@ export default {
   },
 
   // * 收藏歌单相关
-  pushSubList (state, id) {
-    Vue.set(state.loginUser.subList, id, id)
+  pushSubList (state, payload) {
+    state.loginUser.subList = new Map(state.loginUser.subList.set(parseInt(payload.key), payload.value))
   },
 
   unSubList (state, id) {
-    Vue.delete(state.loginUser.subList, id)
+    state.loginUser.subList.delete(id)
+    state.loginUser.subList = new Map(state.loginUser.subList)
+  },
+
+  updateSubList (state) {
+    state.loginUser.subList = new Map(state.loginUser.subList)
   }
 }

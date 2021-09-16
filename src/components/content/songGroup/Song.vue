@@ -1,7 +1,7 @@
 <template>
-  <div class="song">
+  <div class="song" @click="play">
     <slot>
-      <el-row :gutter="gutter">
+      <el-row :gutter="gutter" @contextmenu.native.prevent="context">
         <el-col :span="areas.others" class="other">
 
           <span class="other-startbox" :style="{width: indexWidth + 'px'}">
@@ -43,9 +43,11 @@
           <like-song class="other-like" :id="track.id" v-if="showLike" />
         </el-col>
 
-        <el-col :span="areas.name">
-          {{track.name}}
-          <span class="alias" v-if="track.alias">({{track.alias}})</span>
+        <el-col :span="areas.name"
+                :class="{nocp: isMusic && track.state.cp===0}">
+          <span>{{track.name}} </span>
+          <span class="alias" v-if="track.alias"
+                :class="{nocp: isMusic && track.state.cp===0}">({{track.alias}})</span>
         </el-col>
 
         <el-col :span="areas.artists" class="artists">
@@ -64,17 +66,25 @@
         <el-col :span="areas.duration" class="duration">
           {{track.duration}}
         </el-col>
+
+        <song-context :x.sync="context_x" :y.sync="context_y" :track="track"
+                      :index="index-1" :showContext.sync="showContext"
+                      v-if="showContext" />
+
       </el-row>
+
     </slot>
   </div>
 </template>
 
 <script>
+import LikeSong from 'components/content/miniCom/LikeSong.vue'
+import SongContext from './SongContext.vue'
+
 import { mapGetters } from 'vuex'
-import LikeSong from '../miniCom/LikeSong.vue'
 
 export default {
-  components: { LikeSong },
+  components: { LikeSong, SongContext },
   props: {
     areas: {
       type: Object,
@@ -111,6 +121,13 @@ export default {
       default: true
     }
   },
+  data () {
+    return {
+      showContext: false,
+      context_x: 0,
+      context_y: 0
+    }
+  },
   computed: {
     ...mapGetters([
       'currentPlayMusic'
@@ -144,6 +161,10 @@ export default {
           return 'new'
         }
       }
+    },
+
+    isMusic () {
+      return Object.keys(this.track).length > 0
     }
   },
   methods: {
@@ -154,7 +175,23 @@ export default {
 
     albumDetail () {
       this.$router.push('/album/' + this.track.album.id)
+    },
+
+    play (event) {
+      if (this.isMusic && this.track.state.cp === 0) {
+        this.$notify.topleft('音乐暂无版权', 'error')
+        event.stopImmediatePropagation() // 阻止其它click事件处理
+      }
+    },
+
+    context (event) {
+      if (event.button === 2) { // 如果为右键
+        this.showContext = true // 显示上下文菜单
+        this.context_x = event.clientX // 传递点击位置
+        this.context_y = event.clientY
+      }
     }
+
   }
 }
 </script>
@@ -188,6 +225,10 @@ export default {
   color: var(--color-light-gray);
 }
 
+.nocp {
+  color: #d9cad9;
+}
+
 .other {
   color: var(--color-gray);
   min-width: 100px;
@@ -205,7 +246,7 @@ export default {
 
   &-playing {
     font-size: 20px;
-    transform: translateY(2px);
+    // transform: translateY(2px);
     color: var(--color-main);
   }
 

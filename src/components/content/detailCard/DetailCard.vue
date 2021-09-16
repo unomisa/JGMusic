@@ -1,6 +1,7 @@
 <template>
   <el-card class="card" :body-style="cardBodyStyle">
     <detail-skeleton :loading="loading">
+      <slot name="all"></slot>
       <div class="content">
         <div class="content-left">
           <slot name="left"></slot>
@@ -36,6 +37,7 @@ export default {
 
 <style lang="less" scoped>
 .card {
+  position: relative;
   margin-top: 50px;
   margin-bottom: 2rem;
   // height: 230px;

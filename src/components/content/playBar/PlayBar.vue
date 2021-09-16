@@ -34,7 +34,8 @@ export default {
   },
   computed: {
     ...mapState([
-      'listCurrentIndex'
+      'listCurrentIndex',
+      'playList'
     ]),
 
     ...mapGetters([
@@ -75,15 +76,27 @@ export default {
     currentPlayMusic (newPlay, oldPlay) {
       if (newPlay.id !== oldPlay.id) {
         // * 状态设置
+        this.pause() // 暂停，出bug来找它
         this.currentPlayMusicUrl = '' // 设置歌曲url为空，等待加载
-        // this.pause() // 暂停，这玩意会出bug
         this.setIsLoadingMusic(true) // 换歌之后设置它正在加载
         newPlay.state.currentBroadcast = true
         'state' in oldPlay && (oldPlay.state.currentBroadcast = false)
 
         // 请求歌曲url
         getSongUrl(newPlay.id).then(res => {
-          this.currentPlayMusicUrl = res.data[0].url
+          if (res.code === 200) {
+            this.currentPlayMusicUrl = res.data[0].url
+
+            // 如果该歌曲无法播放，则跳过
+            if (!this.currentPlayMusicUrl) {
+              const previousMusic = this.playList[this.listCurrentIndex - 1]
+              if (previousMusic.id === oldPlay.id) {
+                this.setListCurrentIndex(this.listCurrentIndex + 1)
+              } else {
+                this.setListCurrentIndex(this.listCurrentIndex - 1)
+              }
+            }
+          }
         })
       }
     },

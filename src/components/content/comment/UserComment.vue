@@ -1,5 +1,5 @@
 <template>
-  <div class="user-comment">
+  <div class="user-comment" @contextmenu.prevent="context">
     <div class="left">
       <el-avatar class="avatar" shape="circle"
                  :src="comment.avatarUrl + '?param=50y50'" fit="fill"
@@ -42,20 +42,31 @@
 
           {{comment.likedCount}}
           <el-divider direction="vertical"></el-divider>
-          <svg class="icon other-icon" aria-hidden="true">
-            <use xlink:href="#icon-pinglun"></use>
-          </svg>
+
+          <span @click="reply">
+            <svg class="icon other-icon" aria-hidden="true">
+              <use xlink:href="#icon-pinglun"></use>
+            </svg>
+          </span>
         </span>
       </div>
     </div>
+
+    <comment-context :showContext.sync="showContext" :x.sync="context_x"
+                     :y.sync="context_y" :comment="comment" v-bind="$attrs"
+                     v-if="showContext" />
   </div>
 </template>
 
 <script>
 import { formatDate } from 'common/utils'
 import { likeComment } from 'network/common'
+import CommentContext from './CommentContext.vue'
+
+import { mapState } from 'vuex'
 
 export default {
+  components: { CommentContext },
   props: {
     comment: {
       type: Object,
@@ -64,7 +75,18 @@ export default {
       }
     }
   },
+  data () {
+    return {
+      showContext: false,
+      context_x: 0,
+      context_y: 0
+    }
+  },
   computed: {
+    ...mapState([
+      'loginUser'
+    ]),
+
     publishedDate () {
       const now = new Date()
       const createdDate = new Date(this.comment.time)
@@ -99,6 +121,28 @@ export default {
             this.$notify.topleft('点赞成功')
           }
         })
+      }
+    },
+
+    reply () {
+      this.$comment.init({
+        sendType: 2,
+        reply: true,
+        replyComment: this.comment,
+        type: this.comment.type,
+        rid: this.comment.rid,
+        commentId: this.comment.commentId,
+        placeholder: `回复@${this.comment.nickname}：`
+      })
+    },
+
+    // 上下文菜单
+    context (event) {
+      if (this.comment.userId !== this.loginUser.userId) return // 判断是否是当前登录用户
+      if (event.button === 2) { // 如果为右键
+        this.showContext = true // 显示上下文菜单
+        this.context_x = event.clientX // 传递点击位置
+        this.context_y = event.clientY
       }
     }
   }

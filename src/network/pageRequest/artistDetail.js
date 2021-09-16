@@ -2,7 +2,7 @@ import { request } from 'network/request'
 import { formatDate } from 'common/utils'
 
 // 获取歌手详情
-export function getArtistDetail1 (id, timestamp) {
+export function getArtistDetail1 (id, timestamp = Date.now()) {
   return request({
     url: '/artist/detail',
     params: {

@@ -31,11 +31,12 @@
         <div v-bar class="scroll-area">
           <div>
             <div class="song" v-for="(song,index) of playList" :key="song.id"
-                 @dblclick="selectMusic(index)"
+                 @dblclick="selectMusic(song,index)"
                  :class="{'song-play': song.state.currentBroadcast}">
-              <div class="song-title-box">
+              <div class="song-title-box" :class="{nocp:song.state.cp===0}">
                 <span class="song-title">{{song.name}}</span>
-                <span class="song-alias" v-if="song.alias.length>0">(
+                <span class="song-alias" :class="{nocp:song.state.cp===0}"
+                      v-if=" song.alias.length>0">(
                   {{song.alias}}
                   )</span>
               </div>
@@ -101,7 +102,11 @@ export default {
     openList () {
       this.isShowList = !this.isShowList
     },
-    selectMusic (index) {
+    selectMusic (song, index) {
+      if (song.state.cp === 0) {
+        this.$notify.topleft('音乐暂无版权', 'error')
+        return
+      }
       this.setListCurrentIndex(index)
     },
 
@@ -203,7 +208,6 @@ export default {
   }
 
   &-title {
-    color: #333333;
     &-box {
       &:extend(.ellipsis);
       width: 150px;
@@ -244,5 +248,9 @@ export default {
   &:hover {
     color: black;
   }
+}
+
+.nocp {
+  color: #d9cad9;
 }
 </style>

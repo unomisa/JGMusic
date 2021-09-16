@@ -8,11 +8,12 @@
       <template v-slot:title>
         <el-tabs class="login-tabs" v-model="activeName"
                  @tab-click="handleClick">
-          <!-- <el-tab-pane label="手机登录" name="captcha">
-            <login-captcha :phone.sync="phone" :captcha.sync="captcha" />
-          </el-tab-pane> -->
 
-          <el-tab-pane label="密码登录" name="password"></el-tab-pane>
+          <el-tab-pane label="验证码登录" name="captcha">
+            <login-captcha />
+          </el-tab-pane>
+
+          <!-- <el-tab-pane label="密码登录" name="password"></el-tab-pane> -->
 
           <el-tab-pane label="二维码登录" name="QRcode">
             <login-q-r-code :qrkey="qrkey" :statusCode="statusCode" />
@@ -20,10 +21,6 @@
         </el-tabs>
       </template>
 
-      <!-- <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="loginRequest">登 录</el-button>
-      </span> -->
     </el-dialog>
   </div>
 </template>
@@ -32,7 +29,7 @@
 import LoginCaptcha from './loginMethod/LoginCaptcha.vue'
 import LoginQRCode from './loginMethod/LoginQRCode.vue'
 
-import { getQRKey, captchaVerify, getLoginStatus, getQRCodeStatus, logOut, refreshStatus } from 'network/common/login'
+import { getQRKey, getQRCodeStatus } from 'network/common/login'
 import { updateLoginStatus } from 'common/mixin'
 
 export default {
@@ -41,7 +38,7 @@ export default {
   data () {
     return {
       dialogVisible: false,
-      activeName: 'password',
+      activeName: 'captcha',
       timer: null,
       statusCode: 0,
       qrkey: ''
@@ -58,9 +55,6 @@ export default {
       } else {
         clearInterval(this.timer)
       }
-    },
-    loginRequest () {
-
     },
 
     // 轮询二维码状态
