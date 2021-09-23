@@ -2,15 +2,26 @@
   <div>
     <div class="input">
       <div class="input-row">
+        <span class="input-text">用户名</span>
+        <el-input class="input-login" type="text" placeholder="用户名"
+                  v-model='nickname' />
+      </div>
+
+      <div class="input-row">
         <span class="input-text">手机号</span>
         <el-input class="input-login" type="text" placeholder="手机号"
-                  :maxlength="11" v-model='phone' />
+                  maxlength="11" v-model='phone' />
+      </div>
+
+      <div class="input-row">
+        <span class="input-text">密码</span>
+        <el-input class="input-login" type="password" placeholder="密码"
+                  v-model='password' />
       </div>
 
       <div class="input-row">
         <span class="input-text">短信验证码</span>
-        <el-input class="input-login" :value="captcha" placeholder="短信验证码"
-                  v-model='captcha' />
+        <el-input class="input-login" placeholder="短信验证码" v-model='captcha' />
         <el-button type="success" @click="sendCaptcha"
                    :disabled="!sendCaptchaBtn">{{captchaBtText}}
         </el-button>
@@ -19,19 +30,17 @@
 
     <div class="login">
       <el-button class="login-btn" type="primary" size="default"
-                 @click="phoneLogin">
-        登录
+                 @click="register">
+        注册
       </el-button>
     </div>
   </div>
 </template>
 
 <script>
-import { sendCaptcha, phoneLogin } from 'network/common/login'
-import { updateLoginStatus } from 'common/mixin'
+import { phoneExistence, register, sendCaptcha } from 'network/common/login'
 
 export default {
-  mixins: [updateLoginStatus],
   props: {
     dialogVisible: {
       type: Boolean,
@@ -40,14 +49,15 @@ export default {
   },
   data () {
     return {
+      nickname: '',
       phone: '',
+      password: '',
       captcha: '',
       captchaBtText: '发送验证码',
       sendCaptchaBtn: true
     }
   },
   methods: {
-    // 发送验证码
     sendCaptcha () {
       sendCaptcha(this.phone).then(res => {
         console.log(res)
@@ -72,26 +82,30 @@ export default {
       })
     },
 
-    phoneLogin () {
-      if (this.captcha.length === 0) {
-        this.$notify.topleft('请输入验证码', 'warning')
-      } else {
-        phoneLogin(this.phone, this.captcha).then(res => {
-          console.log('短信登陆后：', res)
-          if (res && res.code === 200) {
-            this.getLoginStatus() // > mixin中setLoginStatus的方法
-            this.$notify.topleft('登录成功')
+    register () {
+      phoneExistence(this.phone).then(res => {
+        console.log('是否存在', res)
+        if (res.code === 200) {
+          if (res.exist === -1) {
+            register(this.phone, this.password, this.captcha, this.nickname).then(res => {
+              console.log('注册结果为', res)
+              if (res.code === 200) {
+                this.$notify.topleft('注册成功')
+              } else {
+                this.$notify.topleft(res.message, 'error')
+              }
+            })
           } else {
-            this.$notify.topleft('验证码错误', 'error')
+            this.$notify.topleft('用户已经注册', 'error')
           }
-        }, () => {
-          this.$notify.topleft('验证码错误', 'error')
-        })
-      }
+        }
+      })
     },
 
     reset () {
+      this.nickname = ''
       this.phone = ''
+      this.password = ''
       this.captcha = ''
     }
   },
@@ -107,8 +121,6 @@ export default {
 
 <style lang="less" scoped>
 .input {
-  margin-top: 40px;
-
   &-login {
     width: 0;
     flex: 1;

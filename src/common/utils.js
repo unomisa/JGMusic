@@ -138,16 +138,16 @@ export function formatArtists (artists) {
 }
 
 // 歌曲时长处理
-export function durationStr (duration) {
-  const multiple = duration / (60 * 1000)
-  let minute
-  if (parseInt(multiple) < 10) {
-    minute = '0' + parseInt(multiple).toString()
-  } else {
-    minute = parseInt(multiple).toString()
+export function durationStr (millis) {
+  let minutes = parseInt(Math.floor(millis / 60000))
+  let seconds = parseInt(((millis % 60000) / 1000).toFixed(0))
+
+  if (seconds === 60) {
+    seconds = 0 // 置零
+    minutes++ // 分钟加一
   }
-  const second = ((multiple.toFixed(2) - minute) * 0.6).toFixed(2).split('.')[1]
-  return minute + ':' + second
+
+  return (minutes < 10 ? '0' : '') + minutes + ':' + (seconds < 10 ? '0' : '') + seconds
 }
 
 // 播放次数格式化

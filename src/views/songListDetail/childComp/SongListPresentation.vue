@@ -147,7 +147,8 @@ export default {
   methods: {
     ...mapMutations([
       'pushSubList',
-      'unSubList'
+      'unSubList',
+      'insertSUubList'
     ]),
 
     userDetail () {
@@ -163,9 +164,11 @@ export default {
         })
       } else {
         subPlaylist(id, 1, Date.now()).then(() => {
-          this.pushSubList({
-            key: this.playList.id,
-            value: {
+          const lists = Array.from(this.loginUser.subList.values())
+          const createListsLength = lists.filter(list => !list.subscribed).length
+          this.insertSUubList({
+            index: createListsLength,
+            list: {
               ...new SongList(this.playList),
               subscribed: true
             }

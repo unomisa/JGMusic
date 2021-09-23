@@ -115,7 +115,7 @@ export default {
 
     // 重置各数据
     resetData () {
-      // console.log('重置歌词')
+      console.log('重置歌词')
       this.lyric.lrc = ''
       this.lyric.tlyric = ''
       this.lyric.nolyric = false

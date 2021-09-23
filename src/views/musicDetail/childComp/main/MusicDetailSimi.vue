@@ -114,6 +114,7 @@ export default {
 }
 
 .item {
+  margin-right: 4rem !important;
   height: 50px;
   padding: 5px;
   display: flex;

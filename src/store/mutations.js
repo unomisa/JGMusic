@@ -4,9 +4,7 @@ export default {
   // 添加至歌单
   addToPlayList (state, payload) {
     state.playList = Array.from(payload.playList) // 使之不是同一引用
-    // if (payload.index !== state.listCurrentIndex) { // 播放歌曲下标不同才跳转
     this.commit('setListCurrentIndex', payload.index) // 播放该下标歌曲
-    // }
   },
 
   // 添加新的歌曲，若以存在则跳转
@@ -47,10 +45,6 @@ export default {
       state.listCurrentIndex = state.playList.length - 1
     } else {
       state.listCurrentIndex = 0
-    }
-
-    if (Vue.prototype.$music !== undefined) {
-      Vue.prototype.$music.play() // 设置位置之后使其开始播放
     }
   },
 
@@ -128,9 +122,23 @@ export default {
     state.loginUser.subList = new Map(state.loginUser.subList.set(parseInt(payload.key), payload.value))
   },
 
+  insertSUubList (state, payload) {
+    let index = 0
+    const newMap = new Map()
+    for (const list of state.loginUser.subList) {
+      if (index === payload.index) {
+        newMap.set(payload.list.id, payload.list)
+      }
+      newMap.set(list[0], list[1])
+      index++
+    }
+    state.loginUser.subList = newMap
+  },
+
   unSubList (state, id) {
     state.loginUser.subList.delete(id)
     state.loginUser.subList = new Map(state.loginUser.subList)
+    console.log('删除后的收藏为：', state.loginUser.subList)
   },
 
   updateSubList (state) {

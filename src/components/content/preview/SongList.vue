@@ -1,5 +1,6 @@
 <template>
-  <div class="song-list" @click="goSongListDetail">
+  <div class="song-list" @click="goSongListDetail"
+       @contextmenu.prevent="context">
     <div class="cover-box" :style="imageStyle">
       <div class="shade"></div>
       <div v-if="songList.highQuality">
@@ -37,11 +38,19 @@
       <div class="trackCount" v-if="showTrackCount">{{songList.trackCount}}首
       </div>
     </div>
+
+    <song-list-context :showContext.sync="showContext" :x.sync="context_x"
+                       :y.sync="context_y" :songList="songList"
+                       v-if="showContext" />
   </div>
 </template>
 
 <script>
+import SongListContext from './songList/SongListContext.vue'
+import { mapState } from 'vuex'
+
 export default {
+  components: { SongListContext },
   props: {
     songList: {
       type: Object,
@@ -66,7 +75,18 @@ export default {
       default: false
     }
   },
+  data () {
+    return {
+      showContext: false,
+      context_x: 0,
+      context_y: 0
+    }
+  },
   computed: {
+    ...mapState([
+      'loginUser'
+    ]),
+
     imageStyle () {
       return {
         height: this.imgHeight + 'px',
@@ -92,6 +112,19 @@ export default {
         })
       } else {
         this.$router.push('/songList/' + this.songList.id)
+      }
+    },
+
+    // 上下文菜单
+    context (event) {
+      const loginId = this.loginUser.userId
+      const expectPath = '/userDetail/' + loginId // 期待路由
+      if (this.$route.fullPath === expectPath && !(this.songList.specialType === 5)) { // 判断与期待路由是否一致
+        if (event.button === 2) { // 如果为右键
+          this.showContext = true // 显示上下文菜单
+          this.context_x = event.clientX // 传递点击位置
+          this.context_y = event.clientY
+        }
       }
     }
   }

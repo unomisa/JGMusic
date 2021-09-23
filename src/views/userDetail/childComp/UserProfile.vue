@@ -88,8 +88,8 @@
 import { mapState, mapMutations } from 'vuex'
 import { followUser } from 'network/common'
 import { Follow } from 'network/pageRequest/user'
-import DetailCard from '../../../components/content/detailCard/DetailCard.vue'
-import CollapsibleText from '../../../components/common/collapsibleText/collapsibleText.vue'
+import DetailCard from 'components/content/detailCard/DetailCard.vue'
+import CollapsibleText from 'components/common/collapsibleText/collapsibleText.vue'
 
 export default {
   components: { DetailCard, CollapsibleText },

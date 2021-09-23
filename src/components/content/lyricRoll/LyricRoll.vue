@@ -2,7 +2,7 @@
   <div v-bar class="scroll-lyric" ref="scroll" :style="scrollStyle">
     <div class="lyric-container" ref="container" @mousewheel="mousewheel">
       <div :style="containerStyle">
-        <div v-if="isActive && !nolyric && !nowNolyric">
+        <div v-if="!nolyric && !nowNolyric">
           <div class="lyric-box" v-for="(lyric,index) of lyricArr" :key="index"
                ref="lyric">
             <div :class="{currentLyric:isCurrentLyric(index)}" class="lyric">
@@ -74,7 +74,6 @@ export default {
       translator: '', // 翻译者
       canScroll: true, // 是否可以滚动
       debounceSetCanScroll: null, // 存储防抖后的函数
-      isShowLyric: true,
       isActive: false
     }
   },
@@ -150,11 +149,10 @@ export default {
   },
   methods: {
     reset () {
+      clearTimeout(this.debounceSetCanScroll()) // 清除可能存在的延时滚动
       this.currentTime = 0
-      this.$refs.container.scrollTop = 0
       this.translator = ''
       this.canScroll = true
-      clearTimeout(this.debounceSetCanScroll()) // 清除可能存在的延时滚动
     },
 
     mousewheel () {
@@ -169,6 +167,7 @@ export default {
     },
 
     repetition () {
+      // console.log('重复执行')
       if (this.isActive) { // 活跃期间重复执行
         // 重复判断滚动条是否拖动,若拖动则使3s后才恢复歌词滚动
         // console.log('一直执行')
@@ -182,6 +181,7 @@ export default {
           this.currentTime = this.$music.currentTime
         }
 
+        // 未活跃时将不再重复
         setTimeout(() => {
           requestAnimationFrame(this.repetition)
         }, 100)
@@ -251,11 +251,6 @@ export default {
     currentLyricIndex (index) {
       this.scrollLyric(index)
     }
-
-    // 不知道有什么用
-    // isPaused () {
-    //   this.scrollLyric(this.currentLyricIndex)
-    // }
   },
   mounted () {
     this.$bus.$on('sliderChange', () => { this.canScroll = true })// 歌曲进度条改变使之可以滚动
@@ -263,7 +258,8 @@ export default {
   },
   activated () {
     this.isActive = true
-    this.repetition()
+    this.repetition() // 活跃时重复开始
+    this.scrollLyric(this.currentLyricIndex) // 活跃后定位至歌词位置
   },
   deactivated () {
     this.isActive = false

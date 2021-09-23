@@ -114,11 +114,13 @@ export default {
   border-radius: 3px;
 
   &-info {
+    width: 0;
     flex: 1;
     display: flex;
     flex-direction: column;
     justify-content: center;
     line-height: 2;
+    padding: 0 8px;
   }
 
   &-name {
@@ -132,10 +134,14 @@ export default {
 
   &-artist {
     color: var(--color-gray);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
 
 .pic {
+  flex: 160px 0;
   cursor: pointer;
 }
 

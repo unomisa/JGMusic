@@ -1,5 +1,5 @@
 <template>
-  <div class="song" @click="play">
+  <div class="song" @dblclick="play">
     <slot>
       <el-row :gutter="gutter" @contextmenu.native.prevent="context">
         <el-col :span="areas.others" class="other">

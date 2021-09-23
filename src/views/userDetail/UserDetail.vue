@@ -16,7 +16,7 @@ import UserProfile from './childComp/UserProfile.vue'
 import { getUserDetail, getUserPlaylist, Profile } from 'network/pageRequest/user'
 import UserSongList from './childComp/UserSongList.vue'
 import { SongList } from 'network/common'
-import { mapMutations } from 'vuex'
+import { mapMutations, mapState } from 'vuex'
 
 export default {
   name: 'UserDetail',
@@ -31,6 +31,11 @@ export default {
       profileLoading: true,
       userListLoading: true
     }
+  },
+  computed: {
+    ...mapState([
+      'loginUser'
+    ])
   },
   methods: {
     ...mapMutations([
@@ -69,8 +74,18 @@ export default {
         this.profileLoading = false
       }
     })
-
     this.getUserPlaylist()
+  },
+  watch: {
+    // 监听当前用户歌单的改变，更新数据
+    'loginUser.subList' () {
+      const userId = parseInt(this.$route.params.userId)
+      if (userId === parseInt(this.loginUser.userId)) {
+        const lists = Array.from(this.loginUser.subList.values())
+        this.created = lists.filter(list => !list.subscribed)
+        this.subscribed = lists.filter(list => list.subscribed)
+      }
+    }
   },
   mounted () {
     this.$bus.$on('infiniteScroll', this.getUserPlaylist)

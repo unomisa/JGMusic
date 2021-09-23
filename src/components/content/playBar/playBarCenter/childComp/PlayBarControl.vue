@@ -52,12 +52,10 @@ export default {
     },
 
     previous () {
-      this.$music.pause()
       this.setListCurrentIndex(this.listCurrentIndex - 1)
     },
 
     next () {
-      this.$music.pause()
       this.setListCurrentIndex(this.listCurrentIndex + 1)
     }
   },

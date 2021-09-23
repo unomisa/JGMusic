@@ -97,7 +97,7 @@ ul {
   z-index: 5;
   width: 12px;
   right: 0;
-  min-height: 10px;
+  /* min-height: 10px; */
 }
 
 .vb>.vb-dragger>.vb-dragger-styler {
@@ -142,8 +142,8 @@ ul {
 
 .vb.vb-dragging-phantom>.vb-dragger>.vb-dragger-styler {
   background-color: rgba(216, 57, 147, .5);
-  /* height: 100%; */
-  height: calc(100% + 10px);
+  height: 100%;
+  /* height: calc(100% + 10px); */
 }
 
 .vb-content {

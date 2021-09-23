@@ -43,12 +43,13 @@ export function phoneLogin (phone, captcha) {
 }
 
 // 向手机发送验证码
-export function sendCaptcha (phone, ctcode) {
+export function sendCaptcha (phone, ctcode, timestamp = Date.now()) {
   return request({
     url: '/captcha/sent',
     params: {
       phone,
-      ctcode
+      ctcode,
+      timestamp
     }
   })
 }
@@ -93,6 +94,32 @@ export function getQRCodeStatus (key, timestamp) {
     url: '/login/qr/check',
     params: {
       key,
+      timestamp
+    }
+  })
+}
+
+// * 注册相关
+// 查看手机号是否注册
+export function phoneExistence (phone, timestamp = Date.now()) {
+  return request({
+    url: '/cellphone/existence/check',
+    params: {
+      phone,
+      timestamp
+    }
+  })
+}
+
+// 注册
+export function register (phone, password, captcha, nickname, timestamp = Date.now()) {
+  return request({
+    url: '/register/cellphone',
+    params: {
+      phone,
+      password,
+      captcha,
+      nickname,
       timestamp
     }
   })

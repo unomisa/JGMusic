@@ -183,6 +183,7 @@ export class SongList {
     this.updateTime = songList.updateTime
     this.highQuality = songList.highQuality
     this.subscribed = songList.subscribed ? songList.subscribed : false
+    this.specialType = songList.specialType
     // this.tracks = []
   }
 }

@@ -52,34 +52,36 @@ export default {
 
     // * audio 事件
     canplay () {
-      this.setIsLoadingMusic(false) // 可以播放之后设置加载完成
-      this.setIsPaused(false)
-      // this.play()
-      this.$music.play()
+      this.$music.play() // 加载完毕自动播放
     },
 
     play () {
-      this.setIsPaused(false)
+      this.setIsLoadingMusic(false) // 可以播放之后设置加载完成
+      this.setIsPaused(false) // 播放时设置没有暂停
       this.$bus.$emit('clickPause', false)
     },
 
     pause () {
-      this.setIsPaused(true)
+      this.setIsPaused(true) // 设置播放状态为暂停
     },
 
     // 播放完毕触发
     ended () {
-      this.setListCurrentIndex(this.listCurrentIndex + 1)
+      console.log('播放完毕')
+      this.setListCurrentIndex(this.listCurrentIndex + 1) // 播放完毕之后切换至下一首
+    },
+
+    reset () {
+      this.pause() // 切换歌曲暂停歌曲，暂停，出bug来找它
+      this.currentPlayMusicUrl = null // 设置歌曲url为空，等待加载
+      this.setIsLoadingMusic(true) // 换歌之后设置它正在加载
     }
   },
   watch: {
     currentPlayMusic (newPlay, oldPlay) {
       if (newPlay.id !== oldPlay.id) {
-        // * 状态设置
-        this.pause() // 暂停，出bug来找它
-        this.currentPlayMusicUrl = '' // 设置歌曲url为空，等待加载
-        this.setIsLoadingMusic(true) // 换歌之后设置它正在加载
-        newPlay.state.currentBroadcast = true
+        this.reset()
+        newPlay.state.currentBroadcast = true // 设置属性为当前播放
         'state' in oldPlay && (oldPlay.state.currentBroadcast = false)
 
         // 请求歌曲url

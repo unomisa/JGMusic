@@ -35,7 +35,7 @@
                     <div class="flex-center">
                       <el-input class="serch-input" placeholder="请输入歌名、歌词、歌手或专辑"
                                 prefix-icon="el-icon-search"
-                                v-model="searchText" />
+                                v-model="searchText" @focus="serchFocus" />
                     </div>
                   </el-col>
                 </el-row>
@@ -94,6 +94,10 @@ export default {
 
     goHome () {
       this.$router.push('/home')
+    },
+
+    serchFocus () {
+      this.$notify.wait()
     }
   },
   created () {

@@ -23,6 +23,8 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 export default {
   props: {
     dynamic: {
@@ -41,6 +43,10 @@ export default {
     }
   },
   computed: {
+    ...mapState([
+      'isLogin'
+    ]),
+
     subText () {
       if (this.isSubList) {
         return '已收藏'
@@ -55,10 +61,18 @@ export default {
       this.$bus.$emit('playAll', 0)
     },
     sub () {
-      this.$emit('sub')
+      if (this.isLogin) {
+        this.$emit('sub')
+      } else {
+        this.$notify.topleft('请先登录', 'warning')
+      }
     },
     share () {
-      this.$emit('share')
+      if (this.isLogin) {
+        this.$emit('share')
+      } else {
+        this.$notify.topleft('请先登录', 'warning')
+      }
     }
   }
 }

@@ -7,6 +7,7 @@
     <nav-bar />
 
     <keep-alive exclude="UserDetail,songListDetail" max="5">
+      <!-- <keep-alive include="musicDetail" max="5"> -->
       <router-view :key="$route.fullPath" />
     </keep-alive>
 

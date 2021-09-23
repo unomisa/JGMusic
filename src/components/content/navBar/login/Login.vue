@@ -10,13 +10,17 @@
                  @tab-click="handleClick">
 
           <el-tab-pane label="验证码登录" name="captcha">
-            <login-captcha />
+            <login-captcha :dialogVisible="dialogVisible" />
           </el-tab-pane>
 
           <!-- <el-tab-pane label="密码登录" name="password"></el-tab-pane> -->
 
           <el-tab-pane label="二维码登录" name="QRcode">
             <login-q-r-code :qrkey="qrkey" :statusCode="statusCode" />
+          </el-tab-pane>
+
+          <el-tab-pane label="注册" name="rigist">
+            <regist :dialogVisible="dialogVisible" />
           </el-tab-pane>
         </el-tabs>
       </template>
@@ -31,10 +35,11 @@ import LoginQRCode from './loginMethod/LoginQRCode.vue'
 
 import { getQRKey, getQRCodeStatus } from 'network/common/login'
 import { updateLoginStatus } from 'common/mixin'
+import Regist from '../regist/regist.vue'
 
 export default {
   mixins: [updateLoginStatus],
-  components: { LoginCaptcha, LoginQRCode },
+  components: { LoginCaptcha, LoginQRCode, Regist },
   data () {
     return {
       dialogVisible: false,
@@ -59,9 +64,10 @@ export default {
 
     // 轮询二维码状态
     pollingQRStatus () {
+      clearInterval(this.timer)
       this.timer = setInterval(() => {
         getQRCodeStatus(this.qrkey, Date.now()).then(res => {
-          // console.log('状态为:', res)
+          console.log('状态为:', res)
           if (res.code === 803) {
             this.handleClose() // 关闭登录窗口
             this.getLoginStatus() // > mixin中setLoginStatus的方法

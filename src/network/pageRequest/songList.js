@@ -79,6 +79,16 @@ export function createSongList (name, timestamp = Date.now()) {
   })
 }
 
+export function deleteSongList (id, timestamp = Date.now()) {
+  return request({
+    url: '/playlist/delete',
+    params: {
+      id,
+      timestamp
+    }
+  })
+}
+
 //  歌单详情信息
 export class SongListDetail {
   constructor (songList) {

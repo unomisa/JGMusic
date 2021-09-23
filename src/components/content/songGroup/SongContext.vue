@@ -2,12 +2,12 @@
   <el-card class="contextmenu" :style="contextStyle" shadow="always"
            :body-style="{ padding: '0 0' }" ref="contextmenu">
     <ul @click="closeMenu">
-      <li class="contextmenu-item">
+      <!-- <li class="contextmenu-item">
         <svg class="icon item-icon" aria-hidden="true">
           <use xlink:href="#icon-pinglun"></use>
         </svg>
         查看评论
-      </li>
+      </li> -->
 
       <li class="contextmenu-item" @click="playMusic">
         <svg class="icon item-icon" aria-hidden="true">
