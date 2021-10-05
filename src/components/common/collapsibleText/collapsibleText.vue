@@ -1,6 +1,6 @@
 <template>
   <div class="line">
-    <div class="text" ref="text">
+    <div class="text" :class="textUnfold" ref="text">
       <slot></slot>
       <div ref="textCopy" class="copy">
         <slot></slot>
@@ -22,6 +22,13 @@ export default {
     }
   },
   computed: {
+    textUnfold () {
+      return {
+        'text-hide': !this.descUnfold,
+        'line-unfold': this.descUnfold
+      }
+    },
+
     isOverflow () {
       if (this.text && this.textCopy) {
         return this.textCopy.clientWidth > this.text.clientWidth
@@ -57,14 +64,18 @@ export default {
 <style lang="less" scoped>
 .line {
   position: relative;
-  line-height: 1.5;
+
+  &-unfold {
+    transform: translateY(-8px);
+  }
 }
 
 .unfold-icon {
   position: absolute;
   right: 0;
-  top: 0;
+  top: -3px;
   font-size: 20px;
+  line-height: 1;
 }
 
 .copy {
@@ -77,7 +88,11 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  line-height: 1.5;
+  line-height: 2;
   text-align: justify;
+
+  &-hide {
+    line-height: 1;
+  }
 }
 </style>

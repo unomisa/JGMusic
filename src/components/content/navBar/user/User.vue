@@ -9,21 +9,30 @@
           <span class="user-name">{{loginUser.nickname}}</span>
           <i class="el-icon-caret-bottom "></i>
         </div>
+
         <el-dropdown-menu class="dropdown-menu" slot="dropdown">
           <el-dropdown-item class="relation">
-            <div class="follows">
+            <div class="follows" @click="followsDetail">
               <div class="follows-number">{{loginUser.follows}}</div>
               <div class="follows-text">关注</div>
             </div>
-            <div class="follows">
+            <div class="follows" @click="followedsDetail">
               <div class="follows-number">{{loginUser.followeds}}</div>
               <div class="follows-text">粉丝</div>
             </div>
           </el-dropdown-item>
+
+          <el-dropdown-item divided icon="el-icon-star-off"
+                            @click.native="mySub">
+            我的收藏
+          </el-dropdown-item>
+
           <el-dropdown-item divided icon="el-icon-switch-button"
-                            @click.native="loginOut">退出登录
+                            @click.native="loginOut">
+            退出登录
           </el-dropdown-item>
         </el-dropdown-menu>
+
       </el-dropdown>
 
     </div>
@@ -53,11 +62,36 @@ export default {
 
     // 跳转用户详情
     goUserDetail () {
-      if (this.$route.path !== `/userDetail/${this.loginUser.userId}`) {
+      if (this.$route.path !== `/user/detail/${this.loginUser.userId}`) {
         this.$router.push({
-          path: `/userDetail/${this.loginUser.userId}`
+          path: `/user/detail/${this.loginUser.userId}`
         })
       }
+    },
+
+    // 关注用户
+    followsDetail () {
+      this.$router.push({
+        path: '/user/follow/' + this.loginUser.userId,
+        query: {
+          type: 'follow'
+        }
+      })
+    },
+
+    // 粉丝用户
+    followedsDetail () {
+      this.$router.push({
+        path: '/user/follow/' + this.loginUser.userId,
+        query: {
+          type: 'followeds'
+        }
+      })
+    },
+
+    // 我的收藏页面
+    mySub () {
+      this.$router.push('/user/sub')
     }
   }
 }

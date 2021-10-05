@@ -74,12 +74,14 @@ export default {
       translator: '', // 翻译者
       canScroll: true, // 是否可以滚动
       debounceSetCanScroll: null, // 存储防抖后的函数
-      isActive: false
+      isActive: false,
+      animateEnd: function () { } // 存储动画停止函数
     }
   },
   computed: {
     ...mapState([
-      'isPaused'
+      'isPaused',
+      'playList'
     ]),
 
     ...mapGetters([
@@ -149,6 +151,7 @@ export default {
   },
   methods: {
     reset () {
+      this.animateEnd() // 滚动动画停止
       clearTimeout(this.debounceSetCanScroll()) // 清除可能存在的延时滚动
       this.currentTime = 0
       this.translator = ''
@@ -168,7 +171,7 @@ export default {
 
     repetition () {
       // console.log('重复执行')
-      if (this.isActive) { // 活跃期间重复执行
+      if (this.isActive && this.playList.length > 0) { // 活跃期间重复执行
         // 重复判断滚动条是否拖动,若拖动则使3s后才恢复歌词滚动
         // console.log('一直执行')
         if (this.$vuebar.getState(this.$refs.scroll).barDragging) {
@@ -228,7 +231,7 @@ export default {
         const lyric = this.$refs.lyric[index] // 获取当前歌词
         const scrollHeight = lyric.offsetTop - ctnHeight * 0.2 - ctnScroolTop // 计算需要滚动的距离
 
-        animate({
+        this.animateEnd = animate({
           duration: 500,
           timing: function (timeFraction) {
             return timeFraction
@@ -259,7 +262,11 @@ export default {
   activated () {
     this.isActive = true
     this.repetition() // 活跃时重复开始
-    this.scrollLyric(this.currentLyricIndex) // 活跃后定位至歌词位置
+
+    // 若存在歌词,活跃后定位至歌词位置
+    if (!this.nolyric && !this.nowNolyric) {
+      this.scrollLyric(this.currentLyricIndex)
+    }
   },
   deactivated () {
     this.isActive = false
@@ -276,7 +283,7 @@ export default {
 
 .lyric-container {
   backface-visibility: hidden;
-  margin-left: 8px !important;
+  // margin-left: 8px !important;
   // height: 35% !important; // 这是减去padding的高度,不能动态计算因为会被覆盖
 }
 

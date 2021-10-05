@@ -2,7 +2,8 @@
   <div class="album-detail">
     <div class="backdrop"></div>
     <div class="album">
-      <album-presentation :album='album' :loading="loading" />
+      <album-presentation :album='album' :loading="loading"
+                          @subControl="subControl" />
       <album-content :tracks='tracks' :desc="album.description"
                      :commentTotal="total" />
     </div>
@@ -15,11 +16,11 @@ import AlbumPresentation from './childComp/AlbumPresentation.vue'
 
 import { getAlbum, AlbumBasic, getAlbumDynamic } from 'network/pageRequest/albumdetail'
 import { Music } from 'network/common'
-import { updateComment } from 'common/mixin'
+import { updateComment, musicBean } from 'common/mixin'
 
 export default {
   name: 'albumDetail',
-  mixins: [updateComment],
+  mixins: [updateComment, musicBean],
   components: { AlbumPresentation, AlbumContent },
   data () {
     return {
@@ -30,18 +31,6 @@ export default {
     }
   },
   methods: {
-    musicBean (music) {
-      return {
-        id: music.id,
-        name: music.name,
-        picUrl: music.al.picUrl,
-        alias: music.alia,
-        artists: music.ar,
-        album: music.al,
-        duration: music.dt
-      }
-    },
-
     // 获取专辑内容
     getAlbum (id) {
       Promise.all([
@@ -59,15 +48,23 @@ export default {
 
         this.loading = false
         this.total = res[1].commentCount
-        console.log('专辑为：', res)
+        // console.log('专辑为：', res)
       })
+    },
+
+    // 收藏控制
+    subControl (flag) {
+      if (flag === 1) {
+        this.album.subCount++
+      } else {
+        this.album.subCount--
+      }
     }
   },
   created () {
     const id = this.$route.params.id
     this.getAlbum(id)
   }
-
 }
 </script>
 

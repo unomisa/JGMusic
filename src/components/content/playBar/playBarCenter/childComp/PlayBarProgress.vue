@@ -48,6 +48,12 @@ export default {
       'setListCurrentIndex'
     ]),
 
+    reset () {
+      this.percent = 0
+      this.currentTime = '00:00'
+      this.repetition() // 切换歌曲需手动开始计时
+    },
+
     // 计算自然增长的时间
     durationStr (duration) {
       const multiple = duration / 60
@@ -100,7 +106,7 @@ export default {
     sliderChange (sliderValue) {
       // console.log('滚动位置：', sliderValue)
       if (sliderValue >= 99.9) { // 如果位置大于等于99.9直接手动切换下一首，而不使用播放完毕自动切换
-        this.setListCurrentIndex(this.listCurrentIndex + 1) // 播放完毕之后切换至下一首，不然某些歌曲会出bug
+        this.$control.next('ended') // 播放完毕之后切换至下一首，不然某些歌曲会出bug
       } else {
         this.$bus.$emit('sliderChange') // 滚动改变
         this.$music.currentTime = (sliderValue * this.$music.duration) / 100 // 计算出当前时间
@@ -139,16 +145,17 @@ export default {
       }
     }
   },
-
   mounted () {
+    this.$bus.$on('singleCycle', this.reset)
     this.repetition()
+  },
+  destroyed () {
+    this.$bus.$off('singleCycle', this.reset)
   },
   watch: {
     currentPlayMusic (newPlay, oldPlay) {
       if (newPlay.id !== oldPlay.id) {
-        this.percent = 0
-        this.currentTime = '00:00'
-        this.repetition() // 切换歌曲需手动开始计时
+        this.reset()
       }
     }
   }

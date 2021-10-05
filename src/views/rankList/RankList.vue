@@ -30,7 +30,7 @@ export default {
   methods: {
     getTopList () {
       getTopList().then(res => {
-        // console.log('所有榜单为：', res)
+        console.log('所有榜单为：', res)
         const promiseArr = []
         const lists = res.list.map(list => new SongList(list))
 

@@ -3,23 +3,23 @@
     <div class="left">
       <el-avatar class="avatar" shape="circle"
                  :src="comment.avatarUrl + '?param=50y50'" fit="fill"
-                 @click.native="goUserDetail" />
+                 @click.native="goUserDetail(comment)" />
       <span v-if="comment.authStatus===1">
         <el-avatar class="author-icon" shape="circle"
-                   src="http://p3.music.126.net/tBTNafgjNnTL1KlZMt7lVA==/18885211718935735.jpg?param=20y20"
+                   :src="comment.avatarDetail.identityIconUrl + '?param=20y20'"
                    fit="fill" />
       </span>
     </div>
 
     <div class="comment">
       <div class="content">
-        <el-link :underline="false" @click="goUserDetail">
+        <el-link :underline="false" @click="goUserDetail(comment)">
           {{comment.nickname}}</el-link>
         ：{{comment.content}}
       </div>
 
       <div class="reply" v-if="Object.keys(comment.replied).length>0">
-        <el-link :underline="false" @click="goUserDetail">
+        <el-link :underline="false" @click="goUserDetail(comment.replied)">
           @{{comment.replied.nickname}}</el-link>
         ：{{comment.replied.content}}
       </div>
@@ -100,8 +100,8 @@ export default {
     }
   },
   methods: {
-    goUserDetail () {
-      this.$router.push('/userDetail/' + this.comment.userId)
+    goUserDetail (comment) {
+      this.$router.push('/user/detail/' + comment.userId)
     },
 
     like () {

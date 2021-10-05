@@ -134,9 +134,9 @@ export default {
 <style lang="less" scoped>
 .list-tags {
   position: relative;
-  display: inline-block;
+  // display: inline-block;
   user-select: none;
-  margin: 1rem 0 0 0;
+  margin: 1rem 0;
 }
 
 .right {

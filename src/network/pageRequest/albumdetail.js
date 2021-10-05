@@ -37,13 +37,14 @@ export function getAlbumDynamic (id, timestamp = Date.now()) {
 
 export class AlbumBasic {
   constructor (album, dynamic) {
+    this.id = album.id
     this.name = album.name
     this.picUrl = album.picUrl
     this.artists = formatArtists(album.artists)
     this.publishTime = formatDate(new Date(album.publishTime)).split(' ')[0]
     this.description = album.description
-    this.subCount = formatPlayCount(dynamic.subCount, 10000) // 收藏数
-    this.shareCount = formatPlayCount(dynamic.shareCount, 10000) // 分享数
+    this.subCount = dynamic.subCount
+    this.shareCount = dynamic.shareCount
     this.isSub = dynamic.isSub // 专辑是否收藏
   }
 }

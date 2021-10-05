@@ -1,7 +1,13 @@
 <template>
-  <div class="artists">
-    <div class="artist" v-for="artist in this.simiArtists" :key="artist.id">
-      <singer :singer="artist" />
+  <div>
+    <div v-if="!empty" class="artists">
+      <div class="artist" v-for="artist in this.simiArtists" :key="artist.id">
+        <singer :singer="artist" />
+      </div>
+    </div>
+
+    <div v-if="empty" class="empty">
+      <span>没有找到相似歌手</span>
     </div>
   </div>
 </template>
@@ -17,6 +23,10 @@ export default {
       default () {
         return []
       }
+    },
+    empty: {
+      type: Boolean,
+      default: false
     }
   }
 }
@@ -43,5 +53,12 @@ export default {
     flex-wrap: wrap;
     margin-top: 1rem;
   }
+}
+
+.empty {
+  width: 100%;
+  text-align: center;
+  font-weight: bold;
+  font-size: 20px;
 }
 </style>

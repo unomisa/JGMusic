@@ -3,6 +3,8 @@
   --color-main: #d83993;
   --color-gray: #808080;
   --color-light-gray: #a0a0a0;
+  --color-border: #f0f2f2;
+  --color-hover: #fbebf4;
 
   --font-size-title: 28px;
   --font-size-large: 20px;
@@ -72,6 +74,12 @@ ul {
   color: #7c83fd !important;
 }
 
+/* <el-tooltip> 组件样式覆盖 */
+.el-tooltip__popper {
+  border: none !important;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.12);
+}
+
 /* 外部图标js使用的通用样式 */
 .icon {
   width: 1em;
@@ -79,6 +87,8 @@ ul {
   vertical-align: -0.15em;
   fill: currentColor;
   overflow: hidden;
+  /* 焦点时取消边框 */
+  outline: none !important;
 }
 
 /* 详情页的上方背景 */

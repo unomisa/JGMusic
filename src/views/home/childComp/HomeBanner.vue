@@ -57,10 +57,13 @@ export default {
       switch (banner.targetType) {
         case 1: this.music(banner.targetId); break
         case 10: this.album(banner.targetId); break
+        case 1000: this.songList(banner.targetId); break
+        case 3000: this.actitve(banner.url); break
         default: console.log('不知道是什么类型')
       }
     },
 
+    // 歌曲
     music (id) {
       getMusicDetail(id).then(res => {
         if (res.code === 200) {
@@ -69,8 +72,19 @@ export default {
       })
     },
 
+    // 专辑
     album (id) {
       this.$router.push('/album/' + id)
+    },
+
+    // 歌单
+    songList (id) {
+      this.$router.push('/songList/' + id)
+    },
+
+    // 活动
+    actitve (url) {
+      window.open(url)
     }
   }
 }

@@ -19,7 +19,7 @@
 import MusicDetailMain from 'views/musicDetail/childComp/main/MusicDetailMain.vue'
 import MusicDetailComment from './childComp/comment/MusicDetailComment.vue'
 
-import { mapGetters } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 import { getSimiMusic, getLyric, getSimiList } from 'network/pageRequest/musicdetail'
 import { Music, SimiList } from 'network/common'
 
@@ -46,6 +46,11 @@ export default {
     }
   },
   computed: {
+    ...mapState([
+      'listCurrentIndex',
+      'playList'
+    ]),
+
     ...mapGetters([
       'currentPlayMusic',
       'isExistCurrentPlayMusic'
@@ -69,7 +74,7 @@ export default {
       getLyric(musicId)
         .then(res => {
           if (res.code === 200) {
-            console.log('歌词为：', res)
+            // console.log('歌词为：', res)
             if ('lrc' in res && 'tlyric' in res) {
               if (!res.lrc.lyric.length > 0) {
                 this.lyric.nowNolyric = true
@@ -115,7 +120,7 @@ export default {
 
     // 重置各数据
     resetData () {
-      console.log('重置歌词')
+      // console.log('重置歌词')
       this.lyric.lrc = ''
       this.lyric.tlyric = ''
       this.lyric.nolyric = false
@@ -147,7 +152,7 @@ export default {
   },
   watch: {
     currentPlayMusic (newMusic, oldMusic) {
-      if (newMusic.id !== oldMusic.id) {
+      if (newMusic.id !== oldMusic.id && this.playList.length > 0) {
         // 每次切换歌曲重置数据及请求歌词
         this.resetData()
         this.getLyric()
@@ -158,6 +163,13 @@ export default {
           this.getSimiMusic()
           this.getSimiList()
         }
+      }
+    },
+
+    // 若播放列表为空,则返回上个路由
+    isExistCurrentPlayMusic (exist) {
+      if (!exist) {
+        this.$router.back()
       }
     }
   }

@@ -5,17 +5,19 @@
       <template v-slot:title>
         <div class="title">发表评论</div>
       </template>
-      <el-input class="content-input" type="textarea" :placeholder="placeholder"
-                v-model="content" :rows="4" resize="none" maxlength="140"
-                show-word-limit>
-      </el-input>
+      <form v-on:submit.prevent="comment">
+        <el-input class="content-input" type="textarea"
+                  :placeholder="placeholder" v-model="content" :rows="4"
+                  resize="none" maxlength="140" show-word-limit
+                  ref="contentInput" @keydown.native="enter">
+        </el-input>
 
-      <div class="send">
-        <el-button class="send-btn" type="primary" size="small" @click="comment"
-                   round>评论
-        </el-button>
-      </div>
-
+        <div class="send">
+          <el-button class="send-btn" type="primary" size="small"
+                     native-type="submit" round>评论
+          </el-button>
+        </div>
+      </form>
     </el-dialog>
   </div>
 </template>
@@ -64,6 +66,10 @@ export default {
       this.commentId = commentId
       this.placeholder = placeholder
       this.content = content
+
+      this.$nextTick(() => {
+        this.$refs.contentInput.focus() // 输入框获取焦点
+      })
     },
 
     comment () {
@@ -71,6 +77,13 @@ export default {
         this.sendReplyComment(this.rid, this.type, this.replyComment)
       } else {
         this.sendComment(this.rid, this.type)
+      }
+    },
+
+    enter (event) {
+      if (event.keyCode === 13 && !event.shiftKey) { // 若按键为回车且没有shfit则提交
+        event.preventDefault()
+        this.comment()
       }
     },
 

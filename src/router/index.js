@@ -3,9 +3,23 @@ import VueRouter from 'vue-router'
 
 Vue.use(VueRouter)
 
+const Search = () => import('views/searchResult/searchResult')
+const SearchSong = () => import('views/searchResult/childComp/SearchSong')
+const SearchAlbum = () => import('views/searchResult/childComp/SearchAlbum')
+const SearchArtist = () => import('views/searchResult/childComp/SearchArtist')
+const SearchSonglist = () => import('views/searchResult/childComp/SearchSonglist')
+const SearchUser = () => import('views/searchResult/childComp/SearchUser')
+
 const Home = () => import('views/home/Home')
 const MusicDetail = () => import('views/musicDetail/MusicDetail')
-const UserDetail = () => import('views/userDetail/UserDetail')
+
+const User = () => import('views/user/User')
+const UserDetail = () => import('views/user/userDetail/UserDetail')
+const UserFollow = () => import('views/user/userFollow/UserFollow')
+const UserSub = () => import('views/user/userSub/UserSub')
+const UserSubArtist = () => import('views/user/userSub/chidView/UserSubArtist')
+const UserSubAlbum = () => import('views/user/userSub/chidView/UserSubAlbum')
+
 const SongListDetail = () => import('views/songListDetail/SongListDetail')
 const AlbumDetail = () => import('views/albumDetail/AlbumDetail')
 const Artist = () => import('views/artist/Artist')
@@ -19,6 +33,47 @@ const routes = [
     redirect: '/home'
   },
   {
+    path: '/search',
+    component: Search,
+    children: [
+      {
+        path: '1',
+        component: SearchSong,
+        meta: {
+          type: '1'
+        }
+      },
+      {
+        path: '10',
+        component: SearchAlbum,
+        meta: {
+          type: '10'
+        }
+      },
+      {
+        path: '100',
+        component: SearchArtist,
+        meta: {
+          type: '100'
+        }
+      },
+      {
+        path: '1000',
+        component: SearchSonglist,
+        meta: {
+          type: '1000'
+        }
+      },
+      {
+        path: '1002',
+        component: SearchUser,
+        meta: {
+          type: '1002'
+        }
+      }
+    ]
+  },
+  {
     path: '/home',
     component: Home
   },
@@ -27,8 +82,38 @@ const routes = [
     component: MusicDetail
   },
   {
-    path: '/userDetail/:userId',
-    component: UserDetail
+    path: '/user',
+    component: User,
+    children: [
+      {
+        path: 'detail/:userId',
+        component: UserDetail
+      },
+      {
+        name: 'userFollow',
+        path: 'follow/:userId',
+        component: UserFollow
+      },
+      {
+        path: 'sub',
+        component: UserSub,
+        children: [
+          {
+            path: '',
+            redirect: '/user/sub/artist'
+          },
+          {
+            path: 'artist',
+            component: UserSubArtist
+
+          },
+          {
+            path: 'album',
+            component: UserSubAlbum
+          }
+        ]
+      }
+    ]
   },
   {
     path: '/songList/:id',

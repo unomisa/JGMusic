@@ -38,10 +38,8 @@
 <script>
 import { mapState, mapMutations } from 'vuex'
 import { playlistManagement } from 'network/common'
-import { updateUserPlaylist } from 'common/mixin'
 
 export default {
-  mixins: [updateUserPlaylist],
   props: {
     track: {
       type: Object,
@@ -98,7 +96,7 @@ export default {
 
     listId () {
       if (this.isMyList) {
-        return this.$route.params.id
+        return parseInt(this.$route.params.id)
       } else {
         return false
       }
@@ -107,7 +105,8 @@ export default {
   methods: {
     ...mapMutations([
       'addNextMusic',
-      'addMusic'
+      'addMusic',
+      'delLikeList'
     ]),
 
     // * 事件处理
@@ -127,10 +126,16 @@ export default {
     // 删除音乐
     delMusic () {
       playlistManagement('del', this.listId, this.track.id).then(res => {
+        console.log('删除歌曲后为：', res)
         if (res.body.code === 200) {
-          this.getUserPlaylist() // > mixin中的更新用户歌单方法
           this.$notify.topleft('删除歌曲成功')
+          const list = this.loginUser.subList.get(this.listId) // 获取用户歌单
+          list.trackCount = res.body.count // 更新歌曲数量
           this.$bus.$emit('songListDelMusic', this.listId, this.index) // 全局发送删除歌曲事件
+
+          if (list.specialType === 5) {
+            this.delLikeList(this.track.id)
+          }
         } else {
           this.$notify.topleft('歌曲删除失败', 'error')
         }
@@ -140,7 +145,7 @@ export default {
     // 全局发送收藏歌曲至歌单
     subMusicToList () {
       if (this.track.state.cp !== 0) {
-        this.$bus.$emit('subMusicToList', this.track.id)
+        this.$bus.$emit('subMusicToList', this.track) // 将歌曲传递给收藏歌单页
       } else {
         this.$notify.topleft('歌曲暂无版权', 'error')
       }

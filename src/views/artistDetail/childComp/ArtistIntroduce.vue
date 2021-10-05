@@ -101,6 +101,8 @@ export default {
             // console.log('取消收藏：', res)
             this.artistUnfollow(id)
             this.$notify.topleft('取消收藏歌手成功')
+          } else {
+            this.$notify.topleft(res.message, 'error')
           }
         })
       } else {
@@ -113,12 +115,14 @@ export default {
               picUrl: this.artist.cover
             }))
             this.$notify.topleft('收藏歌手成功')
+          } else {
+            this.$notify.topleft(res.message, 'error')
           }
         })
       }
     },
     userDetail () {
-      this.$router.push('/userDetail/' + this.artist.userId)
+      this.$router.push('/user/detail/' + this.artist.userId)
     }
   }
 }

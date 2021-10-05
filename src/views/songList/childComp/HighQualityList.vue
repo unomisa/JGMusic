@@ -34,7 +34,7 @@ export default {
   },
   methods: {
     userDetail () {
-      this.$router.push('/userDetail/' + this.list.creator.userId)
+      this.$router.push('/user/detail/' + this.list.creator.userId)
     }
   }
 }

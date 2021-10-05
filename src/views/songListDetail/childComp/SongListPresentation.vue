@@ -44,7 +44,7 @@
           </div>
         </div>
 
-        <dynamic :dynamic="playList" :isMyList="isMyList" :isSubList="isSubList"
+        <dynamic :dynamic="playList" :isMyList="isMyList" :isSub="isSubList"
                  @sub="subList" />
 
         <div class="tags" v-if="'tags' in playList && playList.tags.length>0">
@@ -152,28 +152,38 @@ export default {
     ]),
 
     userDetail () {
-      this.$router.push('/userDetail/' + this.playList.creator.userId)
+      this.$router.push('/user/detail/' + this.playList.creator.userId)
     },
 
     subList () {
       const id = parseInt(this.$route.params.id)
       if (this.isSubList) {
-        subPlaylist(id, 2, Date.now()).then(() => {
-          this.unSubList(id)
-          this.$notify.topleft('取消歌单收藏')
+        subPlaylist(id, 2, Date.now()).then((res) => {
+          if (res.code === 200) {
+            this.unSubList(id)
+            this.$notify.topleft('取消歌单收藏')
+            this.$emit('subControl', -1)
+          } else {
+            this.$notify.topleft(res.message, 'error')
+          }
         })
       } else {
-        subPlaylist(id, 1, Date.now()).then(() => {
-          const lists = Array.from(this.loginUser.subList.values())
-          const createListsLength = lists.filter(list => !list.subscribed).length
-          this.insertSUubList({
-            index: createListsLength,
-            list: {
-              ...new SongList(this.playList),
-              subscribed: true
-            }
-          })
-          this.$notify.topleft('收藏歌单成功')
+        subPlaylist(id, 1, Date.now()).then((res) => {
+          if (res.code === 200) {
+            const lists = Array.from(this.loginUser.subList.values())
+            const createListsLength = lists.filter(list => !list.subscribed).length
+            this.insertSUubList({
+              index: createListsLength,
+              list: {
+                ...new SongList(this.playList),
+                subscribed: true
+              }
+            })
+            this.$notify.topleft('收藏歌单成功')
+            this.$emit('subControl', 1)
+          } else {
+            this.$notify.topleft(res.message, 'error')
+          }
         })
       }
     },
@@ -199,7 +209,7 @@ export default {
 .right {
   & > * {
     margin-top: 0;
-    margin-bottom: 12px;
+    margin-bottom: 13px;
 
     &:last-child {
       margin-bottom: 0;
@@ -211,6 +221,7 @@ export default {
   height: 190px;
   width: 190px;
   border-radius: 5px;
+  display: block;
 }
 
 .title {
@@ -263,7 +274,10 @@ export default {
 .desc {
   &-content {
     color: var(--color-gray);
-    line-height: 2;
+
+    &::first-line {
+      color: red;
+    }
   }
 }
 

@@ -10,7 +10,8 @@
                  @tab-click="handleClick">
 
           <el-tab-pane label="验证码登录" name="captcha">
-            <login-captcha :dialogVisible="dialogVisible" />
+            <login-captcha :dialogVisible="dialogVisible"
+                           :activeName="activeName" />
           </el-tab-pane>
 
           <!-- <el-tab-pane label="密码登录" name="password"></el-tab-pane> -->
@@ -20,7 +21,7 @@
           </el-tab-pane>
 
           <el-tab-pane label="注册" name="rigist">
-            <regist :dialogVisible="dialogVisible" />
+            <regist :dialogVisible="dialogVisible" :activeName="activeName" />
           </el-tab-pane>
         </el-tabs>
       </template>

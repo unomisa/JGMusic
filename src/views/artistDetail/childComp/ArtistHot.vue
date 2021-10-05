@@ -8,7 +8,7 @@
       <div class="title">{{hot.title}}</div>
       <song v-for="(song,index) in songsPart" :key="song.id" :track="song"
             :index="index+1" :areas="areas" :indexWidth="30" :gutter="20"
-            @click.native="play(index)" />
+            @dblclick.native="play(index)" />
 
       <song class="more" @click.native="more" v-if="hot.songs.length>10">
         {{bottomText}}

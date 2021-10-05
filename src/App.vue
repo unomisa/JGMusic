@@ -6,7 +6,7 @@
 
     <nav-bar />
 
-    <keep-alive exclude="UserDetail,songListDetail" max="5">
+    <keep-alive exclude="songListDetail,User" max="5">
       <!-- <keep-alive include="musicDetail" max="5"> -->
       <router-view :key="$route.fullPath" />
     </keep-alive>
@@ -68,8 +68,7 @@ export default {
   },
   watch: {
     $route () {
-      // console.log('路由改变')
-      this.backTop()
+      this.backTop() // 路由改变回顶
     }
   }
 }

@@ -44,6 +44,7 @@ export default {
     },
 
     getArtists () {
+      console.log('请求一次')
       getArtists(this.limit, this.offset, this.initial, this.type, this.area).then(res => {
         if (res.code === 200) {
           console.log('歌手列表为：', res)
@@ -61,8 +62,12 @@ export default {
       })
     }
   },
-  created () {
+  mounted () {
     this.getArtists()
+    this.$bus.$on('infiniteScroll', this.getArtists)
+  },
+  activated () {
+    this.$bus.$on('infiniteScroll', this.getArtists)
   },
   watch: {
     area () {
@@ -79,11 +84,8 @@ export default {
       this.reset()
       this.getArtists()
     }
-  },
-  activated () {
-    this.setInfiniteScrollDisabled(false)
-    this.$bus.$on('infiniteScroll', this.getArtists)
   }
+
 }
 </script>
 

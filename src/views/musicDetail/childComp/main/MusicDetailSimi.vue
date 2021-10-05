@@ -114,7 +114,7 @@ export default {
 }
 
 .item {
-  margin-right: 4rem !important;
+  margin-right: 1rem;
   height: 50px;
   padding: 5px;
   display: flex;
@@ -129,13 +129,12 @@ export default {
 
 .scroll-simi {
   height: 100%;
+  padding-left: 4rem;
 }
 
 .content {
-  padding-left: 4rem;
-  padding-right: 1rem;
+  overflow: hidden;
   user-select: none;
-  box-sizing: border-box;
 }
 
 .list {

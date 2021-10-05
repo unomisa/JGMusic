@@ -46,7 +46,7 @@
 </template>
 
 <script>
-import SongListContext from './songList/SongListContext.vue'
+import SongListContext from '../context/SongListContext.vue'
 import { mapState } from 'vuex'
 
 export default {
@@ -117,14 +117,10 @@ export default {
 
     // 上下文菜单
     context (event) {
-      const loginId = this.loginUser.userId
-      const expectPath = '/userDetail/' + loginId // 期待路由
-      if (this.$route.fullPath === expectPath && !(this.songList.specialType === 5)) { // 判断与期待路由是否一致
-        if (event.button === 2) { // 如果为右键
-          this.showContext = true // 显示上下文菜单
-          this.context_x = event.clientX // 传递点击位置
-          this.context_y = event.clientY
-        }
+      if (event.button === 2) { // 如果为右键
+        this.showContext = true // 显示上下文菜单
+        this.context_x = event.clientX // 传递点击位置
+        this.context_y = event.clientY
       }
     }
   }

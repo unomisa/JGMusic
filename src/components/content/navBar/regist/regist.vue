@@ -1,50 +1,58 @@
 <template>
-  <div>
-    <div class="input">
-      <div class="input-row">
-        <span class="input-text">用户名</span>
-        <el-input class="input-login" type="text" placeholder="用户名"
-                  v-model='nickname' />
+  <form @submit.prevent="register">
+    <div>
+      <div class="input">
+        <div class="input-row">
+          <span class="input-text">用户名</span>
+          <el-input class="input-login" type="text" placeholder="用户名"
+                    v-model='nickname' ref="nameInput" />
+        </div>
+
+        <div class="input-row">
+          <span class="input-text">手机号</span>
+          <el-input class="input-login" type="text" placeholder="手机号"
+                    maxlength="11" v-model='phone' />
+        </div>
+
+        <div class="input-row">
+          <span class="input-text">密码</span>
+          <el-input class="input-login" type="password" placeholder="密码"
+                    v-model='password' />
+        </div>
+
+        <div class="input-row">
+          <span class="input-text">短信验证码</span>
+          <el-input class="input-login" placeholder="短信验证码" v-model='captcha' />
+          <el-button type="success" @click="sendCaptcha"
+                     :disabled="!sendCaptchaBtn">{{captchaBtText}}
+          </el-button>
+        </div>
       </div>
 
-      <div class="input-row">
-        <span class="input-text">手机号</span>
-        <el-input class="input-login" type="text" placeholder="手机号"
-                  maxlength="11" v-model='phone' />
-      </div>
-
-      <div class="input-row">
-        <span class="input-text">密码</span>
-        <el-input class="input-login" type="password" placeholder="密码"
-                  v-model='password' />
-      </div>
-
-      <div class="input-row">
-        <span class="input-text">短信验证码</span>
-        <el-input class="input-login" placeholder="短信验证码" v-model='captcha' />
-        <el-button type="success" @click="sendCaptcha"
-                   :disabled="!sendCaptchaBtn">{{captchaBtText}}
+      <div class="login">
+        <el-button class="login-btn" type="primary" size="default"
+                   native-type="submit">
+          注册
         </el-button>
       </div>
     </div>
-
-    <div class="login">
-      <el-button class="login-btn" type="primary" size="default"
-                 @click="register">
-        注册
-      </el-button>
-    </div>
-  </div>
+  </form>
 </template>
 
 <script>
 import { phoneExistence, register, sendCaptcha } from 'network/common/login'
+import { updateLoginStatus } from 'common/mixin'
 
 export default {
+  mixins: [updateLoginStatus],
   props: {
     dialogVisible: {
       type: Boolean,
       default: false
+    },
+    activeName: {
+      type: String,
+      default: ''
     }
   },
   data () {
@@ -91,13 +99,18 @@ export default {
               console.log('注册结果为', res)
               if (res.code === 200) {
                 this.$notify.topleft('注册成功')
+
+                // 注册完成刷新状态直接登录
+                this.getLoginStatus() // > mixin中setLoginStatus的方法
               } else {
                 this.$notify.topleft(res.message, 'error')
               }
             })
           } else {
-            this.$notify.topleft('用户已经注册', 'error')
+            this.$notify.topleft('该手机号已经注册', 'error')
           }
+        } else {
+          this.$notify.topleft(res.message, 'error')
         }
       })
     },
@@ -113,6 +126,12 @@ export default {
     dialogVisible (visible) {
       if (!visible) {
         this.reset()
+      }
+    },
+
+    activeName (newActive) {
+      if (newActive === 'rigist') {
+        this.$refs.nameInput.focus()
       }
     }
   }

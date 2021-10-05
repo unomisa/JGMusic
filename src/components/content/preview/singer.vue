@@ -27,7 +27,7 @@ export default {
     },
 
     userDetail () {
-      this.$router.push('/userDetail/' + this.singer.accountId)
+      this.$router.push('/user/detail/' + this.singer.accountId)
     }
   }
 }

@@ -4,7 +4,8 @@
 
     <form v-on:submit.prevent="onSubmit">
       <div class="input">
-        <el-input v-model="name" placeholder="请输入歌单名" size="normal" clearable>
+        <el-input v-model="name" placeholder="请输入歌单名" size="normal" clearable
+                  ref="inputName">
         </el-input>
       </div>
 
@@ -43,6 +44,11 @@ export default {
       this.name = ''
     },
     onSubmit () {
+      if (this.name.length === 0) {
+        this.$notify.topleft('请输入歌单名', 'error')
+        return
+      }
+
       createSongList(this.name).then(res => {
         if (res.code === 200) {
           this.$notify.topleft('创建歌单成功')
@@ -55,6 +61,15 @@ export default {
         }
       })
       this.handleClose()
+    }
+  },
+  watch: {
+    dialogVisible (visible) {
+      this.$nextTick(() => { // 也许是在动画之后
+        if (visible && this.$refs.inputName) {
+          this.$refs.inputName.focus() // 使之获取焦点
+        }
+      })
     }
   }
 }

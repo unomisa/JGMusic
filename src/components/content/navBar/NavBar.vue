@@ -32,22 +32,16 @@
                   </el-col>
 
                   <el-col :span="10" :offset="1">
-                    <div class="flex-center">
-                      <el-input class="serch-input" placeholder="请输入歌名、歌词、歌手或专辑"
-                                prefix-icon="el-icon-search"
-                                v-model="searchText" @focus="serchFocus" />
-                    </div>
+                    <search />
                   </el-col>
                 </el-row>
               </div>
             </transition>
 
             <transition name="el-fade-in-linear">
-              <div v-show="$route.path.includes('/musicDetail')">
+              <div v-if="$route.path.includes('/musicDetail')">
                 <el-col :span="12" :offset="0">
-                  <el-input class="detail-search-input" placeholder="搜索"
-                            prefix-icon="el-icon-search" v-model="searchText">
-                  </el-input>
+                  <search class="detail-search-input" round />
                 </el-col>
               </div>
             </transition>
@@ -56,8 +50,8 @@
 
         <el-col :span="4" class="right">
           <slot name="right">
-            <login v-if="isLogin===false" />
-            <user v-if="isLogin===true" />
+            <login v-if="!isLogin" />
+            <user v-if="isLogin" />
           </slot>
         </el-col>
       </el-row>
@@ -68,17 +62,18 @@
 <script>
 import Login from 'components/content/navBar/login/Login.vue'
 import User from './user/User.vue'
+import search from './search/search.vue'
 
 import { mapState } from 'vuex'
 import { updateLoginStatus } from 'common/mixin'
 
 export default {
   mixins: [updateLoginStatus],
-  components: { Login, User },
+  components: { Login, User, search },
   data () {
     return {
-      activeIndex: '',
-      searchText: ''
+      activeIndex: ''
+
     }
   },
   computed: {
@@ -94,14 +89,10 @@ export default {
 
     goHome () {
       this.$router.push('/home')
-    },
-
-    serchFocus () {
-      this.$notify.wait()
     }
   },
   created () {
-    this.getLoginStatus()
+    this.getLoginStatus() // 创建时刷新用户状态
   },
   watch: {
     '$route.path' (toPath) {
@@ -114,7 +105,7 @@ export default {
 <style lang="less" scoped>
 .herder {
   position: fixed;
-  z-index: 9999;
+  z-index: 999;
   top: 0;
   left: 0;
   right: 0;
@@ -169,23 +160,11 @@ export default {
   }
 }
 
-.serch-input {
-  width: 300px;
-}
-
 .detail-search-input {
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  width: 30%;
-}
-</style>
-
-<style lang="less">
-.detail-search-input {
-  & > input {
-    border-radius: 20px;
-  }
+  width: 35%;
 }
 </style>

@@ -40,7 +40,7 @@ export default {
   },
   methods: {
     getHotComments (page, id) {
-      if (page !== 1) return
+      if (page !== 1 || this.hotComments.length > 0) return // 页数不等于1或者热门评论不为空时
       return getHotComment({ id: id, limit: 10, offset: 0 })
         .then(res => {
           if (res.code === 200) {

@@ -22,6 +22,10 @@
         </span>
 
         <like-song class="like-song" :id="currentPlayMusic.id" />
+
+        <span class="sub" @click="subToList">
+          <i class="el-icon-folder-add"></i>
+        </span>
       </div>
       <div class="song-artist">
         <span v-for="(artist,index) of currentPlayMusic.artists"
@@ -62,6 +66,16 @@ export default {
 
     artistDetail (artist) {
       this.$router.push('/artistDetail/' + artist.id)
+    },
+
+    // 保存至歌单
+    subToList () {
+      const track = this.currentPlayMusic
+      if (track.state.cp !== 0) {
+        this.$bus.$emit('subMusicToList', track) // 将歌曲传递给收藏歌单页
+      } else {
+        this.$notify.topleft('歌曲暂无版权', 'error')
+      }
     }
   }
 }
@@ -135,7 +149,7 @@ export default {
 
   &-title {
     position: relative;
-    padding-right: 24px;
+    // padding-right: 24px;
     // &:extend(.omit);
   }
 
@@ -155,6 +169,14 @@ export default {
 .like-song {
   position: absolute;
   margin-left: 5px;
+}
+
+.sub {
+  position: absolute;
+  margin-left: 2rem;
+  color: #808080;
+  font-size: 17px;
+  cursor: pointer;
 }
 
 .artist {

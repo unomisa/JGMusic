@@ -77,6 +77,7 @@ export default {
       })
     },
     getTopSongList () {
+      if (!this.more) return
       getTopSongList(this.tag, this.listsLimit, this.listsOffset).then(res => {
         if (res.code === 200) {
           res.playlists.forEach(list => {
@@ -106,6 +107,7 @@ export default {
     },
 
     getSongListHighquality (limit = 24) {
+      if (!this.more) return
       getSongListHighquality(this.tag, limit, this.hightQualityLists_LastTime).then(res => {
         if (res.code === 200) {
           // console.log('精品歌单内容为：', res)
@@ -148,14 +150,19 @@ export default {
       this.getTopSongList()
     }
   },
+  mounted () {
+    if ('type' in this.$route.query && this.$route.query.type === 'hightQuality') {
+      this.$bus.$on('infiniteScroll', this.getSongListHighquality)
+    } else {
+      this.$bus.$on('infiniteScroll', this.getTopSongList)
+    }
+  },
   activated () {
     if ('type' in this.$route.query && this.$route.query.type === 'hightQuality') {
       this.$bus.$on('infiniteScroll', this.getSongListHighquality)
     } else {
       this.$bus.$on('infiniteScroll', this.getTopSongList)
     }
-
-    this.more && this.setInfiniteScrollDisabled(false)
   }
 }
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <div v-if="showSaveMusic">
+  <div v-show="showSaveMusic">
     <el-card class="save-music" shadow="always" :body-style="bodyStyle">
       <div class="top-box">
         <div class="title">收藏到歌单</div>
@@ -16,11 +16,14 @@
             </div>
             <transition name="el-fade-in-linear">
               <div class="create-input" v-if="!showDesc">
-                <el-input class="name-input" v-model="newSongListname"
-                          size="small" placeholder="新建歌单名"></el-input>
-                <el-button type="primary" size="mini" @click="createSongList">
-                  创建
-                </el-button>
+                <form @submit.prevent="createSongList">
+                  <el-input class="name-input" v-model="newSongListname"
+                            size="small" placeholder="新建歌单名" ref="nameInput">
+                  </el-input>
+                  <el-button type="primary" size="mini" native-type="submit">
+                    创建
+                  </el-button>
+                </form>
               </div>
             </transition>
           </div>
@@ -31,10 +34,10 @@
       </div>
 
       <div class="scroll-content" v-bar>
-        <div>
+        <div ref="scroll">
           <div class="lists">
             <div class="list" v-for="list in createPlaylist" :key="list.id"
-                 @click="saveMusic(list)">
+                 @click="saveMusic(list,track)">
               <div class="list-left">
                 <el-image class="cover" :src="list.coverImgUrl + '?param=80y80'"
                           fit="fill">
@@ -54,17 +57,15 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapMutations, mapState } from 'vuex'
 import { playlistManagement, SongList } from 'network/common'
-import { updateUserPlaylist } from 'common/mixin' // 更新用户歌单信息
 import { createSongList } from 'network/pageRequest/songList'
 
 export default {
-  mixins: [updateUserPlaylist],
   data () {
     return {
       showSaveMusic: false,
-      mid: null,
+      track: null,
       newSongListname: '', // 想创建的歌单名
       showDesc: true
     }
@@ -94,23 +95,38 @@ export default {
     }
   },
   methods: {
-    init (mid) {
-      console.log('显示收藏歌单列表')
-      this.mid = mid
+    ...mapMutations([
+      'insertSUubList',
+      'updateSubList',
+      'addLikeList'
+    ]),
+
+    init (track) {
+      this.track = track
       this.showSaveMusic = true
       this.newSongListname = ''
     },
 
     reset () {
-      this.mid = null
-      this.showSaveMusic = false
+      this.track = null
+      this.showSaveMusic = false // 关闭窗口
+      this.showDesc = true
+      this.$refs.scroll.scrollTop = 0 // 滚动回顶
     },
 
-    saveMusic (list) {
-      playlistManagement('add', list.id, this.mid).then(res => {
+    saveMusic (list, track) {
+      playlistManagement('add', list.id, track.id).then(res => {
         if (res.body.code === 200) {
+          // 如果歌单是用户喜欢的歌单，则将歌曲id添加至其中
+          if (list.specialType === 5) {
+            this.addLikeList(track.id)
+          }
+
           this.$notify.topleft('添加至歌单成功')
-          this.getUserPlaylist() // > mixin中的更新用户歌单方法
+          const sourceList = this.loginUser.subList.get(list.id)
+          sourceList.trackCount = res.body.count // 变更歌曲数量
+          sourceList.coverImgUrl = track.picUrl // 将添加的歌曲封面变更为歌单封面
+          this.updateSubList() // 更新
         } else {
           const message = res.body.message
           this.$notify.topleft(message, 'error')
@@ -121,13 +137,20 @@ export default {
 
     showCreateInput () {
       this.showDesc = false
+      this.$nextTick(() => {
+        this.$refs.nameInput.focus()
+      })
     },
 
     // * 网络请求
     createSongList () {
       createSongList(this.newSongListname).then(res => {
         const list = new SongList(res.playlist)
-        this.saveMusic(list)
+        this.insertSUubList({
+          list: list,
+          index: 1
+        })
+        this.saveMusic(list, this.track)
       })
     }
   },

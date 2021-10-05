@@ -2,6 +2,8 @@ import axios from 'axios'
 import Vue from 'vue'
 
 let baseUrl = ''
+// Vue.prototype.$httpRequestMap = new Map() // 存储请求的取消函数
+// const CancelToken = axios.CancelToken
 
 if (process.env.NODE_ENV === 'development') {
   baseUrl = 'http://localhost:3000'
@@ -13,17 +15,13 @@ export function request (config) {
   const instance = axios.create({
     baseURL: baseUrl,
     timeout: 10000,
-    withCredentials: true, // 允许跨域
-    retry: 4,
-    retryDelay: 1000
+    withCredentials: true // 允许跨域
+
   })
 
-  axios.defaults.timeout = 15000 // 超时时间
+  axios.defaults.timeout = 10000 // 超时时间
   axios.defaults.retry = 3 // 请求次数
   axios.defaults.retryDelay = 1000
-
-  // 在main.js设置全局的请求次数，请求的间隙
-  // * 自动重新请求功能
 
   // 请求拦截
   instance.interceptors.request.use(
@@ -32,6 +30,11 @@ export function request (config) {
       //   _t: Date.parse(new Date()) / 1000,
       //   ...config.params
       // }
+
+      // config.cancelToken = new CancelToken(c => { // 强行中断请求要用到的
+      //   Vue.prototype.$httpRequestMap.set(config.url, c)
+      // })
+
       return config
     },
     err => {

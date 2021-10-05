@@ -17,7 +17,7 @@
         <div class="name">{{album.name}}</div>
         <song v-for="(song,index) in songsPart(album.songs)" :key="song.id"
               :track="song" :index="index+1" :areas='areas' :indexWidth="30"
-              :gutter="20" @click.native="play(album.songs,index)" />
+              :gutter="20" @dblclick.native="play(album.songs,index)" />
 
         <song class="more" @click.native="albumDetail(album)"
               v-if="album.songs.length>10">

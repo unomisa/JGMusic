@@ -98,8 +98,8 @@ export class SongListDetail {
     this.createTime = formatDate(new Date(songList.createTime)).split(' ')[0] // 歌单创建时间
     this.updateTime = formatDate(new Date(songList.updateTime)).split(' ')[0] // 最近更新时间
 
-    this.subCount = formatPlayCount(songList.subscribedCount, 10000) // 歌单被收藏次数
-    this.shareCount = formatPlayCount(songList.shareCount, 10000) // 歌单分享次数
+    this.subCount = songList.subscribedCount// 歌单被收藏次数
+    this.shareCount = songList.shareCount// 歌单分享次数
     this.subscribed = songList.subscribed // 用户是否收藏
 
     this.tags = songList.tags // 标签

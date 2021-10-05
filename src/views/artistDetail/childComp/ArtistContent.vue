@@ -7,8 +7,14 @@
     </el-menu>
 
     <div v-show="activeIndex==='1'">
-      <artist-hot :hot="hot" />
-      <artist-albums :albums="albumsFilter" />
+      <div v-if="!albumEmpty">
+        <artist-hot :hot="hot" />
+        <artist-albums :albums="albumsFilter" />
+      </div>
+
+      <div v-if="albumEmpty">
+        <div class="empty">没有相关专辑</div>
+      </div>
     </div>
 
     <div v-show="activeIndex==='2'">
@@ -16,7 +22,7 @@
     </div>
 
     <div v-show="activeIndex==='3'">
-      <artist-simi :simiArtists="simiArtists" />
+      <artist-simi :simiArtists="simiArtists" :empty="simiEmpty" />
     </div>
   </div>
 </template>
@@ -31,20 +37,22 @@ import ArtistSimi from './ArtistSimi.vue'
 import { mapMutations } from 'vuex'
 import { getAlbum } from 'network/pageRequest/albumdetail'
 import { Music, Artist } from 'network/common'
-import { infiniteScroll } from 'common/mixin'
+import { infiniteScroll, musicBean } from 'common/mixin'
 
 export default {
-  mixins: [infiniteScroll],
+  mixins: [infiniteScroll, musicBean],
   components: { ArtistAlbums, ArtistHot, ArtistDesc, ArtistSimi },
   data () {
     return {
       activeIndex: '1',
       albums: [],
+      albumEmpty: false,
       albumLimit: 3,
       albumPage: 1,
       hot: { songs: [] },
       artistDesc: {},
-      simiArtists: []
+      simiArtists: [],
+      simiEmpty: false
     }
   },
   computed: {
@@ -56,18 +64,6 @@ export default {
     ...mapMutations([
       'setInfiniteScrollDisabled'
     ]),
-
-    musicBean (music) {
-      return {
-        id: music.id,
-        name: music.name,
-        picUrl: music.al.picUrl,
-        alias: music.alia,
-        artists: music.ar,
-        album: music.al,
-        duration: music.dt
-      }
-    },
 
     select (index) {
       const id = this.$route.params.id
@@ -87,9 +83,14 @@ export default {
       return getArtistAlbum(id, limit, offset).then(res => {
         if (res.code === 200) {
           console.log('歌手专辑信息为：', res)
-          res.hotAlbums.forEach(album => {
-            this.albums.push(new ArtistAlbum(album))
-          })
+
+          if (res.hotAlbums.length === 0) {
+            this.albumEmpty = true
+          } else {
+            res.hotAlbums.forEach(album => {
+              this.albums.push(new ArtistAlbum(album))
+            })
+          }
 
           if (res.more === true) {
             this.getArtistAlbum(id, limit, offset + limit)
@@ -128,7 +129,7 @@ export default {
     },
 
     getAlbums () {
-      if (this.activeIndex !== '1') return // 非专辑选项不请求
+      if (this.activeIndex !== '1' || this.albums.length === 0) return // 非专辑选项不请求
       const promiseArr = []
       const start = this.albumLimit * (this.albumPage - 1)
       let end = this.albumLimit * this.albumPage
@@ -161,7 +162,11 @@ export default {
       getSimiArtist(id).then(res => {
         if (res.code === 200) {
           // console.log('相似歌手为：', res)
-          this.simiArtists = res.artists.map(artist => new Artist(artist))
+          if (res.artists.length === 0) {
+            this.simiEmpty = true
+          } else {
+            this.simiArtists = res.artists.map(artist => new Artist(artist))
+          }
         }
       })
     }
@@ -173,8 +178,10 @@ export default {
       this.getAlbums() // 然后请求多个专辑
     })
   },
+  mounted () {
+    this.$bus.$on('infiniteScroll', this.getAlbums) // 接收下拉刷新事件
+  },
   activated () {
-    this.setInfiniteScrollDisabled(false)
     this.$bus.$on('infiniteScroll', this.getAlbums) // 接收下拉刷新事件
   }
 }
@@ -194,5 +201,12 @@ export default {
   font-size: 18px;
   padding: 0;
   margin-right: 2rem;
+}
+
+.empty {
+  width: 100%;
+  text-align: center;
+  font-weight: bold;
+  font-size: 20px;
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="play-bar" v-if="isExistCurrentPlayMusic">
+  <div class="play-bar" v-show="isExistCurrentPlayMusic">
     <el-row type="flex" align="middle" justify="space-between">
       <play-bar-left />
 
@@ -68,19 +68,21 @@ export default {
     // 播放完毕触发
     ended () {
       console.log('播放完毕')
-      this.setListCurrentIndex(this.listCurrentIndex + 1) // 播放完毕之后切换至下一首
+      // this.$bus.$emit('nextPlay', 'ended') // 播放完毕后,下一首
+      this.$control.next('ended') // 下一首,类别为自然播放
     },
 
     reset () {
-      this.pause() // 切换歌曲暂停歌曲，暂停，出bug来找它
+      this.$music && this.$music.pause() // 暂停当前播放歌曲,以免切换后还在播放,新加入
+      // this.pause() // 切换歌曲暂停歌曲，暂停，出bug来找它
       this.currentPlayMusicUrl = null // 设置歌曲url为空，等待加载
       this.setIsLoadingMusic(true) // 换歌之后设置它正在加载
     }
   },
   watch: {
     currentPlayMusic (newPlay, oldPlay) {
-      if (newPlay.id !== oldPlay.id) {
-        this.reset()
+      if (newPlay.id !== oldPlay.id && this.playList.length > 0) {
+        this.reset() // 不能甩在外面,不然添加歌曲后歌曲不会播放了
         newPlay.state.currentBroadcast = true // 设置属性为当前播放
         'state' in oldPlay && (oldPlay.state.currentBroadcast = false)
 
@@ -92,22 +94,28 @@ export default {
             // 如果该歌曲无法播放，则跳过
             if (!this.currentPlayMusicUrl) {
               const previousMusic = this.playList[this.listCurrentIndex - 1]
-              if (previousMusic.id === oldPlay.id) {
-                this.setListCurrentIndex(this.listCurrentIndex + 1)
+              console.log('上一首歌曲为：', previousMusic)
+              if (!previousMusic || previousMusic.id === oldPlay.id) {
+                this.$control.next('invalid')
               } else {
-                this.setListCurrentIndex(this.listCurrentIndex - 1)
+                this.$control.previous('invalid') // 上一首，类型为无效的
               }
             }
           }
         })
+      } if (this.playList.length === 0) { // 播放列表为空则重置
+        this.reset()
       }
     },
 
-    isExistCurrentPlayMusic () {
-      this.$nextTick(() => {
-        Vue.prototype.$music = this.$refs.music
-        this.$music.volume = 0.3 // 初始化音量大小
-      })
+    // 改变后挂载music
+    isExistCurrentPlayMusic (newValue) {
+      if (newValue) {
+        this.$nextTick(() => {
+          Vue.prototype.$music = this.$refs.music
+          this.$music.volume = 0.3 // 初始化音量大小
+        })
+      }
     }
 
   }

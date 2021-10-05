@@ -1,45 +1,74 @@
 <template>
-  <div class="control-box">
-    <el-button class="previous" @click="previous">
-      <svg class="icon previous-icon" aria-hidden="true">
-        <use xlink:href="#icon-shangyishou"></use>
-      </svg>
-    </el-button>
+  <div>
+    <el-row :gutter="20" class="control-row">
+      <el-col :span="9" :offset="0" class="control-left">
+        <!-- <span class="mode" @click="choiceModel">
+          <el-tooltip popper-class="tooltip" :content="modes[modeIndex].type"
+                      placement="top" effect="light" :visible-arrow="false">
+            <svg class="icon mode-icon" aria-hidden="true">
+              <use :xlink:href="modeIcon"></use>
+            </svg>
+          </el-tooltip>
+        </span> -->
+        <play-bar-play-mode />
+      </el-col>
 
-    <div class="control">
-      <el-button circle class="control-btn" :loading="isLoadingMusic"
-                 v-show="isLoadingMusic">
-      </el-button>
+      <el-col :span="6" :offset="0" class="control-box">
+        <el-button class="previous" @click="previous">
+          <svg class="icon previous-icon" aria-hidden="true">
+            <use xlink:href="#icon-shangyishou"></use>
+          </svg>
+        </el-button>
 
-      <div class="control-btn" @click="control()" v-show="!isLoadingMusic">
-        <svg class="icon play-icon" aria-hidden="true" v-show="isPaused">
-          <use xlink:href="#icon-bofang"></use>
-        </svg>
+        <div class="control">
+          <el-button circle class="control-btn" :loading="isLoadingMusic"
+                     v-show="isLoadingMusic">
+          </el-button>
 
-        <svg class="icon pause-icon" aria-hidden="true" v-show="!isPaused">
-          <use xlink:href="#icon-zanting"></use>
-        </svg>
-      </div>
+          <div class="control-btn" @click="control()" v-show="!isLoadingMusic">
+            <svg class="icon play-icon" aria-hidden="true" v-show="isPaused">
+              <use xlink:href="#icon-bofang"></use>
+            </svg>
 
-    </div>
+            <svg class="icon pause-icon" aria-hidden="true" v-show="!isPaused">
+              <use xlink:href="#icon-zanting"></use>
+            </svg>
+          </div>
 
-    <el-button class="next" @click="next">
-      <svg class="icon next-icon" aria-hidden="true">
-        <use xlink:href="#icon-shangyishou"></use>
-      </svg>
-    </el-button>
+        </div>
+
+        <el-button class="next" @click="next">
+          <svg class="icon next-icon" aria-hidden="true">
+            <use xlink:href="#icon-shangyishou"></use>
+          </svg>
+        </el-button>
+      </el-col>
+
+      <el-col :span="9" :offset="0">&nbsp;</el-col>
+    </el-row>
+
   </div>
 </template>
 
 <script>
-import { mapMutations, mapState } from 'vuex'
+import PlayBarPlayMode from './PlayBarPlayMode.vue'
+
+import { mapState, mapGetters } from 'vuex'
 
 export default {
-  methods: {
-    ...mapMutations([
-      'setListCurrentIndex'
+  components: { PlayBarPlayMode },
+  computed: {
+    ...mapState([
+      'isLoadingMusic',
+      'isPaused'
     ]),
 
+    ...mapGetters([
+      'isExistCurrentPlayMusic'
+    ])
+
+  },
+  methods: {
     // 播放控制
     control () {
       if (this.$music.paused !== true) {
@@ -51,20 +80,30 @@ export default {
       }
     },
 
-    previous () {
-      this.setListCurrentIndex(this.listCurrentIndex - 1)
+    // 空格暂停
+    spaceControl (event) {
+      // * 播放列表不存在存在 || 为空格 || target为body
+      if (!this.isExistCurrentPlayMusic || event.keyCode !== 32 || event.target !== document.body) return
+      this.control()
+      event.preventDefault()
     },
 
+    // 上一首播放
+    previous () {
+      this.$control.previous()
+    },
+
+    // 处理下一首播放
     next () {
-      this.setListCurrentIndex(this.listCurrentIndex + 1)
+      this.$control.next()
     }
   },
-  computed: {
-    ...mapState([
-      'listCurrentIndex',
-      'isLoadingMusic',
-      'isPaused'
-    ])
+
+  created () {
+    document.addEventListener('keydown', this.spaceControl)
+  },
+  destroyed () {
+    document.removeEventListener('keydown', this.spaceControl)
   }
 }
 </script>
@@ -86,6 +125,12 @@ export default {
   &:extend(.flex-center);
   width: 60px;
   height: 40px;
+  cursor: pointer;
+
+  &-row {
+    display: flex;
+    align-items: center;
+  }
 
   &-box {
     &:extend(.flex-center);
@@ -102,6 +147,11 @@ export default {
     &:hover {
       background-color: #e5e5e5;
     }
+  }
+
+  &-left {
+    text-align: right;
+    height: 100%;
   }
 }
 

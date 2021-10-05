@@ -1,29 +1,31 @@
 <template>
-  <div>
-    <div class="input">
-      <div class="input-row">
-        <span class="input-text">手机号</span>
-        <el-input class="input-login" type="text" placeholder="手机号"
-                  :maxlength="11" v-model='phone' />
+  <form @submit.prevent="phoneLogin">
+    <div>
+      <div class="input">
+        <div class="input-row">
+          <span class="input-text">手机号</span>
+          <el-input class="input-login" type="text" placeholder="手机号"
+                    :maxlength="11" v-model='phone' ref="phoneInput" />
+        </div>
+
+        <div class="input-row">
+          <span class="input-text">短信验证码</span>
+          <el-input class="input-login" :value="captcha" placeholder="短信验证码"
+                    v-model='captcha' />
+          <el-button type="success" @click="sendCaptcha"
+                     :disabled="!sendCaptchaBtn">{{captchaBtText}}
+          </el-button>
+        </div>
       </div>
 
-      <div class="input-row">
-        <span class="input-text">短信验证码</span>
-        <el-input class="input-login" :value="captcha" placeholder="短信验证码"
-                  v-model='captcha' />
-        <el-button type="success" @click="sendCaptcha"
-                   :disabled="!sendCaptchaBtn">{{captchaBtText}}
+      <div class="login">
+        <el-button class="login-btn" type="primary" size="default"
+                   native-type="submit">
+          登录
         </el-button>
       </div>
     </div>
-
-    <div class="login">
-      <el-button class="login-btn" type="primary" size="default"
-                 @click="phoneLogin">
-        登录
-      </el-button>
-    </div>
-  </div>
+  </form>
 </template>
 
 <script>
@@ -36,6 +38,10 @@ export default {
     dialogVisible: {
       type: Boolean,
       default: false
+    },
+    activeName: {
+      type: String,
+      default: ''
     }
   },
   data () {
@@ -47,6 +53,7 @@ export default {
     }
   },
   methods: {
+
     // 发送验证码
     sendCaptcha () {
       sendCaptcha(this.phone).then(res => {
@@ -95,10 +102,19 @@ export default {
       this.captcha = ''
     }
   },
+
   watch: {
     dialogVisible (visible) {
       if (!visible) {
         this.reset()
+      } else if (this.activeName === 'captcha') {
+        this.$refs.phoneInput.focus()
+      }
+    },
+
+    activeName (newActive) {
+      if (newActive === 'captcha') {
+        this.$refs.phoneInput.focus()
       }
     }
   }

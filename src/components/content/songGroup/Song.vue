@@ -1,5 +1,5 @@
 <template>
-  <div class="song" @dblclick="play">
+  <div class="song" @dblclick="play" ref="song">
     <slot>
       <el-row :gutter="gutter" @contextmenu.native.prevent="context">
         <el-col :span="areas.others" class="other">
@@ -46,25 +46,35 @@
         <el-col :span="areas.name"
                 :class="{nocp: isMusic && track.state.cp===0}">
           <span>{{track.name}} </span>
-          <span class="alias" v-if="track.alias"
+          <span class="alias" v-if="track.tns"
+                :class="{nocp: isMusic && track.state.cp===0}">({{track.tns}})</span>
+          <span class="alias" v-if="track.alias && !track.tns"
                 :class="{nocp: isMusic && track.state.cp===0}">({{track.alias}})</span>
         </el-col>
 
         <el-col :span="areas.artists" class="artists">
           <span v-for="(artist,index) in track.artists" :key="index">
-            <span class="artist"
-                  @click.stop="artistDetail(artist)">{{artist.name}}</span>
+            <span class="artist" @click.stop="artistDetail(artist)">
+              <span v-if="artist.name">{{artist.name}}</span>
+              <span v-if="!artist.name">未知歌手</span>
+            </span>
             <span v-if="index!==track.artists.length-1">&nbsp;/&nbsp;</span>
           </span>
         </el-col>
 
         <el-col :span="areas.album">
-          <span class="album"
-                @click.stop="albumDetail">{{track.album.name}}</span>
+          <span class="album" @click.stop="albumDetail"
+                v-if="track.album.name">{{track.album.name}}</span>
+          <span v-if="!track.album.name" class="album">未知专辑</span>
         </el-col>
 
         <el-col :span="areas.duration" class="duration">
           {{track.duration}}
+        </el-col>
+
+        <el-col :span="areas.pop" v-if="areas.pop" class="pop">
+          <el-progress class="progress" :percentage="track.pop"
+                       :show-text="false"></el-progress>
         </el-col>
 
         <song-context :x.sync="context_x" :y.sync="context_y" :track="track"
@@ -94,7 +104,8 @@ export default {
           name: 6,
           artists: 7,
           album: 5,
-          duration: 3
+          duration: 3,
+          pop: 0
         }
       }
     },
@@ -130,7 +141,8 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'currentPlayMusic'
+      'currentPlayMusic',
+      'playListMap'
     ]),
 
     fomtIndex () {
@@ -142,7 +154,18 @@ export default {
     },
 
     playing () {
-      return this.track.state.currentBroadcast
+      // console.log('计算是否播放')
+      if (this.track.state.currentBroadcast) {
+        // if (this.$refs.song) {
+        //   this.$emit('playSong', this.$refs.song)
+        // } else {
+        //   // console.log('song还没有挂载s')
+        // }
+        return true
+      } else {
+        return false
+      }
+      // return this.track.id === this.currentPlayMusic.id // 这种方法性能太差,会导致切换歌曲全部都重新计算
     },
 
     other () {
@@ -170,6 +193,7 @@ export default {
   methods: {
     // * 事件处理
     artistDetail (artist) {
+      if (artist.name === '未知歌手' || !artist.name) return
       this.$router.push('/artistDetail/' + artist.id)
     },
 
@@ -214,6 +238,7 @@ export default {
 }
 
 .el-row {
+  height: inherit;
   & > * {
     overflow: hidden;
     text-overflow: ellipsis;
@@ -311,5 +336,13 @@ export default {
 
 .down {
   color: #3fdbf0;
+}
+
+.pop {
+  height: inherit;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-right: 2rem !important;
 }
 </style>

@@ -24,7 +24,7 @@
             {{album.name}}</span>
         </div>
 
-        <dynamic :dynamic="album" />
+        <dynamic :dynamic="album" :isSub="isSubAlbum" @sub="subAlbum" />
 
         <div class="artists">
           <span>歌手：</span>
@@ -48,6 +48,9 @@
 import DetailCard from 'components/content/detailCard/DetailCard.vue'
 import Dynamic from 'components/content/miniCom/Dynamic.vue'
 
+import { subAlbum } from 'network/common'
+import { mapGetters, mapMutations } from 'vuex'
+
 export default {
   components: { DetailCard, Dynamic },
   props: {
@@ -62,9 +65,51 @@ export default {
       default: true
     }
   },
+  computed: {
+    ...mapGetters([
+      'AlbumSubList'
+    ]),
+
+    isSubAlbum () {
+      if ('id' in this.album) {
+        return String(this.album.id) in this.AlbumSubList
+      } else {
+        return false
+      }
+    }
+  },
   methods: {
+    ...mapMutations([
+      'pushSubAlbum',
+      'deleteSubAlbum'
+    ]),
+
     artistDetail (artist) {
       this.$router.push('/artistDetail/' + artist.id)
+    },
+
+    subAlbum () {
+      if (this.isSubAlbum) { // 判断是否已收藏专辑
+        subAlbum(this.album.id, -1).then(res => {
+          if (res.code === 200) {
+            this.deleteSubAlbum(this.album.id)
+            this.$notify.topleft('取消收藏专辑成功')
+            this.$emit('subControl', -1)
+          } else {
+            this.$notify.topleft(res.message, 'error')
+          }
+        })
+      } else {
+        subAlbum(this.album.id, 1).then(res => {
+          if (res.code === 200) {
+            this.pushSubAlbum(this.album.id)
+            this.$notify.topleft('收藏专辑成功')
+            this.$emit('subControl', 1)
+          } else {
+            this.$notify.topleft(res.message, 'error')
+          }
+        })
+      }
     }
   }
 }
@@ -105,5 +150,7 @@ export default {
 
 .artists {
   display: flex;
+  flex-wrap: wrap;
+  line-height: 1.5;
 }
 </style>

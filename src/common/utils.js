@@ -75,6 +75,33 @@ export function isFloat (number) {
   return ~~number !== number
 }
 
+// 生成从minNum到maxNum的随机数
+export function randomNum (minNum, maxNum) {
+  switch (arguments.length) {
+    case 1:
+      return parseInt(Math.random() * minNum + 1, 10)
+    case 2:
+      return parseInt(Math.random() * (maxNum - minNum + 1) + minNum, 10)
+    default:
+      return 0
+  }
+}
+
+// 数组随机排序
+export function shuffle (arr) {
+  let i = arr.length
+  while (i) {
+    const j = Math.floor(Math.random() * i--);
+    [arr[j], arr[i]] = [arr[i], arr[j]]
+  }
+}
+
+export function arrSwap (arr, indexA, indexB) {
+  const temp = arr[indexA]
+  arr[indexA] = arr[indexB]
+  arr[indexB] = temp
+}
+
 /**
  * * js 动画函数
  * @timing 时间函数
@@ -82,13 +109,13 @@ export function isFloat (number) {
  * @duration 动画时间
  */
 export function animate ({ timing, draw, duration }) {
-  const start = performance.now()
+  let start = performance.now()
 
   requestAnimationFrame(function animate (time) {
     // timeFraction 从 0 增加到 1
     // * 用当前时间减去开始时间除以总时间，得到当前进程百分比数
     let timeFraction = (time - start) / duration
-    if (timeFraction > 1) timeFraction = 1 // 超出动画时间归1以正常结束
+    if (timeFraction > 1 || timeFraction < 0) timeFraction = 1 // 超出动画时间或手动暂停动画归1以正常结束
 
     // 计算当前动画状态
     const progress = timing(timeFraction)
@@ -99,6 +126,10 @@ export function animate ({ timing, draw, duration }) {
       requestAnimationFrame(animate)
     }
   })
+
+  return function () {
+    start = start + duration // 使timeFraction为负数来使动画停止
+  }
 }
 
 // 使节点滚动至固定位置（流畅动画）

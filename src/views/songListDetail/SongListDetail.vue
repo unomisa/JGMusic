@@ -2,7 +2,8 @@
   <div class="container">
     <div class="backdrop"></div>
     <div class="list-detail">
-      <song-list-presentation :playList="playList" :loading="loading" />
+      <song-list-presentation :playList="playList" :loading="loading"
+                              @subControl="subControl" />
       <song-list-content :tracks="tracks" :total="total" />
     </div>
   </div>
@@ -31,7 +32,8 @@ export default {
       trackIds: [],
       total: 0,
       loading: true,
-      startIndex: 0
+      startIndex: 0,
+      active: true
     }
   },
   computed: {
@@ -60,7 +62,7 @@ export default {
     getPlayListDetail (id) {
       getPlayListDetail(id, Date.now()).then(res => {
         if (res.code === 200) {
-          console.log('歌单详情为：', res)
+          // console.log('歌单详情为：', res)
           this.playList = new SongListDetail(res.playlist) // 歌单描述
           this.trackIds = res.playlist.trackIds
           this.total = res.playlist.commentCount
@@ -82,8 +84,16 @@ export default {
       })
     },
 
-    getMusicDetail () {
-      const ids = this.trackIds.map(trackId => trackId.id).join(',')
+    getMusicDetail (limit = 1000, offset = 0) {
+      // 分批请求
+      let end = offset + limit
+      let ids = []
+      if (end < this.trackIds.length) {
+        ids = this.trackIds.slice(offset, end).map(trackId => trackId.id).join(',')
+      } else {
+        end = this.trackIds.length
+        ids = this.trackIds.slice(offset, end).map(trackId => trackId.id).join(',')
+      }
       getMusicDetail(ids).then(res => {
         if (res.code === 200) {
           console.log('歌曲详情为：', res)
@@ -97,6 +107,10 @@ export default {
             this.tracks.push(music)
           })
           this.loading = false
+
+          if (end !== this.trackIds.length && this.active) {
+            this.getMusicDetail(limit, offset + limit)
+          }
         }
       })
     },
@@ -105,17 +119,30 @@ export default {
     delMusic (lid, index) {
       this.tracks.splice(index, 1) // 删除歌曲，重绘页面
       this.playList.trackCount-- // 当前页面歌单总数-1
+    },
+
+    // 收藏处理
+    subControl (flag) {
+      if (flag === 1) {
+        this.playList.subCount++
+      } else {
+        this.playList.subCount--
+      }
     }
   },
   created () {
     const id = this.$route.params.id
     this.getPlayListDetail(id)
+  },
+  mounted () {
     this.$bus.$on('songListDelMusic', this.delMusic) // 歌单删除歌曲
   },
   destroyed () {
+    this.active = false
     this.$bus.$off('songListDelMusic', this.delMusic)
   },
   deactivated () {
+    this.active = false
     this.$bus.$off('songListDelMusic', this.delMusic)
   }
 }

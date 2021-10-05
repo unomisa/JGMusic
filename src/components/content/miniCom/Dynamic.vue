@@ -9,21 +9,22 @@
       </el-button>
 
       <el-button plain round @click="sub" :disabled="isMyList">
-        <i class="el-icon-folder-add" v-show="!isSubList"></i>
-        <i class="el-icon-folder-checked" v-show="isSubList"></i>
-        {{subText}}({{dynamic.subCount}})
+        <i class="el-icon-folder-add" v-show="!isSub"></i>
+        <i class="el-icon-folder-checked" v-show="isSub"></i>
+        {{subText}}({{formatPlayCount(dynamic.subCount,10000)}})
       </el-button>
 
-      <el-button plain round @click="share">
+      <!-- <el-button plain round @click="share">
         <i class="el-icon-share"></i>
-        分享({{dynamic.shareCount}})
-      </el-button>
+        分享({{formatPlayCount(dynamic.shareCount,10000)}})
+      </el-button> -->
     </div>
   </el-divider>
 </template>
 
 <script>
 import { mapState } from 'vuex'
+import { formatPlayCount } from 'common/utils'
 
 export default {
   props: {
@@ -37,7 +38,7 @@ export default {
       type: Boolean,
       default: false
     },
-    isSubList: {
+    isSub: {
       type: Boolean,
       default: false
     }
@@ -48,7 +49,7 @@ export default {
     ]),
 
     subText () {
-      if (this.isSubList) {
+      if (this.isSub) {
         return '已收藏'
       } else {
         return '收藏'
@@ -56,6 +57,10 @@ export default {
     }
   },
   methods: {
+    formatPlayCount (count, threshold) {
+      return formatPlayCount(count, threshold)
+    },
+
     // 播放全部
     playAll () {
       this.$bus.$emit('playAll', 0)

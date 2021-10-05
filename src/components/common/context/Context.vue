@@ -77,7 +77,7 @@ export default {
 .contextmenu {
   position: fixed;
   z-index: 2000;
-  width: 150px;
+  // width: 150px;
   font-size: 14px;
   user-select: none;
   transition: none;

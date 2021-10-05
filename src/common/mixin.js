@@ -1,10 +1,10 @@
 import { getLoginStatus } from 'network/common/login'
 import { mapMutations, mapState } from 'vuex'
 import {
-  getUserDetail, Profile, getLikeList, getUserFollows,
-  Follow, getUserPlaylist, getArtistSubList
+  getUserDetail, LoginUser, getLikeList, getUserFollows,
+  getUserPlaylist, getArtistSubList, getAlbumSubList
 } from 'network/pageRequest/user'
-import { Artist, SongList } from 'network/common'
+import { Artist, SongList, User } from 'network/common'
 
 // 更新登录状态s
 export const updateLoginStatus = {
@@ -15,20 +15,21 @@ export const updateLoginStatus = {
       'setLikeListSet',
       'setArtistSub',
       'pushFollowList',
-      'pushSubList'
+      'pushSubList',
+      'pushSubAlbum'
     ]),
 
     getUserDetail (userId) {
       return getUserDetail(userId, Date.now()).then(res => {
-        // console.log('用户详情为：', res)
+        // console.log('当前用户详情为：', res)
         if (res.code === 200) {
-          this.setLoginUser(new Profile(res))
+          this.setLoginUser(new LoginUser(res))
           this.setIsLogin(true)
         }
       })
     },
 
-    getArtistSubList (limit = 25, offset = 0) {
+    getArtistSubList (limit = 50, offset = 0) {
       return getArtistSubList(limit, offset, Date.now()).then(res => {
         if (res.code === 200) {
           // console.log('收藏歌手列表为：', res)
@@ -55,7 +56,7 @@ export const updateLoginStatus = {
           // console.log('用户关注列表为：', res)
           res.follow.forEach(user => this.pushFollowList({
             key: user.userId,
-            value: new Follow(user)
+            value: new User(user)
           }))
           if (res.more) {
             this.getUserFollows(uid, limit, offset + limit)
@@ -64,10 +65,23 @@ export const updateLoginStatus = {
       })
     },
 
+    getAlbumSubList (limit = 50, offset = 0) {
+      return getAlbumSubList(limit, offset).then(res => {
+        // console.log('收藏专辑为：', res)
+        if (res.code === 200) {
+          res.data.forEach(album => {
+            this.pushSubAlbum(album.id)
+          })
+          // this.result = res.data.map(artist => new Album(artist))
+          // this.loading = false
+        }
+      })
+    },
+
     getUserPlaylist (uid, limit = 50, offset = 0) {
       return getUserPlaylist(uid, limit, offset, Date.now()).then(res => {
         if (res.code === 200) {
-          console.log('当前用户歌单信息为：', res)
+          // console.log('登录用户歌单信息为：', res)
           res.playlist.forEach(list => {
             this.pushSubList({
               key: list.id,
@@ -90,7 +104,9 @@ export const updateLoginStatus = {
             this.getUserFollows(userId).then(() => {
               this.getLikeList(userId).then(() => {
                 this.getUserPlaylist(userId).then(() => {
-                  this.getArtistSubList()
+                  this.getArtistSubList().then(() => {
+                    this.getAlbumSubList()
+                  })
                 })
               })
             })
@@ -122,7 +138,7 @@ export const updateUserPlaylist = {
       const LoginUserId = this.loginUser.userId // 获取当前用户id
       return getUserPlaylist(LoginUserId, limit, offset, Date.now()).then(res => {
         if (res.code === 200) {
-          // console.log('当前用户歌单信息为：', res)
+          console.log('当前用户歌单信息为：', res)
           res.playlist.forEach(list => {
             this.pushSubList({
               key: list.id,
@@ -140,14 +156,36 @@ export const updateUserPlaylist = {
 }
 
 export const infiniteScroll = {
+  mounted () {
+    this.setInfiniteScrollDisabled(false) // 监听
+  },
+  activated () {
+    this.setInfiniteScrollDisabled(false) // 监听
+    this.$bus.$off('infiniteScroll') // 保证只添加一次事件
+  },
   // 离开页面关闭滚动与滚动监听
   deactivated () {
     this.setInfiniteScrollDisabled(true)
     this.$bus.$off('infiniteScroll')
   },
+
+  // ! 销毁周期会在下个页面create之前执行,不能保证在页面结束后执行
   destroyed () {
     this.setInfiniteScrollDisabled(true)
     this.$bus.$off('infiniteScroll')
+  }
+}
+
+export const playAll = {
+  activated () {
+    this.$bus.$off('playAll') // 保证只添加一次事件
+  },
+  // 离开页面关闭滚动与滚动监听
+  deactivated () {
+    this.$bus.$off('playAll')
+  },
+  destroyed () {
+    this.$bus.$off('playAll')
   }
 }
 
@@ -162,7 +200,7 @@ export const updateComment = {
       }
     }
   },
-  created () {
+  mounted () {
     this.$bus.$on('addComment', this.addComment)
   },
   destroyed () {
@@ -183,7 +221,9 @@ export const musicBean = {
         alias: music.alia,
         artists: music.ar,
         album: music.al,
-        duration: music.dt
+        duration: music.dt,
+        pop: music.pop,
+        tns: 'tns' in music && music.tns[0]
       }
     }
   }

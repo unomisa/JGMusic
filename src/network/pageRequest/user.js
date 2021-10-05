@@ -56,10 +56,35 @@ export function getArtistSubList (limit, offset, timestamp = Date.now()) {
   })
 }
 
+// 获取用户收藏专辑
+export function getAlbumSubList (limit, offset, timestamp = Date.now()) {
+  return request({
+    url: '/album/sublist',
+    params: {
+      limit,
+      offset,
+      timestamp
+    }
+  })
+}
+
 // 获取用户关注用户
 export function getUserFollows (uid, limit, offset, timestamp = Date.now()) {
   return request({
     url: '/user/follows',
+    params: {
+      uid,
+      limit,
+      offset,
+      timestamp
+    }
+  })
+}
+
+// 获取用户粉丝用户
+export function getUserFolloweds (uid, limit, offset, timestamp = Date.now()) {
+  return request({
+    url: '/user/followeds',
     params: {
       uid,
       limit,
@@ -88,28 +113,28 @@ export class Profile {
     this.level = profile.level
     this.identify = profile.identify
 
+    this.authStatus = info.authStatus // 用户是否为网易云音乐人
+    this.avatarDetail = info.avatarDetail ? info.avatarDetail : null // 头像额外内容
+
     this.userId = info.userId
     this.nickname = info.nickname
     this.avatarUrl = info.avatarUrl
     this.backgroundUrl = info.backgroundUrl
     this.followeds = info.followeds
+    this.mutual = info.mutual // 是否互相关注
     this.follows = info.follows
     this.signature = info.signature
     this.gender = info.gender
-
-    this.likeListSet = new Set([]) // 喜欢列表
-    this.artistSub = new Map([]) // 收藏歌手列表
-    this.followList = new Map([]) // 关注用户
-    this.subList = new Map([]) // 收藏歌单
   }
 }
 
-export class Follow {
-  constructor (follow) {
-    this.userId = follow.userId
-    this.name = follow.nickname
-    this.avatarUrl = follow.avatarUrl
-    this.signature = follow.signature
-    this.followeds = follow.followeds
+export class LoginUser extends Profile {
+  constructor (profile) {
+    super(profile)
+    this.likeListSet = new Set([]) // 喜欢列表
+    this.followList = new Map([]) // 关注用户
+    this.subList = new Map([]) // 收藏歌单
+    this.artistSub = new Map([]) // 收藏歌手列表
+    this.subAlbum = {}
   }
 }

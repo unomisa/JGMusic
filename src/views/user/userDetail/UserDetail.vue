@@ -2,24 +2,27 @@
   <div class="page">
     <div class="backdrop"></div>
     <div class="user-detail">
-      <user-profile :profile="profile" :profileLoading="profileLoading" />
+      <user-profile :profile="profile" :profileLoading="profileLoading"
+                    @profileChange="profileChange" />
+
       <user-song-list :created="created" :subscribed="subscribed"
                       :loading="userListLoading" />
     </div>
   </div>
-
 </template>
 
 <script>
 import UserProfile from './childComp/UserProfile.vue'
+import UserSongList from './childComp/UserSongList.vue'
 
 import { getUserDetail, getUserPlaylist, Profile } from 'network/pageRequest/user'
-import UserSongList from './childComp/UserSongList.vue'
 import { SongList } from 'network/common'
 import { mapMutations, mapState } from 'vuex'
+import { infiniteScroll } from 'common/mixin'
 
 export default {
   name: 'UserDetail',
+  mixins: [infiniteScroll],
   components: { UserProfile, UserSongList },
   data () {
     return {
@@ -29,7 +32,8 @@ export default {
       limit: 100, // 歌单每次请求数量
       offset: 0, // 歌单偏移数量,
       profileLoading: true,
-      userListLoading: true
+      userListLoading: true,
+      more: false // 是否允许加载更多
     }
   },
   computed: {
@@ -44,8 +48,8 @@ export default {
 
     getUserPlaylist () {
       const userId = parseInt(this.$route.params.userId)
-      getUserPlaylist(userId, this.limit, this.offset, Date.now()).then(res => {
-        console.log('歌单信息为：', JSON.parse(JSON.stringify(res)))
+      return getUserPlaylist(userId, this.limit, this.offset, Date.now()).then(res => {
+        // console.log('歌单信息为：', JSON.parse(JSON.stringify(res)))
         if (res.code === 200) {
           res.playlist.forEach((songList) => {
             if (songList.userId === userId) {
@@ -54,27 +58,49 @@ export default {
               this.subscribed.push(new SongList(songList))
             }
           })
+
           this.userListLoading = false
+
           if (res.more === true) {
             this.offset += this.limit
             this.setInfiniteScrollDisabled(false)
+            this.more = true // 第一次加载后才能加载更多，否则会重复
           } else {
             this.setInfiniteScrollDisabled(true)
           }
         }
       })
+    },
+
+    morePlayList () {
+      this.more && this.getUserPlaylist()
+    },
+
+    getUserDetail () {
+      const userId = parseInt(this.$route.params.userId)
+      getUserDetail(userId).then(res => {
+        console.log('用户信息为：', res)
+        if (res.code === 200) {
+          this.profile = new Profile(res)
+          this.profileLoading = false
+        }
+      })
+    },
+
+    // * 事件响应
+    profileChange (profile) {
+      this.profile = profile
     }
   },
   created () {
-    const userId = parseInt(this.$route.params.userId)
-    getUserDetail(userId).then(res => {
-      console.log('歌手信息为：', res)
-      if (res.code === 200) {
-        this.profile = new Profile(res)
-        this.profileLoading = false
-      }
-    })
+    this.getUserDetail()
     this.getUserPlaylist()
+  },
+  mounted () {
+    this.$bus.$on('infiniteScroll', this.morePlayList)
+  },
+  activated () {
+    this.$bus.$on('infiniteScroll', this.morePlayList)
   },
   watch: {
     // 监听当前用户歌单的改变，更新数据
@@ -86,15 +112,6 @@ export default {
         this.subscribed = lists.filter(list => list.subscribed)
       }
     }
-  },
-  mounted () {
-    this.$bus.$on('infiniteScroll', this.getUserPlaylist)
-  },
-  destroyed () {
-    this.$bus.$off('infiniteScroll')
-  },
-  deactivated () {
-    this.$bus.$off('infiniteScroll')
   }
 }
 </script>

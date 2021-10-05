@@ -40,7 +40,7 @@ export default {
   position: relative;
   margin-top: 50px;
   margin-bottom: 2rem;
-  // height: 230px;
+  // height: 230px;  // 不能设置固定高度，否则无法展开隐藏文字
 }
 
 .content {

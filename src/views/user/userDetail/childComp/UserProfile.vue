@@ -20,7 +20,7 @@
               <use xlink:href="#icon-nan"></use>
             </svg>
 
-            <svg class="icon" aria-hidden="true" v-if="profile.gender!==1">
+            <svg class="icon" aria-hidden="true" v-if="profile.gender === 2">
               <use xlink:href="#icon-nv"></use>
             </svg>
           </span>
@@ -46,8 +46,9 @@
         <el-divider content-position="right" v-if="!isLoginUser">
           <div class="btn">
             <el-button plain round @click="followUser">
+              <i class="el-icon-sort mutual" v-if="profile.mutual"></i>
               <i class="el-icon-plus" v-show="!isFollow"></i>
-              <i class="el-icon-check" v-show="isFollow"></i>
+              <i class="el-icon-check" v-show="!profile.mutual && isFollow"></i>
               {{followText}}
             </el-button>
 
@@ -59,13 +60,13 @@
         </el-divider>
 
         <div class="relationship">
-          <div class="relationship-text">
+          <div class="relationship-text" @click="followsDetail">
             <div class="relationship-number">{{profile.follows}}</div>
             <div>关注</div>
           </div>
           <el-divider class="divider-vertical" direction="vertical">
           </el-divider>
-          <div class="relationship-text">
+          <div class="relationship-text" @click="followedsDetail">
             <div class="relationship-number">{{profile.followeds}}</div>
             <div>粉丝</div>
           </div>
@@ -86,8 +87,7 @@
 <script>
 
 import { mapState, mapMutations } from 'vuex'
-import { followUser } from 'network/common'
-import { Follow } from 'network/pageRequest/user'
+import { followUser, User } from 'network/common'
 import DetailCard from 'components/content/detailCard/DetailCard.vue'
 import CollapsibleText from 'components/common/collapsibleText/collapsibleText.vue'
 
@@ -110,6 +110,10 @@ export default {
       'loginUser'
     ]),
 
+    uid () {
+      return parseInt(this.$route.params.userId)
+    },
+
     isLoginUser () {
       const id = parseInt(this.$route.params.userId)
       return this.loginUser.userId === id
@@ -125,7 +129,9 @@ export default {
     },
 
     followText () {
-      if (this.isFollow) {
+      if (this.profile.mutual) {
+        return '互相关注'
+      } else if (this.isFollow) {
         return '已关注'
       } else {
         return '关注'
@@ -139,7 +145,6 @@ export default {
     ]),
 
     editInfo () {
-      console.log('点击')
       this.$notify.info({
         position: 'top-left',
         title: '等待开发',
@@ -155,27 +160,56 @@ export default {
       if (this.isFollow) {
         followUser(uid, 0, Date.now()).then(res => {
           if (res.code === 200) {
-            console.log('取消关注：', res)
+            // console.log('取消关注：', res)
             this.userUnfollow(uid)
             this.$notify.topleft('已取消关注')
+            this.profile.followed = false
+            this.profile.mutual = false
+            this.profile.followeds = this.profile.followeds - 1 // 粉丝减一
           }
         })
       } else {
         followUser(uid, 1, Date.now()).then(res => {
           if (res.code === 200) {
-            console.log('关注：', res)
+            // console.log('关注：', res)
             this.pushFollowList({
               key: uid,
-              value: new Follow(this.profile)
+              value: new User({
+                ...this.profile,
+                followed: true
+              })
             })
             this.$notify.topleft('已关注')
+            this.profile.followed = res.user.followed // 根据返回设置
+            this.profile.mutual = res.user.mutual // 根据返回设置
+            this.profile.followeds = this.profile.followeds + 1 // 粉丝加一
           }
         })
       }
     },
+
     sendMessage () {
       this.$notify.wait()
+    },
+
+    followsDetail () {
+      this.$router.push({
+        path: '/user/follow/' + this.profile.userId,
+        query: {
+          type: 'follow'
+        }
+      })
+    },
+
+    followedsDetail () {
+      this.$router.push({
+        path: '/user/follow/' + this.profile.userId,
+        query: {
+          type: 'followeds'
+        }
+      })
     }
+
   }
 }
 </script>
@@ -189,6 +223,7 @@ export default {
   height: 190px;
   width: 190px;
   border-radius: 100%;
+  display: block;
 }
 
 .nickname {
@@ -272,8 +307,11 @@ export default {
 .signature {
   &-content {
     color: var(--color-gray);
-    line-height: 2;
   }
+}
+
+.mutual {
+  transform: rotate(90deg);
 }
 </style>
 

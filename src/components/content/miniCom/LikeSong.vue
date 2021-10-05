@@ -56,7 +56,7 @@ export default {
             this.$notify.topleft('已取消喜欢')
           }
         } else {
-          this.$notify.topleft('该歌曲无法添加至喜欢列表', 'error')
+          this.$notify.topleft(res.message, 'error')
         }
       })
     }

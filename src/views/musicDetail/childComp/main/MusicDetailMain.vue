@@ -145,5 +145,6 @@ export default {
 .right {
   flex: 1;
   overflow: hidden;
+  box-sizing: border-box;
 }
 </style>

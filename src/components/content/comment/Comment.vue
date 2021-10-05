@@ -130,13 +130,13 @@ export default {
       }
     }
   },
-  created () {
+  mounted () {
     this.$bus.$on('addComment', this.addComment)
   },
-  destroyed () {
+  deactivated () {
     this.$bus.$off('addComment', this.addComment)
   },
-  deactivated () {
+  destroyed () {
     this.$bus.$off('addComment', this.addComment)
   }
 }

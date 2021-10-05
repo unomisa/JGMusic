@@ -6,7 +6,7 @@
       <el-menu-item index="3" v-if="desc">专辑详情</el-menu-item>
     </el-menu>
 
-    <song-group :tracks="tracks" v-show="activeIndex==='1'" />
+    <song-group :tracks="tracks" :areas="areas" v-show="activeIndex==='1'" />
 
     <comment :newComments="newComments" :hotComments="hotComments"
              :total="commentTotal" :loading="commentLoading" :type="3" :rid="id"
@@ -46,7 +46,15 @@ export default {
       newComments: [],
       hotComments: [],
       activeIndex: '1',
-      commentLoading: true
+      commentLoading: true,
+      areas: {
+        others: 3,
+        name: 6,
+        artists: 5,
+        album: 5,
+        duration: 2,
+        pop: 3
+      }
     }
   },
   computed: {
