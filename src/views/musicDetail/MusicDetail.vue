@@ -168,7 +168,7 @@ export default {
 
     // 若播放列表为空,则返回上个路由
     isExistCurrentPlayMusic (exist) {
-      if (!exist) {
+      if (!exist && this.showMusicDetail) { // 若播放列表为空且当前在音乐详情中
         this.$router.back()
       }
     }
