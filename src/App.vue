@@ -11,9 +11,10 @@
       <router-view :key="$route.fullPath" />
     </keep-alive>
 
+    <!-- <footer-declare /> -->
+
     <save-to-playlist />
     <back-top :target="$refs.scrollbar" />
-
     <play-bar />
   </div>
 </template>
@@ -23,6 +24,7 @@ import PlayBar from 'components/content/playBar/PlayBar.vue'
 import NavBar from './components/content/navBar/NavBar.vue'
 import BackTop from 'components/common/backTop/BackTop.vue'
 import SaveToPlaylist from 'components/content/savaToPlay/SaveToPlaylist.vue'
+import FooterDeclare from 'components/content/footer/FooterDeclare.vue'
 
 import { mapGetters, mapMutations, mapState } from 'vuex'
 
@@ -31,7 +33,8 @@ export default {
     PlayBar,
     NavBar,
     BackTop,
-    SaveToPlaylist
+    SaveToPlaylist,
+    FooterDeclare
   },
   computed: {
     ...mapState([

@@ -49,7 +49,7 @@ import DetailCard from 'components/content/detailCard/DetailCard.vue'
 import Dynamic from 'components/content/miniCom/Dynamic.vue'
 
 import { subAlbum } from 'network/common'
-import { mapGetters, mapMutations } from 'vuex'
+import { mapState, mapGetters, mapMutations } from 'vuex'
 
 export default {
   components: { DetailCard, Dynamic },
@@ -66,12 +66,16 @@ export default {
     }
   },
   computed: {
+    ...mapState([
+      'isLogin'
+    ]),
+
     ...mapGetters([
       'AlbumSubList'
     ]),
 
     isSubAlbum () {
-      if ('id' in this.album) {
+      if ('id' in this.album && this.isLogin) {
         return String(this.album.id) in this.AlbumSubList
       } else {
         return false

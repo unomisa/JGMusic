@@ -97,6 +97,7 @@ export const updateLoginStatus = {
 
     getLoginStatus () {
       getLoginStatus(Date.now()).then(res => {
+        // console.log('当前状态结果为：', res)
         const data = res.data
         if (data.code === 200 && data.account !== null && data.profile !== null) {
           const userId = data.profile.userId

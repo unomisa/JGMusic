@@ -84,6 +84,7 @@ export default {
   },
   computed: {
     ...mapState([
+      'isLogin',
       'loginUser'
     ]),
 
@@ -111,7 +112,11 @@ export default {
           }
         })
       } else {
-        this.$router.push('/songList/' + this.songList.id)
+        if (this.songList.specialType === 5 && !this.isLogin) {
+          this.$notify.topleft('需要登录才能查看', 'warning')
+        } else {
+          this.$router.push('/songList/' + this.songList.id)
+        }
       }
     },
 

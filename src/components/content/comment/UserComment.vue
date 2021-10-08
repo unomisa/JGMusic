@@ -111,6 +111,10 @@ export default {
           if (res.code === 200) {
             this.$emit('unLike')
             this.$notify.topleft('取消点赞')
+          } else {
+            if (res && res.message) {
+              this.$notify.topleft(res.message, 'error')
+            }
           }
         })
       } else {
@@ -119,6 +123,10 @@ export default {
           if (res.code === 200) {
             this.$emit('like')
             this.$notify.topleft('点赞成功')
+          } else {
+            if (res && res.message) {
+              this.$notify.topleft(res.message, 'error')
+            }
           }
         })
       }

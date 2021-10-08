@@ -56,7 +56,9 @@ export default {
             this.$notify.topleft('已取消喜欢')
           }
         } else {
-          this.$notify.topleft(res.message, 'error')
+          if (res && res.message) {
+            this.$notify.topleft(res.message, 'error')
+          }
         }
       })
     }

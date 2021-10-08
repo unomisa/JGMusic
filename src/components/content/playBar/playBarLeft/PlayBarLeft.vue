@@ -40,12 +40,16 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 import LikeSong from 'components/content/miniCom/LikeSong.vue'
 
 export default {
   components: { LikeSong },
   computed: {
+    ...mapState([
+      'isLogin'
+    ]),
+
     ...mapGetters([
       'currentPlayMusic',
       'isExistCurrentPlayMusic'
@@ -70,11 +74,15 @@ export default {
 
     // 保存至歌单
     subToList () {
-      const track = this.currentPlayMusic
-      if (track.state.cp !== 0) {
-        this.$bus.$emit('subMusicToList', track) // 将歌曲传递给收藏歌单页
+      if (this.isLogin) {
+        const track = this.currentPlayMusic
+        if (track.state.cp !== 0) {
+          this.$bus.$emit('subMusicToList', track) // 将歌曲传递给收藏歌单页
+        } else {
+          this.$notify.topleft('歌曲暂无版权', 'error')
+        }
       } else {
-        this.$notify.topleft('歌曲暂无版权', 'error')
+        this.$notify.topleft('请登录后操作', 'error')
       }
     }
   }

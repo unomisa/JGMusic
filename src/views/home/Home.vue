@@ -2,12 +2,13 @@
   <div class="home">
     <el-container>
       <home-main />
-      <!-- <el-footer>Footer</el-footer> -->
     </el-container>
+    <!-- <footer-declare /> -->
   </div>
 </template>
 
 <script>
+import FooterDeclare from 'components/content/footer/FooterDeclare.vue'
 // 组件
 import HomeMain from './childComp/HomeMain.vue'
 
@@ -15,7 +16,8 @@ import HomeMain from './childComp/HomeMain.vue'
 
 export default {
   components: {
-    HomeMain
+    HomeMain,
+    FooterDeclare
   }
 }
 </script>
@@ -24,9 +26,5 @@ export default {
 .el-container {
   width: var(--width-main);
   margin: 0 auto;
-}
-
-.el-footer {
-  background-color: gray;
 }
 </style>

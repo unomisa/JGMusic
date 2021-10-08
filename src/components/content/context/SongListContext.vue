@@ -16,7 +16,7 @@
       添加至播放列表
     </context-item>
 
-    <context-item @click.native="subSongList" v-if="isMyList">
+    <context-item @click.native="subSongList" v-if="isMyList && isLogin">
       <template v-slot:icon>
         <i class="el-icon-folder-add"></i>
       </template>
@@ -62,6 +62,7 @@ export default {
   },
   computed: {
     ...mapState([
+      'isLogin',
       'loginUser'
     ]),
 
@@ -93,18 +94,26 @@ export default {
     ]),
 
     play () {
-      this.getPlayListDetail(this.songList.id).then(tracks => {
-        this.addToPlayList({
-          playList: tracks,
-          index: 0
+      if (this.songList.specialType === 5 && !this.isLogin) {
+        this.$notify.topleft('需要登录才能查看', 'warning')
+      } else {
+        this.getPlayListDetail(this.songList.id).then(tracks => {
+          this.addToPlayList({
+            playList: tracks,
+            index: 0
+          })
         })
-      })
+      }
     },
 
     addToNextMusics () {
-      this.getPlayListDetail(this.songList.id).then(tracks => {
-        this.addNextMusics(tracks)
-      })
+      if (this.songList.specialType === 5 && !this.isLogin) {
+        this.$notify.topleft('需要登录才能查看', 'warning')
+      } else {
+        this.getPlayListDetail(this.songList.id).then(tracks => {
+          this.addNextMusics(tracks)
+        })
+      }
     },
 
     subSongList () {

@@ -6,12 +6,8 @@ import '@/element-ui/index' // element ui 按需导入
 import 'normalize.css'
 
 import 'assets/js/Symbol/iconfont' // 导入第三方图标
-import contentmenu from 'v-contextmenu' // 上下文菜单组件
-import 'v-contextmenu/dist/index.css' // 上下文菜单样式
 import comment from 'components/content/comment/plugin/index' // 评论组件
-
 import Vuebar from 'vuebar' // 滚动栏样式
-Vue.use(contentmenu)
 Vue.use(Vuebar)
 Vue.use(comment)
 

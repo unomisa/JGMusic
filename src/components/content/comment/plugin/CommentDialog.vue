@@ -68,7 +68,7 @@ export default {
       this.content = content
 
       this.$nextTick(() => {
-        this.$refs.contentInput.focus() // 输入框获取焦点
+        this.$refs.contentInput && this.$refs.contentInput.focus() // 输入框获取焦点
       })
     },
 
@@ -121,7 +121,11 @@ export default {
             ]
           }, rid, type))
         } else {
-          this.$notify.topleft('回复评论失败', 'error')
+          if (res && res.message) {
+            this.$notify.topleft(res.message, 'error')
+          } else {
+            this.$notify.topleft('回复评论失败')
+          }
         }
       })
       this.handleClose()

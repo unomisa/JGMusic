@@ -22,10 +22,12 @@
         </svg>
         下一首播放
       </li>
-      <li class="contextmenu-item" @click="subMusicToList">
+
+      <li class="contextmenu-item" @click="subMusicToList" v-if="isLogin">
         <i class="el-icon-folder-add item-icon"></i>
         收藏到歌单
       </li>
+
       <el-divider class="divider" v-if="isMyList"></el-divider>
       <li class="contextmenu-item" v-if="isMyList" @click="delMusic">
         <i class="el-icon-delete item-icon"></i>
@@ -71,7 +73,8 @@ export default {
   },
   computed: {
     ...mapState([
-      'loginUser'
+      'loginUser',
+      'isLogin'
     ]),
 
     contextStyle () {
@@ -82,7 +85,7 @@ export default {
     },
 
     isMyList () {
-      if (this.$route.path.includes('songList') && 'id' in this.$route.params) {
+      if (this.isLogin && this.$route.path.includes('songList') && 'id' in this.$route.params) {
         const sid = parseInt(this.$route.params.id)
         if (this.loginUser.subList.has(sid) && !this.loginUser.subList.get(sid).subscribed) {
           return true

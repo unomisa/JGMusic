@@ -166,6 +166,10 @@ export default {
             this.profile.followed = false
             this.profile.mutual = false
             this.profile.followeds = this.profile.followeds - 1 // 粉丝减一
+          } else {
+            if (res && res.message) {
+              this.$notify.topleft(res.message, 'error')
+            }
           }
         })
       } else {
@@ -183,6 +187,10 @@ export default {
             this.profile.followed = res.user.followed // 根据返回设置
             this.profile.mutual = res.user.mutual // 根据返回设置
             this.profile.followeds = this.profile.followeds + 1 // 粉丝加一
+          } else {
+            if (res && res.message) {
+              this.$notify.topleft(res.message, 'error')
+            }
           }
         })
       }

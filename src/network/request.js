@@ -8,7 +8,8 @@ let baseUrl = ''
 if (process.env.NODE_ENV === 'development') {
   baseUrl = 'http://localhost:3000'
 } else if (process.env.NODE_ENV === 'production') {
-  baseUrl = 'https://nicemusic-api.lxhcool.cn/'
+  baseUrl = '/api' // 使用api进行标识
+  // baseUrl = 'https://nicemusic-api.lxhcool.cn/'
 }
 
 export function request (config) {
@@ -48,9 +49,23 @@ export function request (config) {
       return res.data
     },
     err => {
+      const _res = err.response
+
       console.log(err)
+      console.log(Object.keys(err))
+      console.log(Object.values(err))
+
+      // 处理没有登录造成的301错误
+      if (_res.status === 301) {
+        // Vue.prototype.$notify.topleft('请登录后操作', 'warning')
+        return {
+          ..._res.data,
+          message: '请登录后操作'
+        }
+      }
 
       // 如果请求超时则重新请求
+      console.log('err.message: ', err.message)
       if (err.message.includes('timeout')) {
         console.log('请求时间超时')
         const config = err.config

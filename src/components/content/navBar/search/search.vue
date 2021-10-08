@@ -113,7 +113,8 @@ export default {
       this.search()
     },
 
-    inputFocus () {
+    inputFocus (event) {
+      console.log('event: ', event)
       console.log('search获取焦点')
       if (this.searchText.length === 0) {
         this.searchHot() // 没有输入内容则获取热门搜索
