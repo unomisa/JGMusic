@@ -2,7 +2,7 @@
 node_modules
 /dist
 /NeteaseCloudMusicApi
-src/assets/theme
+/src/assets/theme
 
 # local env files
 .env.local
