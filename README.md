@@ -1,6 +1,5 @@
 # JGMusic
 网易云第三方播放网站
-线上demo：http://121.41.74.40/
 
 ## Project setup
 
